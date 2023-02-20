@@ -1,0 +1,190 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load multioptions_tags %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+                <div class="row mb-3">
+                   
+                   
+                    <div class="col-sm-12">
+                        <a href="{% url 'faculty_classroom' %}" class="btn btn-primary p-2 m-1 rounded-pill">Classroom</a>
+                        <a href="{% url 'view_all_assignment' %}" class="btn btn-primary p-2 m-1 rounded-pill">Assignments</a>
+                        <a href="{% url 'view_all_test' %}" class="btn btn-primary p-2 m-1 rounded-pill">Tests</a>
+                        <a href="{% url 'view_all_discussion' %}" class="btn btn-primary p-2 m-1 rounded-pill">Discussions</a>
+                    </div>
+                    
+                </div>
+
+				<div class="row mb-2">
+                    
+                    <a href="{% url 'faculty_classroom' %}"><h3 >{{classroom.name}}</h3></a>
+                   
+                </div>
+                <hr>
+                <h4 class="d-inline">Chapter's</h4>  
+            
+           
+            <div class="row mb-5 mt-4" id="classroom_div">
+                
+                {% for chapter in chapter %}
+                    <div class="col-sm-3">
+                        <div class="card shadow mb-3">
+                            <div class="card-body text-center">
+                                <h4><a href="{% url 'classroom_detail' chapter.id %}">{{chapter.name}}</a></h4>
+                                <div class="row justify-content-md-center m-2">
+                                    
+
+                                </div>
+                            
+                            </div>
+                        </div>                        
+                    </div>
+                    
+                {% empty %}
+                    No Class rooms created
+                {% endfor %}
+            </div>
+           
+                
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+        
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+    <script>
+        $(document).ready(function(){
+
+            $('#video_div').on('click','.play_video',function(){
+                event.preventDefault();
+                fulllink = $(this).attr('video-url');
+                video = fulllink.split('=');
+                video_id = video[video.length-1]
+                revisedlink = "https://www.youtube.com/embed/" + video_id
+                $('#video_div iframe').attr('src',revisedlink);
+            
+
+            });
+
+
+            $('#topic_div').on('click','.topic_detail',function(){
+                    event.preventDefault();
+                    url = $(this).attr('topic-url');
+                    $.ajax({
+                        url:url,
+                        success:function(output)
+                        {
+                            $('#video_div').html(output.video_html);
+                            $('#material_div').html(output.material_html);
+                        },
+                    });
+            });
+
+
+            $('.container').on('click','.ajax_operation',function(){
+                    event.preventDefault();
+                    url = $(this).attr('data-url');
+                    $.ajax({
+                        url:url,
+                        success:function(output)
+                        {
+                            $('#AjaxModal').html(output.form);
+                            $('#AjaxModal').modal('show');
+                            
+                        },
+                    });
+            });
+
+            $('#AjaxModal').on('click','#edit_btn', function(){
+                
+                event.preventDefault();
+                formdata = new FormData($('#AjaxModal #ajax_form')[0]);
+                url = $(this).attr('data-url');
+                
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            if(output.model_name=='Topic')
+                            {
+                                $('#topic_div').html(output.html);
+                            }
+                            else if(output.model_name=='Material')
+                            {
+                                $('#material_div').html(output.html);
+                            }
+                            else{
+                                $('#video_div').html(output.html);
+                            }
+
+                            $('#AjaxModal').modal('hide');
+                            
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+            
+            
+                    },
+                });
+
+
+            });
+
+            $('.container').on('click','.ajax_delete',function(){
+                event.preventDefault();
+                if (confirm('Are you sure to delete?')) {
+                    url = $(this).attr('data-url');
+                    $.ajax({
+                        url : url,
+                        
+                        success:function(output)
+                        {
+                           
+                            if(output.model_name=='Topic')
+                            {
+                                $('#topic_div').html(output.html);
+                            }
+                            else if(output.model_name=='Material')
+                            {
+                                $('#material_div').html(output.html);
+                            }
+                            else{
+                                $('#video_div').html(output.html);
+                            }
+
+                                         
+                        
+                        
+                            
+                        },
+                    });
+                }
+
+            });
+
+
+        });
+
+    </script>
+
+{% endblock %}

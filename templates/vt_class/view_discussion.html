@@ -1,0 +1,65 @@
+
+{% extends 'base_2.html' %}
+{% load static %}
+{% block content %}
+{% load status_tags %}
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+
+            <div class="row mb-2">              
+                               
+                <div class="col-sm-6">                  
+                    
+                   <a href="{% url 'topic' topic.chapter.id %}" class="btn btn-primary p-1 m-1 rounded-pill">Go Back</a>
+                   
+                </div>
+
+                <div class="col-sm-6"> </div>                
+            </div>
+
+            <div class="kt-pricing-1__items row">               
+                <div class="kt-pricing-1__item col-lg-7 bg-blue">
+                    <div class="row p-2">
+                        <div class="col-sm-8">
+                            <h4 class="kt-pricing-1__subtitle"> Discussions on  {{topic.title}} </h4>
+                        </div>
+                        <div class="col-sm-4">
+                            <h5 class="float-right" ><a href="{% url 'ask_questions' request.resolver_match.kwargs.pk %}">+ Ask new questions?</a></h5>
+                        </div>
+                        
+                        
+                    </div>
+                    <hr>
+                    <span class="kt-pricing-1__description">
+                        <ul class="unoderlist">                       
+                            
+                            {% for forum in topic.forum_set.all %}                            
+										
+	                            <li class="p-3">
+                                    <h4>
+                                         <a>{{forum.title}} </a>
+
+                                         <span class="float-right lead">
+                                             <a href="{% url 'view_replies' forum.id %}">View  replies</a>
+                                          </span> 
+                                    </h4>
+                                </li>
+
+                            {% empty %}
+                            
+                               <h5>No discussion found on this topic.</h5>
+                                
+                            {% endfor %}                  
+                        
+                      
+                        </ul>
+                    </span>                                                
+                </div>
+        
+            </div>
+        </div>
+    </div>
+
+                               
+
+{% endblock %}

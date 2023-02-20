@@ -1,0 +1,178 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% block content %}
+								<div class="kt-portlet kt-portlet--height-fluid">
+									<div class="kt-portlet__body">
+                                        <div class="kt-pricing-1__items row">
+                                            <div class="kt-pricing-1__item col-lg-4 bg-blue scrollkit" style="height: 450px;" id="video_scrollbar">
+                                                {% if user.student %}
+                                                    {% if  attempt_status %}
+                                                       <h5>Learning Style <button class="btn" style="background-color: #ffdf57;"> {% if style == "K" %} Kinaesthetic {% elif style == "A" %} Auditory {% else %}Visual {% endif %}</button></h5>
+                                                    {% else %}
+                                                        <p>Know  your learning style, <a class="btn btn-primary"  href="{% url 'home' %}">Take Test</a> </p>
+                                                    {% endif %}
+
+                                                {% endif %}
+                                                <div class="row">
+                                                    <div class="col-sm-4"><button data-url="{% url 'video_filter' pk=pk style='V' %}" id="ls_V" value="V"  class="btn ls_change btn-success w-100">Visual</button> </div>
+                                                    <div class="col-sm-4"><button data-url="{% url 'video_filter' pk=pk style='K' %}" id="ls_K" value="K" class="btn ls_change btn-success w-100">Kinaesthetic</button></div>
+                                                    <div class="col-sm-4"><button data-url="{% url 'video_filter' pk=pk style='A' %}" id="ls_A" value="A" class="btn ls_change btn-success w-100">Auditory</button></div>
+
+                                                </div>
+
+                                                 
+                                                <h3 class="kt-pricing-1__subtitle mt-1">Videos</h3>
+                                                <span class="kt-pricing-1__description" >
+                                                    <ul class="video_ul">
+                                                        {% for video in videos %}
+                                                            <li class="w-100 p-2" style="list-style-type: none;"><a class="video_list" href="#" data_link="{{video.video_link}}?ecver=1">Chapter {{video.chapter_no}} : {{video.video_title}}</a></li>
+                                                        {% empty %}
+                                                            No Videos found for this resource
+                                                        {% endfor %}
+
+                                                    </ul>
+                                                    
+                                                        
+
+                                                </span>
+                                                
+                                            </div>
+                                            <div class="kt-pricing-1__item col-lg-8 ">
+                                              
+                                                    <iframe width="100%" height="450px" src="" ></iframe>
+                                                                                                                 
+                                            </div>
+                                            
+                                        </div>
+									</div>
+                                </div>
+
+                              
+                                
+                                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+                                <script>
+                                        $(document).ready(function(){
+
+                                            // make style selected
+                                               var learning_style = "{{style}}";
+                                               $('#ls_'+learning_style).removeClass('btn-success');
+                                               $('#ls_'+learning_style).addClass('btn-danger');
+
+                                            //Choose Learning Style
+
+                                            $(".ls_change").click(function(){
+                                                event.preventDefault();
+                                                var style = $(this).attr('value');
+                                                $('.ls_change').removeClass('btn-danger');
+                                                $('.ls_change').addClass('btn-success');
+                                                var url =$(this).attr('data-url');
+                                                $.ajax({
+                                                    url : url,                                  
+                                                    success:function(output)
+                                                    {                                                                                 
+                                                       $('.video_ul').html(output.html);                                                        
+                                                       $('#ls_'+style).removeClass('btn-success');
+                                                       $('#ls_'+style).addClass('btn-danger');
+                                                       defaultPreview();
+
+                                                    },
+                                                });
+
+
+                                            });
+
+                                            function defaultPreview() {
+                                                
+                                                var link = $(".video_list:first").attr('data_link');
+                                            
+
+                                                if (link.indexOf("drive.google.com") != -1)
+
+                                                {
+                                                    var res = link.replace("view?ecver=1", 'preview');
+                                                                                                                
+                                                    $('iframe').attr("src", res);
+                                                    $(".video_list").css('color','white');
+                                                    $(this).css('color','black');                                                       
+
+
+                                                }
+
+                                                else{
+
+                                                    var full_video_link = "youtube.com";
+                                                    if(link.indexOf(full_video_link) != -1){                                                    
+                                                    var res = link.split("=");                                                 
+                                                    var link = "https://www.youtube.com/embed/"+res[1]; 
+
+                                                    }
+                                                    else{
+                                                        var res = link;                                                    
+                                                        var link = "https://www.youtube.com/embed/"+res;                                                  
+
+                                                    }
+
+                                                $('iframe').attr("src", link);
+                                                $(".video_list:first").css('color','black');
+
+                                                }
+                                            
+                                            
+
+
+
+
+                                                }
+                                                                                    
+                                            defaultPreview();
+                                            
+                                            $('.video_ul').on('click','.video_list',function(){                                                 
+                                           
+                                                event.preventDefault();
+                                                var link = $(this).attr('data_link'); 
+                                                if (link.indexOf("drive.google.com") != -1)
+                                                {
+                                                    
+                                                    var res = link.replace("view?ecver=1", 'preview');                                                                                                            
+                                                    $('iframe').attr("src", res);
+                                                    $(".video_list").css('color','white');
+                                                    $(this).css('color','black');
+
+                                                }
+
+                                                else{
+
+                                                 var full_video_link = "youtube.com";
+                                                 if(link.indexOf(full_video_link) != -1){                                                    
+                                                 var res = link.split("=");                                                 
+                                                 var link = "https://www.youtube.com/embed/"+res[1]; 
+
+                                                }
+                                                else{
+                                                    var res = link;                                                    
+                                                    var link = "https://www.youtube.com/embed/"+res;                                                  
+
+                                                }
+
+                                                $('iframe').attr("src", link);
+                                                $(".video_list").css('color','white');
+                                                $(this).css('color','black');
+
+
+
+                                                }
+                                        
+                                              
+
+                                               
+                                            });
+
+                                            
+ 
+                                        });
+                                </script>
+                                
+                                
+                                
+                                
+                           {% endblock %}

@@ -1,0 +1,288 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load mathfilters %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+                
+                   
+                <div class="row mb-3">
+                   
+                    <div class="col-sm-12">
+                        <a href="{% url 'faculty_classroom' %}" class="btn btn-primary p-2 m-1 rounded-pill">Classroom</a>
+                        <a href="{% url 'view_all_assignment' %}" class="btn btn-primary p-2 m-1 rounded-pill">Assignments</a>
+                        <a href="{% url 'view_all_test' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Tests</a>
+                        <a href="{% url 'view_all_discussion' %}" class="btn btn-primary p-2 m-1 rounded-pill">Discussions</a>
+                        <a href="{% url 'faculty_resource_list' %}" class="btn btn-primary p-2 m-1 rounded-pill">Resources</a>
+                    </div>
+                    
+                </div>
+                   
+                    
+                
+				<div class="d-inline mb-5">
+                    <h4 class="d-inline mb-5">My Tests</h4>  
+                    <a href="#" id="new_test" class="p-2 small bg-blue float-right ml-2" style="border-radius: 30px;"> + New Test</a> 
+                    <a href="{% url 'test_view_report' %}"  class="p-2 small bg-blue  float-right" style="border-radius: 30px;">View Report</a> 
+               
+                </div>
+                <hr>
+                
+                <div class="row m-3 ">
+                    <table class="table table-striped table-responsive">
+                        <thead>
+                          <tr>
+                            <th scope="col">Status</th>
+                            <th scope="col">Test Name</th>
+                            <th scope="col">Course</th>                        
+                            <th scope="col">Open Date</th>                            
+                            <th scope='col'>Duration In Minutes</th>
+                            <th scope="col">Total Strength</th>
+                            <th scope="col">Attempted</th>                            
+                            <th scope="col">Not Atempted</th>
+                            <th scope="col">Edit</th>
+                            <th scope="col">Delete</th>
+                          </tr>
+                        </thead>
+                        <tbody id="quiz_div">
+
+                        {% for quiz in quizzes %}
+
+                            {% if quiz.created_by == user %}
+                            <tr>
+                                <td>                                        
+                                    {% if quiz.isActive %}
+                                    Activated
+                                    {% else %}
+                                    <button data-url="{% url 'ajax_activate_quiz' quiz.id %}" class="activate_quiz_btn btn btn-primary">Activate</button>
+                                    {% endif %}
+                                
+                                </td>                                    
+                                <td><a href="{% url 'view_test' quiz.id %}">{{quiz.name}}</a></td>
+                                <td>{{ quiz.subject_assignment.all|join:", " }}</td>
+                                <td>{{quiz.openDate}}</td>                                
+
+                                {% if quiz.timed_exam %}
+                                <td>{{quiz.duration_in_minutes}}</td>
+                                {% else %}
+                                <td>NA</td>
+                                {% endif %}
+                                
+                                <td>{{quiz.strength}}</td>
+                                <td><a href="{% url 'view_report' quiz.id %}">{{quiz.submitted_count}}</a></td>                            
+                                <td><a   href="{% url 'view_not_attempt' quiz.id %}">{{ quiz.strength|sub:quiz.submitted_count }} </a></td>
+                                <td> <a class="edit_quiz" data-url= "{% url 'ajax_edit_quiz' quiz.id %}" href="#"><img src="{% static '/images/icons/edit.png' %}"></a></td>
+                                <td><a class="delete_quiz" data-url= "{% url 'ajax_delete_home_quiz' quiz.id %}" href="#"><img src="{% static '/images/icons/delete.png' %}"></a></td>
+                            </tr>
+                           {% else %}
+
+                            <tr>
+                                <td>                                        
+                                    {% if quiz.isActive %}
+                                    Activated
+                                    {% else %}
+                                    Not Activated
+                                    {% endif %}
+                                
+                                </td>                                    
+                                <td><a href="{% url 'view_test' quiz.id %}">{{quiz.name}}</a></td>
+                                <td>{{ quiz.subjects.all|join:", " }}</td>
+                                <td>{{quiz.openDate}}</td>
+                                
+
+                                {% if quiz.timed_exam %}
+                                <td>{{quiz.duration_in_minutes}}</td>
+                                {% else %}
+                                <td>NA</td>
+                                {% endif %}
+                                
+                                <td>{{quiz.strength}}</td>
+                                <td><a href="{% url 'view_report' quiz.id %}">{{quiz.submitted_count}}</a></td>                            
+                                <td><a   href="{% url 'view_not_attempt' quiz.id %}">{{ quiz.strength|sub:quiz.submitted_count }} </a></td>
+                                <td> -</td>
+                                <td>-</td>
+                            </tr>
+                           {% endif %}
+                           
+                        {% endfor %}                          
+                        </tbody>
+                      </table>
+                </div>                          
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+        
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+    <script>
+        $(document).ready(function(){
+            
+            //Activate Quiz
+            
+            $('#quiz_div').on('click','.activate_quiz_btn',function(){
+                event.preventDefault();
+                if (confirm('Are you sure to activate your quiz?')) {
+                    url = $(this).attr('data-url');
+                    $.ajax({
+                        url : url,
+                        
+                        success:function(output)
+                        {
+                            if(output.valid)
+                            {
+                                location.reload();
+                            }
+                            else{
+                                alert(output.response);
+                            }
+                            
+                        },
+                    });
+                }
+
+            });
+
+
+
+
+            $('#new_test').click(function(){
+                event.preventDefault();
+                $.ajax({
+                        url : '{%url "ajax_create_test" %}',
+                        
+                        success:function(output)
+                        {
+                            $('#AjaxModal').html(output.form);
+                            $('#AjaxModal').modal('show');
+                            
+                        },
+                });
+
+            });
+
+            //Create new quiz
+            $('#AjaxModal').on('click','#create_quiz_btn', function(){
+
+                event.preventDefault();
+                formdata = new FormData($('#AjaxModal #quiz_form')[0]);
+                $.ajax({
+                    url : '{%url "ajax_create_test" %}',
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+             
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            location.reload();                            
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+                    },
+                });
+
+
+            });
+
+             //Edit Popup
+             $('#quiz_div').on('click','.edit_quiz',function(){
+                event.preventDefault();
+                url = $(this).attr('data-url');
+                $.ajax({
+                        url : url,
+                        
+                        success:function(output)
+                        {
+                            $('#AjaxModal').html(output.form);
+                            $('#AjaxModal').modal('show');
+                            
+                        },
+                });
+
+            });
+
+            //update quiz
+            $('#AjaxModal').on('click','#update_quiz_btn', function(){
+            
+                event.preventDefault();
+                url = $(this).attr('data-url');
+                formdata = new FormData($('#AjaxModal #quiz_form')[0]);
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+                    
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+       
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#quiz_div').html(output.html);
+                            $('#AjaxModal').modal('hide');
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+            
+            
+                    },
+                });
+            });
+
+            //delete Quiz
+
+            $('#quiz_div').on('click','.delete_quiz',function(){
+                event.preventDefault();
+                if (confirm('Are you sure to delete your Test?')) {
+                    url = $(this).attr('data-url');
+                    $.ajax({
+                        url : url,
+                        
+                        success:function(output)
+                        {
+                            if(output.valid)
+                            {
+                                location.reload();
+                            }
+                            else{
+                                alert('Permission Denied');
+                            }
+                            
+                        },
+                    });
+                }
+
+            });
+
+
+
+
+        });
+
+        
+
+    </script>
+
+{% endblock %}

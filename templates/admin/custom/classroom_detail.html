@@ -1,0 +1,260 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load multioptions_tags %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+                <div class="row mb-3">
+                   
+                   
+                    <div class="col-sm-12">
+                        <a href="{% url 'faculty_classroom' %}" class="btn btn-primary p-2 m-1 rounded-pill">Classroom</a>
+                        <a href="{% url 'view_all_assignment' %}" class="btn btn-primary p-2 m-1 rounded-pill">Assignments</a>
+                        <a href="{% url 'view_all_test' %}" class="btn btn-primary p-2 m-1 rounded-pill">Tests</a>
+                        <a href="{% url 'view_all_discussion' %}" class="btn btn-primary p-2 m-1 rounded-pill">Discussions</a>
+                    </div>
+                    
+                </div>
+
+				<div class="row mb-2">
+                    {%comment%}<a href="{% url 'classroom_detail' classroom.id %}"><h3 >{{classroom.name}}</h3></a>{%endcomment%}
+                    <h3 >{{classroom.name}}</h3>
+                </div>
+                
+            <hr>
+                
+                <div class="row">
+                    <div class="col-sm-3">
+                        <h4 class="d-inline">Topics</h4>
+                        <a href="#"  data-url="{%url 'ajax_add' model_name='Topic' parent_pk=chapter.id %}" class="ajax_operation p-2 bg-blue float-right" style="border-radius: 30px;"> + New Topic</a> 
+                    </div>    
+                </div>     
+                <div class="row">
+                    <div class="col-sm-3 shadow bg-secondary m-3 p-3" id="topic_div">
+                        <p>Click Topics to view it's Resources.</p>
+                        <ul class="list-unstyled mt-3">
+                            {% for topic in topics %}
+                                <li class="mt-2">
+                                    <img src="{% static '/images/icons/list.png' %}">
+                                    <a class="topic_detail" href="#" topic-url="{% url 'ajax_topic_detail' topic.id %}" >{{topic.title}} </a>
+                                    <span class="float-right">
+                                        <a class="ajax_operation" href="#" data-url="{%url 'ajax_edit' model_name='Topic' pk=topic.id parent_pk=topic.chapter.id  %}"><img title="Edit Topic" src="{% static '/images/icons/edit.png' %}"></a>
+                                        <a class="ajax_delete" href="#" data-url="{%url 'ajax_delete' model_name='Topic' pk=topic.id parent_pk=topic.chapter.id %}"><img title="Delete Topic" src="{% static '/images/icons/delete.png' %}"></a>
+                                    </span>
+                                    
+                                </li>
+                            {% empty %}
+                                No topics found
+                            {% endfor %}
+                        </ul>
+                        
+
+                    </div>
+
+                    <div class="col-sm-8 m-1">
+                        <h4 class="d-inline">Material</h4>
+                        <a href="#" data-url="{%url 'ajax_add' model_name='Material' parent_pk=chapter.id  %}"  class="ajax_operation p-2 float-right bg-blue" style="border-radius: 30px;"> + New Material</a>
+                        <div class="row shadow bg-secondary mx-3 my-5 p-3" id="material_div">
+                            
+                            {% for material in materials %}
+    
+                                <div class="col-sm-6 ">
+                                    <img src="{% static '/images/icons/material.png' %}">
+                                    <a href="{{material.material.url}}" download>
+                                        {{material.title}}
+                                    </a>
+                                    <span class="float-right">
+                                        <a class="ajax_operation" href="#" data-url="{%url 'ajax_edit' model_name='Material' pk=material.id parent_pk=chapter.id  %}"><img title="Edit Material" src="{% static '/images/icons/edit.png' %}"></a>
+                                        <a class="ajax_delete" href="#" data-url="{%url 'ajax_delete' model_name='Material' pk=material.id parent_pk=chapter.id %}"><img title="Delete Material" src="{% static '/images/icons/delete.png' %}"></a>
+                                    </span>
+                                </div>
+                            {% empty %}
+
+                                No Materials Found
+    
+                            {% endfor %}
+                               
+                        </div>
+                        <h4 class="d-inline">Videos</h4>
+                        <a href="#" data-url="{%url 'ajax_add' model_name='Video' parent_pk=chapter.id  %}" class="ajax_operation float-right p-2 bg-blue" style="border-radius: 30px;"> + New Video</a>
+
+                        <div class="row m-3 shadow bg-secondary p-3" id="video_div">
+                            
+                            <div class="col-sm-8">
+                                
+                                <div class="embed-responsive embed-responsive-16by9">
+                                    <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/"></iframe>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                
+                                <ul class="list-unstyled">
+                                    {% for video in videos %}
+    
+                                        <li> 
+                                            <img src="{% static '/images/icons/video.png' %}">
+                                            <a href="#" class="play_video" video-url="{{video.link}}">{{video.title}}</a>
+                                            <span class="float-right">
+                                                <a class="ajax_operation" href="#" data-url="{%url 'ajax_edit' model_name='Video' pk=video.id parent_pk=chapter.id  %}"><img title="Edit Video" src="{% static '/images/icons/edit.png' %}"></a>
+                                                <a class="ajax_delete" href="#" data-url="{%url 'ajax_delete' model_name='Video' pk=video.id parent_pk=chapter.id %}"><img title="Delete Video" src="{% static '/images/icons/delete.png' %}"></a>
+                                            </span>
+                                        </li>
+
+                                    {% empty %}
+
+                                        No Videos Found
+    
+                                    {% endfor %}
+    
+                                </ul>
+                                
+                            </div>
+
+                            
+                            
+                            
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+        
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+    <script>
+        $(document).ready(function(){
+
+            $('#video_div').on('click','.play_video',function(){
+                event.preventDefault();
+                fulllink = $(this).attr('video-url');
+                video = fulllink.split('=');
+                video_id = video[video.length-1]
+                revisedlink = "https://www.youtube.com/embed/" + video_id
+                $('#video_div iframe').attr('src',revisedlink);
+            
+
+            });
+
+
+            $('#topic_div').on('click','.topic_detail',function(){
+                    event.preventDefault();
+                    url = $(this).attr('topic-url');
+                    $.ajax({
+                        url:url,
+                        success:function(output)
+                        {
+                            $('#video_div').html(output.video_html);
+                            $('#material_div').html(output.material_html);
+                        },
+                    });
+            });
+
+
+            $('.container').on('click','.ajax_operation',function(){
+                    event.preventDefault();
+                    url = $(this).attr('data-url');
+                    $.ajax({
+                        url:url,
+                        success:function(output)
+                        {
+                            $('#AjaxModal').html(output.form);
+                            $('#AjaxModal').modal('show');
+                            
+                        },
+                    });
+            });
+
+            $('#AjaxModal').on('click','#edit_btn', function(){
+                
+                event.preventDefault();
+                formdata = new FormData($('#AjaxModal #ajax_form')[0]);
+                url = $(this).attr('data-url');
+                
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            if(output.model_name=='Topic')
+                            {
+                                $('#topic_div').html(output.html);
+                            }
+                            else if(output.model_name=='Material')
+                            {
+                                $('#material_div').html(output.html);
+                            }
+                            else{
+                                $('#video_div').html(output.html);
+                            }
+
+                            $('#AjaxModal').modal('hide');
+                            
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+            
+            
+                    },
+                });
+
+
+            });
+
+            $('.container').on('click','.ajax_delete',function(){
+                event.preventDefault();
+                if (confirm('Are you sure to delete?')) {
+                    url = $(this).attr('data-url');
+                    $.ajax({
+                        url : url,
+                        
+                        success:function(output)
+                        {
+                           
+                            if(output.model_name=='Topic')
+                            {
+                                $('#topic_div').html(output.html);
+                            }
+                            else if(output.model_name=='Material')
+                            {
+                                $('#material_div').html(output.html);
+                            }
+                            else{
+                                $('#video_div').html(output.html);
+                            }
+
+                                         
+                        
+                        
+                            
+                        },
+                    });
+                }
+
+            });
+
+
+        });
+
+    </script>
+
+{% endblock %}

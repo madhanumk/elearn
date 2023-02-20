@@ -1,0 +1,974 @@
+{% extends 'base_2.html' %}
+{% load status_tags %}
+{% load static %}
+{% block content %}      
+
+                                <!--<div class="kt-subheader   kt-grid__item" id="kt_subheader">
+                                    <div class="kt-container ">
+                                        <div class="kt-subheader__main">                                            
+                                            <h3 class="kt-subheader__title">
+                                                <i class="flaticon2-shelter h6 mt-1"></i> &nbsp; Dashboard
+                                             </h3>                                        
+                                        </div>
+                                        
+                                    </div>
+                                </div>-->
+                                
+								<div class="">
+									<div class="kt-portlet__body">
+                                        <div class="kt-pricing-1__items row">
+                                            <div class="kt-pricing-1__item col-lg-12 table-responsive">
+
+
+                                                   <!--Begin::Dashboard 3-->
+
+                                                    <!--Begin::Row-->
+                                                    <div class="row">
+
+                                                        <div class="col-xl-4 shadow mb-4 col-lg-6 order-lg-1 order-xl-1">
+
+                                                            <!--begin:: Widgets/Finance Summary-->
+                                                            <div class="kt-portlet kt-portlet--height-fluid">
+                                                                <div class="kt-portlet__head">
+                                                                    <div class="kt-portlet__head-label">
+                                                                        <h3 class="kt-portlet__head-title">
+                                                                            My Profile
+                                                                        </h3>
+                                                                    </div>
+                                                                    <div class="kt-portlet__head-toolbar">
+                                                                       
+                                                                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-fit dropdown-menu-md">
+                    
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="kt-portlet__body">
+                                                                    <div class="kt-widget12">
+                                                                        <div class="kt-widget12__content"   style="margin-bottom:1rem  !important ;">
+                                                                            <div class="kt-widget12__item"   style="margin-bottom:1rem   !important ;">
+                                                                                <div class="kt-widget12__info" >
+                                                                                    <span class="kt-widget12__desc"  style="padding-bottom:0  !important ;">Name</span>
+                                                                                    <span class="kt-widget12__value">{{user}}</span>
+                                                                                    {% if user.student %}
+                                                                                        <span class="kt-widget12__desc"  style="padding-bottom:0  !important ;">Programme</span>
+                                                                                        <span class="kt-widget12__value">{{user.student.programme}} </span>
+                                                                                    {% else %}
+
+                                                                                       
+                                                                                        
+
+                                                                                    {% endif %}
+                                                                                </div>
+                                                                                
+                                                                                <div class="kt-widget12__info">
+                                                                                    {%if user.student%}
+                                                                                    <span class="kt-widget12__desc"  style="padding-bottom:0  !important ;">Semester</span> {{user.student.semester}}<span class="kt-widget12__desc"  style="padding-bottom:0  !important ;">Acadmic Year</span>{{user.student.year}}</span>
+                                                                                    {%else%}
+                                                                                    <span class="kt-widget12__desc"  style="padding-bottom:0  !important ;">Department</span>
+                                                                                    <span class="kt-widget12__value">
+                                                                                        {{user.faculty.department}}
+                                                                                    </span>
+                                                                                    {%endif%}
+                                                                                </div>
+                                                                               
+                                                                            </div>
+                                                                            <div class="kt-widget12__item"   style="padding-bottom:0  !important ;">
+                                                                                <div class="kt-widget12__info">
+                                                                                    <span class="kt-widget12__desc"   style="padding-bottom:0  !important ;">Degree Category</span>
+                                                                                    <span class="kt-widget12__value">
+
+                                                                                        {% if user.student %}                                                                               
+                                                                                           {{user.student.programme.department.degree_category}}
+                                                                                        {% else %}
+                                                                                        {{user.faculty.category}}
+                                                                                        {% endif %}
+                                                                                    </span>
+                                                                                </div>
+                                                                              
+                                                                            </div>
+                                                                            {% comment %}
+                                                                            <div  style="background-color: #ffdf57;border-radius: 5px;">
+
+                                                                                <h4 style="color:black" class="pl-3 mt-3">My Personality</h4>
+                                                                                <hr>
+                                                                                
+                                                                                <div>
+                                                                                    
+                                                                                    {% if personality %}
+
+                                                                                    <div class="row container">
+                                                                                        <div class="col-lg-6">
+                                                                                            {% if personality|stringformat:"s" == "Visionary" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/Visionary.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Creator" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/Creator.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Guide" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/Guide.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Coordinator" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/Coordinator.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Explorer" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/Explorer.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Expert" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/Expert.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Initiator" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/Initiator.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Investigator" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/Investigator.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Reformer" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/re-former.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Trainer" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/trainer.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Go-Getter" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/go-getter.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Controller" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/controller.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Collaborator" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/Collaborator.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Mentor" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/Mentor.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Workmate" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/Workmate.png' %}">
+                                                                                            {% elif personality|stringformat:"s" == "Manager" %}
+                                                                                               <img height="70" width="70" class="m-3" src="{% static 'images/Workmate.png' %}">
+                                                                                           {% endif %}
+                                                                                        </div>
+                                                                                        <div class="col-lg-6">
+                                                                                            <h3 style="color: black;" class="mt-2">{{personality}} </h3>
+                                                                                            <a class="btn btn-primary" href="{% url 'my_personality' %}">Know more</a>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                   
+    
+                                                                                    {% else %}   
+                                                                                    
+                                                                                    <div class="row container">
+                                                                                        <h6 style="color:black" class="pl-3">Know your personality in 5 minutes. <u><a class="btn btn-primary" href="https://learn-buddy.in/home/">Take Test</a></u></h6>                                                                                                 
+                                                                                    </div>
+                                                                                                                                                                   
+    
+                                                                                    {% endif %}
+    
+    
+                                                                                  
+                                                                                </div>
+                                                                                
+
+                                                                            </div>
+                                                                            
+                                                                            {% if user.student%}
+
+                                                                            <div class="mt-2" style="background-color: #1dc9b7;border-radius: 5px;">
+
+                                                                                <h4 style="color:black" class="pl-3 mt-3">My Learning Style</h4>
+                                                                                <hr>                                                                               
+                                                                                <div>
+                                                                              
+                                                                                    {% if learning_styles %}
+
+                                                                                        <div class="row container mb-1">
+                                                                                            {% for learning_style in learning_styles %}
+                                                                                                <div class="col-lg-6">
+                                                                                                    {% if learning_style|stringformat:"s" == "Auditory" %}
+                                                                                                      <img height="50" width="50" src="{% static 'images/audio-icon.png' %}">
+                                                                                                    {% elif learning_style|stringformat:"s" == "Visual" %}
+                                                                                                      <img height="50" width="50" src="{% static 'images/visual-icon.png' %}">
+                                                                                                    {% elif learning_style|stringformat:"s" == "Kinaesthetic" %}
+                                                                                                      <img height="50" width="50" src="{% static 'images/kinesthetic-icon.png' %}">
+                                                                                                   {% endif %}
+                                                                                                </div>
+                                                                                                <div class="col-lg-6">
+                                                                                                    <h3 style="color: black;" class="mt-2">{{learning_style}} </h3>
+                                                                                                   
+                                                                                                </div>
+                                                                                            {% endfor %}
+                                                                                        </div>
+    
+                                                                                    {% else %}
+
+                                                                                    <div class="row container mb-1 ml-1">
+                                                                                        <h6 style="color:white">Know your learning style in 5 minutes. <u><a class="btn btn-primary"  href="{% url 'home' %}">Take Test</a></u></h6>
+                                                                                    </div>
+
+                                                                                    {% endif %}                       
+                                                                                </div>
+                                                                            </div>
+
+                                                                            {% endif %}
+                                                                            {% endcomment %}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                              
+                                                            </div>
+                    
+                                                            <!--end:: Widgets/Finance Summary-->
+                                                        </div>
+                                                        {% comment %}
+                                                        <div class="col-lg-6 shadow mb-4 col-xl-4 order-lg-1 order-xl-1">
+
+                                                            <!--begin:: Widgets/Sales Stats-->
+                                                            <div class="kt-portlet kt-portlet--head--noborder kt-portlet--height-fluid">
+                                                                <div class="kt-portlet__head kt-portlet__head--noborder">
+                                                                    <div class="kt-portlet__head-label">
+                                                                        <h3 class="kt-portlet__head-title">
+                                                                            Portal Usage
+                                                                        </h3>
+                                                                    </div>
+                                                                    <div class="kt-portlet__head-toolbar">
+                                                                        <select id="date_select" style="float:right; border-color: #097E75;">
+                                                                            <option value='7'>Last 7 days</option>
+                                                                            <option value='14'>Last 2 weeks</option>
+                                                                            <option value='21'>Last 3 weeks</option>
+                                                                            <option value='28'>Last 4 weeks</option>    
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="kt-portlet__body">
+
+                                                                    <h5 class=w-100>
+                                                                 
+                                                                  
+    
+    
+                                                                    </h5> 
+                                                                    <div id="mychart_div">
+                                                                        <canvas id="myChart_1" width="400" class="p-2" ></canvas>
+                                                                    </div>
+
+                                                                    <div class="kt-widget15__items kt-margin-t-40">
+                                                                        <div class="row">
+                                                                            <div class="col">
+                                                                                <div class="kt-widget15__item">
+                                                                                    <span class="kt-widget15__stats">
+                                                                                        {{general_usage}}
+                                                                                    </span>
+                                                                                    <span class="kt-widget15__text">
+                                                                                        General Usage
+                                                                                    </span>
+                                                                                    <div class="kt-space-10"></div>
+                                                                                    <div class="progress kt-widget15__chart-progress--sm">
+                                                                                        <div class="progress-bar bg-danger" role="progressbar" style="width:84%; aria-valuenow="{{general_usage}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col">
+                                                                                <div class="kt-widget15__item">
+                                                                                    <span class="kt-widget15__stats">
+                                                                                        {{school_usage}}
+                                                                                    </span>
+                                                                                    <span class="kt-widget15__text">
+                                                                                        School Usage
+                                                                                    </span>
+                                                                                    <div class="kt-space-10"></div>
+                                                                                    <div class="progress kt-progress--sm">
+                                                                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 81%;" aria-valuenow=" {{school_usage}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col">
+                                                                                <div class="kt-widget15__item">
+                                                                                    <span class="kt-widget15__stats">
+                                                                                        {{your_usage}}
+                                                                                    </span>
+                                                                                    <span class="kt-widget15__text">
+                                                                                        Your Usage
+                                                                                    </span>
+                                                                                    <div class="kt-space-10"></div>
+                                                                                    <div class="progress kt-progress--sm">
+                                                                                        <div class="progress-bar bg-success" role="progressbar" style="width: 75%;" aria-valuenow="{{your_usage}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                                    </div>
+                                                                                </div>
+                                                                         
+                                                                            </div>
+
+                                                                            <div class="col">
+                                                                                <div class="kt-widget15__item">
+                                                                                    <span class="kt-widget15__stats">
+                                                                                      
+                                                                                    </span>
+                                                                                    <span class="kt-widget15__text">
+                                                                                      
+                                                                                    </span>
+                                                                                    <div class="kt-space-10"></div>
+                                                                                
+                                                                                </div>
+                                                                         
+                                                                            </div>
+                                                                           
+                                                                        </div>
+
+                                                                        
+                                                                    </div>
+
+                                                                
+
+                                                                    <!--end::Widget 6-->
+                                                                </div>
+                                                            </div>
+
+                                                            <!--end:: Widgets/Sales Stats-->
+                                                        </div>{% endcomment %}
+                                                        <div class="col-lg-6 shadow mb-4 col-xl-4 order-lg-1 order-xl-1">
+
+                                                            <!--begin:: Widgets/Top Locations-->
+                                                            <div class="kt-portlet kt-portlet--head--noborder kt-portlet--height-fluid">
+                                                                <div class="kt-portlet__head">
+                                                                    <div class="kt-portlet__head-label">
+                                                                        <h3 class="kt-portlet__head-title">
+                                                                            Recents
+                                                                        </h3>
+                                                                    </div>
+                                                                 
+                                                                </div>
+                                                                <div class="kt-portlet__body">
+                                                                    <div class="kt-portlet__body">
+                                                                        <div class="tab-content">
+                                                                            <div class="tab-pane active" id="kt_widget4_tab11_content">
+                                                                                <div class="kt-scroll" data-scroll="true" data-height="400" style="height: 400px;">
+                                                                                    <div class="kt-list-timeline">
+                                                                                        <div class="kt-list-timeline__items">
+
+                                                                                            {% for history in histories %}
+
+                                                                                                <div class="kt-list-timeline__item">
+                                                                                                    <span class="kt-list-timeline__badge kt-list-timeline__badge--success"></span>
+                                                                                                    <span class="kt-list-timeline__text"><a href="{{history.urlload}}" > {{history.pre_title}} - {{history}}  </a></span>
+                                                                                                    <span class="kt-list-timeline__time">{{history.date|timesince}}</span>
+                                                                                                </div>
+
+
+                                                                                            {% empty %}
+                                                                                                <div class="kt-list-timeline__item">
+                                                                                                    <span class="kt-list-timeline__badge kt-list-timeline__badge--success"></span>
+                                                                                                    <span class="kt-list-timeline__text">No recents available</span>
+                                                                                              
+                                                                                                </div>
+
+                                                                                            {% endfor %}
+                                                                                          
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                           
+                                                                          
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <!--end:: Widgets/Top Locations-->
+                                                        </div>
+                                                      
+                                                   
+
+                                                        <div class="col-xl-8 shadow mb-4 col-lg-12 order-lg-3 order-xl-1">
+                                                            <div class="kt-portlet kt-portlet--height-fluid kt-portlet--mobile ">
+                                                                <div class="kt-portlet__head kt-portlet__head--lg kt-portlet__head--noborder kt-portlet__head--break-sm">
+                                                                    <div class="kt-portlet__head-label">
+                                                                        <h3 class="kt-portlet__head-title">
+                                                                            Quiz Scores  - <a href="{% url 'my_scores' %}"><u>View Scores & Correct Answers</u></a></h5> 
+                                                                        </h3>
+                                                                    </div>
+                                                                    <div class="kt-portlet__head-toolbar">
+                                                                        <div class="dropdown dropdown-inline">
+                                                                       
+                                                                          
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="kt-portlet__body kt-portlet__body--fit">
+
+                                                                    <canvas id="myChart" width="400" class="p-2" ></canvas>
+
+
+                                                                    <hr>
+                                                                  <div class="row">
+
+                                                                    {% if more_concentrate_on_resources %}
+                                                                        <div class="col-sm-6  pl-5 mb-2">
+                                                                            <h4>Concentrate more on</h4>                                                                           
+                                                                                <div class="pl-2">                                                                            
+                                                                                    {% for resource in more_concentrate_on_resources %}
+                                                                                        <span class="mb-1 mt-1">
+                                                                                            <div class="row">
+                                                                                                <a class="m-2" href="{% url 'resource' resource.id %}"><img src="{% static 'images/pdf.svg' %}" height="35" width="35" alt=""> </a>  
+                                                                                                <a class="m-2" href="{% url 'videos' resource.id %}"><img src="{% static 'images/mp4.svg' %}" height="35" width="35" alt=""> </a>   
+                                                                                                <a class="m-2" href="{% url 'resource' resource.id %}">{{resource}}</a>   
+                                                                                            </div>
+                                                                                           
+                                                                                        </span>
+                                                                                    {% endfor %}
+                                                                                </div>                                                                      
+
+                                                                        </div>
+
+                                                                    {% endif %}
+
+                                                                    {% if needs_to_improve_resources %}
+                                                                        <div class="col-sm-6 pl-5 mb-2">
+                                                                            <h4>Needs to improve on</h4>
+                                                                            <div class="pl-2">                                                                            
+                                                                                {% for resource in needs_to_improve_resources %}
+                                                                                    <span class="mb-1 mt-1">
+                                                                                        <div class="row">
+                                                                                            <a class="m-2" href="{% url 'resource' resource.id %}"><img src="{% static 'images/pdf.svg' %}" height="35" width="35" alt=""> </a>  
+                                                                                            <a class="m-2" href="{% url 'videos' resource.id %}"><img src="{% static 'images/mp4.svg' %}" height="35" width="35" alt=""> </a>   
+                                                                                            <a class="m-2" href="{% url 'resource' resource.id %}">{{resource}}</a>
+                                                                                        </div>
+                                                                                        
+                                                                                    </span>
+                                                                                {% endfor %}
+                                                                            </div>
+                                                                        </div>
+                                                                    {% endif %}
+
+                                                                    {% if performing_resources %}
+                                                                        <div class="col-sm-6 pl-5 mb-2">
+                                                                            <h4>Performing Subjects</h4>
+                                                                            <div class="pl-2">                                                                            
+                                                                                {% for resource in performing_resources %}
+                                                                                    <span class="mb-1 mt-1">  
+                                                                                        <div class="row">
+                                                                                            <a class="m-2" href="{% url 'resource' resource.id %}"><img src="{% static 'images/pdf.svg' %}" height="35" width="35" alt=""> </a>  
+                                                                                            <a class="m-2" href="{% url 'videos' resource.id %}"><img src="{% static 'images/mp4.svg' %}" height="35" width="35" alt=""> </a>   
+                                                                                            <a class="m-2" href="{% url 'resource' resource.id %}">{{resource}}</a>
+                                                                                        </div>                                                                                      
+                                                                                        
+                                                                                    </span>
+                                                                                {% endfor %}
+                                                                            </div>
+                                                                        </div>
+                                                                   {% endif %}
+
+                                                                   {% if quizes %}
+
+                                                                   <div class="col-sm-12 pl-5 mb-2 mt-2"><hr></div>
+                                                                    {% comment %}
+                                                                   <div class="col-sm-12 pl-5 mb-2 mt-2">
+                                                                       
+                                                                        <h4>Pending Quiz</h4>
+                                                                        <div class="pl-2">    
+                                                                            <div class="row">
+                                                                                {% for quiz in quizes %}
+                                                                                    <div class="col-sm-4">
+                                                                                        <span class="mb-1 mt-1"><a href="{% url 'quiz-detail' quiz.id %}"><img src="{% static 'images/exam.svg' %}" height="35" width="35" alt=""> </a>   <a href="{% url 'quiz-detail' quiz.id %}">{{quiz}}  </a> </span>
+                                                                                    </div>                                                                               
+                                                                                {% endfor %}
+                                                                            </div>                                                                                                                                                
+                                                                        </div>
+                                                                    </div>
+                                                                    {% endcomment %}
+                                                                   {% endif %}                                                   
+
+                                                                  </div>   
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-xl-4 shadow mb-4 col-lg-6 order-lg-2 order-xl-1">
+                                                            <div class="kt-portlet kt-portlet--height-fluid kt-portlet--mobile ">
+                                                                <div class="kt-portlet__head kt-portlet__head--lg kt-portlet__head--noborder kt-portlet__head--break-sm">
+                                                                    <div class="kt-portlet__head-label">
+                                                                        <h3 class="kt-portlet__head-title">
+                                                                            Quiz Marks
+                                                                        </h3>
+                                                                    </div>
+                                                                    <div class="kt-portlet__head-toolbar">
+                                                                        <div class="dropdown dropdown-inline">
+                                                                       
+                                                                          
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="kt-portlet__body kt-portlet__body--fit">
+
+                                                                    <div  class="table-responsive p-3"> 
+                                                                    
+                                                                        <table class="table p-3" >
+                                                                         <thead class="">
+                                                                            <tr  class="">
+                                                                                <th>Quiz Name</th>
+                                                                                <th>Attempted on</th>
+                                                                                <th>Status</th>
+                                                                                <th>Score</th>
+                                                                                
+                                                                            </tr>
+                                                                            </thead>
+                                                                            {% for attempt in attempts %}
+                                                                                <tr class="p-3">
+                                                                                    <td>{{attempt.Quiz.name}}</td>
+                                                                                    <td>{{attempt.date}}</td>
+                                                                                    <td>{% if  attempt.score < 50 %}
+                                                                                          <span style="width: 100px;"><span class="btn btn-bold btn-sm btn-font-sm  btn-label-danger">Needs to improve</span></span>
+                                                                                        {% elif attempt.score < 71 %}
+                                                                                          <span style="width: 100px;"><span class="btn btn-bold btn-sm btn-font-sm  btn-label-danger">Pass</span></span>
+                                                                                        {% else %}
+
+                                                                                            <span style="width: 100px;"><span class="btn btn-bold btn-sm btn-font-sm  btn-label-success">Performer</span></span>
+                                                                                        {% endif %}
+                                                                                        </td>
+                                                                                    <td>{{attempt.score}}</td>
+                                                                                </tr>
+                                                                            {% endfor %}
+                                                                        </table>
+                                                                        </div>
+
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
+                                                        {% if user.student %}
+
+                                                        <div class="col-xl-8 shadow mb-4 col-lg-12 order-lg-3 order-xl-1">
+                                                            <div class="kt-portlet kt-portlet--height-fluid kt-portlet--mobile ">
+                                                                <div class="kt-portlet__head kt-portlet__head--lg kt-portlet__head--noborder kt-portlet__head--break-sm">
+                                                                    <div class="kt-portlet__head-label">
+                                                                        <h3 class="kt-portlet__head-title">
+                                                                            Assignment Scores 
+                                                                        </h3>
+                                                                    </div>
+                                                                    <div class="kt-portlet__head-toolbar">
+                                                                        <div class="dropdown dropdown-inline">
+                                                                       
+                                                                          
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="kt-portlet__body kt-portlet__body--fit">
+
+                                                                    <canvas id="assignmentChart" width="400" class="p-2" ></canvas>
+                                                                    <div class="row">
+
+                                                                        {% if more_concentrate_on_croom %}
+                                                                            <div class="col-sm-6  pl-5 mb-2">
+                                                                                <h4>Concentrate more on</h4>
+    
+                                                                                    <div class="pl-2">                                                                            
+                                                                                        {% for classroom in more_concentrate_on_croom %}                                                                                        
+                                                                                          <span class="mb-1 mt-1">
+                                                                                            <div class="row">
+                                                                                                <a href="{% url 'topic' classroom.id %}"><img src="{% static 'images/classroom.svg' %}" height="35" width="35" alt=""> </a>  <a href="{% url 'topic' classroom.id %}">{{classroom}}</a>   
+                                                                                            </div>  
+                                                                                          </span>
+                                                                                            
+                                                                                       {% endfor %}
+                                                                                    </div>
+                                                                                
+    
+                                                                            </div>
+    
+                                                                        {% endif %}
+    
+                                                                        {% if needs_to_improve_croom %}
+                                                                            <div class="col-sm-6 pl-5 mb-2">
+                                                                                <h4>Needs to improve on</h4>
+                                                                                <div class="pl-2">                                                                            
+                                                                                    {% for classroom in needs_to_improve_croom %}
+                                                                                        <span class="mb-1 mt-1">
+                                                                                            <div class="row">
+                                                                                                <a href="{% url 'topic' classroom.id %}"><img src="{% static 'images/classroom.svg' %}" height="35" width="35" alt=""> </a>   <a href="{% url 'topic' classroom.id %}">{{classroom}}</a>   
+                                                                                            </div>
+                                                                                        </span>
+                                                                                    {% endfor %}
+                                                                                </div>
+                                                                            </div>
+                                                                        {% endif %}
+    
+                                                                        {% if performing_croom %}
+                                                                            <div class="col-sm-6 pl-5 mb-2">
+                                                                                <h4>Performing Classroom</h4>
+                                                                                <div class="pl-2">                                                                            
+                                                                                    {% for classroom in performing_croom %}
+                                                                                        <span class="mb-1 mt-1">
+                                                                                            <div>
+                                                                                                <a href="{% url 'topic' classroom.id %}"><img src="{% static 'images/classroom.svg' %}" height="35" width="35" alt=""> </a>   <a href="{% url 'topic' classroom.id %}">{{classroom}}</a>
+                                                                                            </div>
+                                                                                        </span>
+                                                                                    {% endfor %}
+                                                                                </div>
+                                                                            </div>
+                                                                       {% endif %}
+    
+                                                                       {% if assignments %}
+    
+                                                                       <div class="col-sm-12 pl-5 mb-2 mt-2"><hr></div>
+    
+                                                                       <div class="col-sm-12 pl-5 mb-2 mt-2">
+                                                                           
+                                                                            <h4>Pending Assignment</h4>
+                                                                            <div class="pl-2">    
+                                                                                <div class="row">
+                                                                                    {% for assignment in assignments %}
+                                                                                    <div class="col-sm-4">
+                                                                                        <span class="mb-1 mt-1"><a href="{% url 'assignment' assignment.id %}"><img src="{% static 'images/exam.svg' %}" height="35" width="35" alt=""> </a>   <a href="{% url 'assignment' assignment.id %}">{{assignment}}  </a> 
+                                                                                    </div>                                                                                   
+    
+                                                                                    {% endfor %}
+    
+                                                                                </div>                                                                        
+                                         
+    
+                                                                             
+                                                                            </div>
+                                                                        </div>
+    
+                                                                       {% endif %}
+    
+                                                                      </div>   
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                     
+                                                        <div class="col-xl-4 shadow mb-4 col-lg-6 order-lg-1 order-xl-1">
+
+                                                            <div class="kt-portlet kt-portlet--height-fluid kt-portlet--mobile ">
+                                                                <div class="kt-portlet__head kt-portlet__head--lg kt-portlet__head--noborder kt-portlet__head--break-sm">
+                                                                    <div class="kt-portlet__head-label">
+                                                                        <h3 class="kt-portlet__head-title">
+                                                                            Assignment Marks
+                                                                        </h3>
+                                                                    </div>
+                                                                    <div class="kt-portlet__head-toolbar">
+                                                                        <div class="dropdown dropdown-inline">
+                                                                       
+                                                                          
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="kt-portlet__body kt-portlet__body--fit">
+
+                                                                    <div  class="table-responsive p-3"> 
+                                                                    
+                                                                        <table class="table p-3" >
+                                                                         <thead class="">
+                                                                            <tr  class="">
+                                                                                <th>Assignment Name</th>
+                                                                                <th>Submitted on</th>
+                                                                                <th>Status</th>
+                                                                                <th>Score</th>
+                                                                                
+                                                                            </tr>
+                                                                            </thead>
+                                                                            {% for submission in submissions %}
+                                                                                <tr class="p-3">
+                                                                                    <td>{{submission.assignment.title }}</td>
+                                                                                    <td>{{submission.submitted_on}}</td>
+                                                                                    <td>
+
+                                                                                        {% if submission.status == "A" %}
+                                                                                        <span style="width: 100px;"><span class="btn btn-bold btn-sm btn-font-sm  btn-label-success">Accepted</span></span>
+                                                                                    
+                                                                                        {% elif submission.status == "S"  %}                                             
+                                                                                        <span style="width: 100px;"><span class="btn btn-bold btn-sm btn-font-sm  btn-label-danger">Submitted</span></span>
+                                                                                        {% elif  submission.status == "R" %}                                            
+                                                                                        <span style="width: 100px;"><span class="btn btn-bold btn-sm btn-font-sm  btn-label-danger">Resent</span></span>                                                          
+                                                                                        {% endif %}
+
+                                                                                    </td>
+
+                                                                                    <td>
+
+                                                                                        {% if submission.status == "A" %}
+                                                                                            {{submission.marks}}
+                                                                                        {% elif submission.status == "S"  %} 
+                                                                                            Not evaluated
+                                                                                        {% else %}
+                                                                                          -
+                                                                                        {% endif %}
+                                                                                        
+                                                                                        
+                                                                             
+                                                                                        </td>
+                                                                                    <td>{{attempt.score}}</td>
+                                                                                </tr>
+                                                                            {% endfor %}
+                                                                        </table>
+                                                                        </div>
+
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        {% endif %}
+                                                
+                                                    
+                                                    </div>
+
+                                                    <!--End::Row-->
+
+                                                    <!--End::Dashboard 3-->
+
+                                            </div>
+                                            
+                                        
+                                         
+                                        </div>
+									</div>
+                                </div>
+<script>
+    $("document").ready(function () {
+        var myChart;
+        $('#date_select').change(function(){
+            $('#date_select').blur();
+            $("canvas#myChart_1").remove();
+            $("#mychart_div").append('<canvas id="myChart_1" width="400" class="p-2" ></canvas>');
+            $.ajax({                       
+                url: "{% url 'ajax_load_usage' %}",
+                data: {'days':$(this).children("option:selected").val()},                   
+                success: function (chart_data) {
+                    
+                    var ctx_1 = document.getElementById("myChart_1").getContext("2d");
+
+                myChart = new Chart(ctx_1, {
+                        type: 'line',
+                        data: {
+                            labels: chart_data.date,
+                            datasets: [{
+                                label: 'Usage',
+                                backgroundColor: '#097E75',
+                                //borderColor : 'red',
+                                data: chart_data.mins
+                            }]          
+                        },
+                        options: {
+                            responsive: true,
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Portal Usage in Minutes'
+                            }
+                        }
+                    });
+                                                    
+                }
+            });
+        });
+
+        //load assignment charts
+
+        $.ajax({                       
+            url: "{% url 'ajax_load_assignment_charts' %}",                   
+            success: function (chart_data) {   
+                var ctx = document.getElementById("assignmentChart").getContext("2d");
+                var max_test = 0;
+                for(counter=0;counter<chart_data.scores.length;counter++)
+                {
+                    if(chart_data.scores[counter].length > max_test)
+                    {
+                        max_test = chart_data.scores[counter].length;
+                    }
+                }
+                colors = ['#097E75','#0743A4','#08599B','red','maroon','olive','magenta','yellow','violet','brown','black','pink'];
+
+                var datasets = [];
+
+                for(col=0;col<max_test;col++)
+                {
+                        var c_data =[];
+                        for(row=0;row<chart_data.scores.length;row++)
+                        {
+                            if (col<chart_data.scores[row].length)
+                            {
+                                if(chart_data.scores[row][col]==0)
+                                {
+                                    c_data.push(0.5);
+                                }
+                                else
+                                {
+                                    c_data.push(chart_data.scores[row][col]);
+                                }
+                                
+                            }
+                            else
+                            {
+                                c_data.push(-1);
+                            }
+                        }
+                        
+                       
+                        
+                        datasets.push({'label':'Test'+(col+1),'backgroundColor':colors[col],'data':c_data});
+                }
+
+                
+
+                var data = {
+                    labels: chart_data.subjects,
+                    datasets: datasets,
+                    
+                };
+
+                var mychart = new Chart(ctx, {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        barValueSpacing: 20,
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    min: 0,
+                                }
+                            }],
+                            xAxes: [{
+                                
+                                ticks: {
+                                min: 0
+                                }
+                            }],
+                        }
+                    }
+                });
+
+            var ctx_1 = document.getElementById("myChart_1").getContext("2d");
+
+            myChart = new Chart(ctx_1, {
+            type: 'line',
+            data: {
+              labels: chart_data.date,
+              datasets: [{
+                label: 'Usage',
+                backgroundColor: '#097E75',
+                //borderColor : 'red',
+                data: chart_data.mins
+              }]          
+            },
+            options: {
+              responsive: true,
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Portal Usage in Minutes'
+              }
+            }
+          });
+                                                    
+            }
+        });
+
+
+                                
+   
+
+
+        $.ajax({                       
+            url: "{% url 'ajax_load_charts' %}",                   
+            success: function (chart_data) {   
+                var ctx = document.getElementById("myChart").getContext("2d");
+                var max_test = 0;
+                for(counter=0;counter<chart_data.scores.length;counter++)
+                {
+                    if(chart_data.scores[counter].length > max_test)
+                    {
+                        max_test = chart_data.scores[counter].length;
+                    }
+                }
+                colors = ['#097E75','#0743A4','#08599B','red','maroon','olive','magenta','yellow','violet','brown','black','pink'];
+
+                var datasets = [];
+
+                for(col=0;col<max_test;col++)
+                {
+                        var c_data =[];
+                        for(row=0;row<chart_data.scores.length;row++)
+                        {
+                            if (col<chart_data.scores[row].length)
+                            {
+                                if(chart_data.scores[row][col]==0)
+                                {
+                                    c_data.push(0.5);
+                                }
+                                else
+                                {
+                                    c_data.push(chart_data.scores[row][col]);
+                                }
+                                
+                            }
+                            else
+                            {
+                                c_data.push(-1);
+                            }
+                        }
+                        
+                       
+                        
+                        datasets.push({'label':'Test'+(col+1),'backgroundColor':colors[col],'data':c_data});
+                }
+
+                
+
+                var data = {
+                    labels: chart_data.subjects,
+                    datasets: datasets,
+                    
+                };
+
+                var mychart = new Chart(ctx, {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        barValueSpacing: 20,
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    min: 0,
+                                }
+                            }],
+                            xAxes: [{
+                                
+                                ticks: {
+                                min: 0
+                                }
+                            }],
+                        }
+                    }
+                });
+
+            var ctx_1 = document.getElementById("myChart_1").getContext("2d");
+
+            myChart = new Chart(ctx_1, {
+            type: 'line',
+            data: {
+              labels: chart_data.date,
+              datasets: [{
+                label: 'Usage',
+                backgroundColor: '#097E75',
+                //borderColor : 'red',
+                data: chart_data.mins
+              }]          
+            },
+            options: {
+              responsive: true,
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Portal Usage in Minutes'
+              }
+            }
+          });
+                                                    
+            }
+        });
+
+
+                                
+    });
+                                    
+</script>            
+                                
+{% endblock %}

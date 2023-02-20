@@ -1,0 +1,17 @@
+{% load static %}
+{% for material in materials %}
+    
+<div class="col-sm-6 ">
+    <img src="{% static '/images/icons/material.png' %}">
+    <a href="{{material.material.url}}" download>
+        {{material.title}}
+    </a>
+    <span class="float-right">
+      <a class="ajax_operation" href="#" data-url="{%url 'ajax_edit' model_name='Material' pk=material.id parent_pk=material.topic.chapter.id  %}"><img src="{% static '/images/icons/edit.png' %}"></a>
+      <a class="ajax_delete" href="#" data-url="{%url 'ajax_delete' model_name='Material' pk=material.id parent_pk=material.topic.chapter.id %}"><img src="{% static '/images/icons/delete.png' %}"></a>
+    </span>
+</div>
+{% empty %}
+
+    No Materials Found
+{% endfor %}

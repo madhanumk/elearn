@@ -1,0 +1,5 @@
+{% for video in videos %}
+    <li class="w-100 p-2" style="list-style-type: none;"><a class="video_list" href="#" data_link="{{video.video_link}}?ecver=1">Chapter {{video.chapter_no}} : {{video.video_title}}</a></li>
+{% empty %}
+    No Videos found for this resource
+{% endfor %}

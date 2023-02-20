@@ -1,0 +1,116 @@
+{% extends '../base_2.html' %}
+
+
+{% load static %}
+{% block content %}      
+                                
+								<div class="kt-portlet kt-portlet--height-fluid">
+									<div class="kt-portlet__body">
+                                        <div class="kt-pricing-1__items row">
+                                            <div class="kt-pricing-1__item col-lg-12 table-responsive">
+                                                    <div class="container " >
+
+                                                            <div class="row">
+                                                                <div class="col-lg-7 ml-3 mt-2 mb-5 pt-3 text-center" style="background-color: cadetblue; color:white">
+                                                                        {% for attempt in Attempts|slice:":1" %}
+                                                                        <p style="font-size:14px; font-weight: bold;">
+                                                                            Your score in Last Attempt on {{attempt.Quiz.name}} <br> {{attempt.score}} % <br>
+                                                                            <a style="text-decoration: underline; font-size:14px; font-weight: bold; color:white;" href="{% url 'quiz-answer-detail' attempt.Quiz.id  %}">View Answers</a>
+                                                                        
+                                                                        
+                                                                        </p>
+                                                                        {% empty %}
+                                                                            <p style="font-size:14px; font-weight: bold;">You have not attended any quizes.</p>
+                                                                        {% endfor %}
+                                                                        
+
+
+                                                                </div>
+                                                                <div class="col-lg-4 mt-2 mb-5 pt-3 text-center">
+                                                                    <div class="form-group">
+                                                               
+                                                                                <select id="subject_dropdown" class="form-control w-100" id="sel1">
+                                                                                    <option value="">Choose Course</option>
+                                                                                        {% if user.student %}
+                                                                                          {% for subject in subjects %}
+                                                                                             <option value="{{subject.id}}">{{subject.subject.subject_title}}</option>
+                                                                                          {% endfor %}
+                                                                                        {% else %}
+                                                                                           {% for subject in subjects %}
+                                                                                            <option value="{{subject.id}}">{{subject.subject.subject_title}} - {{subject.grade}}</option>
+                                                                                           
+                                                                                           {% endfor %}
+                                                                                         {% endif %}
+                                                                                    
+                                                                                                
+                                                                                </select>
+                                                                                </div>
+
+                                                                </div>
+                                                                
+                                                            
+                                                            
+                                                            
+                                                            </div>
+                                                            
+                                                            <div id="scores" >
+                                                                <div  class="table-responsive "> 
+                                                                    
+                                                                <table class="table" >
+                                                                 <thead class="thead-dark">
+                                                                    <tr  class="p-3">
+                                                                        <th>Quiz Name</th>
+                                                                        <th>Attempted on</th>
+                                                                        <th>Score</th>
+                                                                        <th>Answer</th>
+                                                                    </tr>
+                                                                    </thead>
+                                                                    {% for attempt in Attempts %}
+                                                                        <tr class="p-3">
+                                                                            <td>{{attempt.Quiz.name}}</td>
+                                                                            <td>{{attempt.date}}</td>
+                                                                            <td>{{attempt.score}}</td>
+                                                                            <td><a href="{% url 'quiz-answer-detail' attempt.Quiz.id  %}">View Answers</a> </td>
+                                                                        </tr>
+                                                                    {% endfor %}
+                                                                </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                
+
+                                         
+                                              
+                                            </div>
+                                            
+                                        
+                                         
+                                        </div>
+									</div>
+                                </div>
+                                <script>
+                                        $("#subject_dropdown").change(function () {
+                                                    var subject = $(this).val();  // get the selected country ID from the HTML input
+                                                       if(subject!="")
+                                                       {
+                                                        $.ajax({                       // initialize an AJAX request
+                                                          url: "{% url 'scores' %}",                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+                                                          data: {'subject': subject},
+                                                          success: function (data) {   // `data` is the return of the `load_cities` view function
+                                                                $("#scores").html(data.html_scores);  // replace the contents of the city input with the data that came from the server
+                                                          }
+                                                    });
+                                
+                                                       }
+                                                       
+                                                });
+                                    
+                                    
+                                    </script>            
+                                
+                {% endblock %}
+
+
+                
+

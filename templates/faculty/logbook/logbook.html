@@ -1,0 +1,273 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% block content %} 
+{% load mathfilters %}
+{% load crispy_forms_tags %}
+
+
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+				<div class="row">
+                    <div class="col-sm-12">
+                        <h3>Log Book Entry</h3>
+                    </div>
+                  
+                    <div class="col-sm-12">                        
+                        <ul class="nav nav-tabs" role="tablist">
+                            {% for subject in subjects %}
+                                {% if forloop.counter == tab %} 
+                                    <li class="nav-item">
+                                       <a class="nav-link active" data-toggle="tab" href="#">{{subject}}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="nav-item">
+                                      <a class="nav-link"  href="{% url 'log-book'%}?tab={{forloop.counter}}">{{subject}}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}                      
+                        </ul>     
+
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            {% for subject in subjects %}
+                              {% if forloop.counter == tab %} 
+                                <div  style="overflow-x:auto;" id="tab{{subject.id}}" class="container tab-pane active"><br>
+                                   <a class="float-right" href="{% url 'log-book-history' tab %}">View History</a>
+                                    <form  method="post" id="logbook_form">
+                                        {% csrf_token %}                             
+                                            <div class="d-none">                      
+                                                {{ logbookform|crispy }} 
+                                            </div> 
+
+                                            {{ logbookentryform.management_form }}
+                                       
+                                            <table class="table" style="width: 100%;border-collapse: collapse;table-layout: fixed;">                                          
+
+                                            {% for form in logbookentryform.forms %}
+                                                {% if forloop.first %}
+                                                    <thead style="width:100%;display: table;">
+                                                    <tr>
+                                                        {% for field in form.visible_fields %}
+                                                            <th>{{ field.label|capfirst }}</th>
+                                                        {% endfor %}
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody style="display: block;overflow: auto;height: 300px;">                                                    
+                                                        <tr class="update_1"></tr>
+                                                        <tr class="update_2"></tr>
+                                                        <tr class="update_3"></tr>
+                                                        <tr class="update_4"></tr>
+                                                        <tr class="update_5"></tr>
+                                                        <tr class="update_6"></tr>
+                                                        <tr class="update_7"></tr>
+                                                        <tr class="update_8"></tr>
+                                                        <tr class="update_9"></tr>
+                                                    </tbody>
+
+                                                {% endif %}
+
+                                                <tr class="update_{{forloop.counter}}"></tr>
+
+                                                
+                                                {% if form.hour.value %}
+                                                   <tr hour="" class="{% cycle 'row1' 'row2' %} formset_row check_row_{{form.hour.value}} log-book-data-row" id="hour_{{forloop.counter}}">
+                                                {% else %}
+                                              
+                                                  <tr hour="" class="{% cycle 'row1' 'row2' %} formset_row empty_row_{{forloop.counter}}" id="hour_{{forloop.counter}}">
+                                                 {% endif %}  
+                                                 {% with forloop.counter as outer_counter %} 
+                                                 {% for field in form.visible_fields %}
+                                                        <td>
+                                                            {# Include the hidden fields in the form #}
+                                                            {% if forloop.first %}
+                                                                {% for hidden in form.hidden_fields %}
+                                                                    {{ hidden }}
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                            {{ field.errors.as_ul }}
+
+                                                            {% if field.label == 'Hour' %}
+                                                                <div class="d-none"> {{ field }}</div>
+                                                                <p class="hour_display set_hour_{{outer_counter}}"></p>
+                                                            {% else %}
+                                                               {{ field }}
+                                                            {% endif %}
+                                                        </td>
+                                                    {% endfor %}
+
+                                                    {% endwith %}
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                                
+                                    
+                                      <input class="float-right btn btn-primary ml-2 day-update" type="submit" value="Day Update">
+                                      <button class="float-right btn btn-primary ml-2 logbook-update">Update</button>
+                                   </form>    
+                                </div>
+                              {% else %}
+                                <div id="tab{{subject.id}}" class="container tab-pane"><br>
+                                    <h3>{{subject}}</h3>
+                                    
+                                </div>
+                              {% endif %}
+                            {% endfor %}               
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+<script>
+    $(document).ready(function(){
+        
+        function update_tr() {     
+            var numRow = $('.log-book-data-row').length;           
+            for (let i = 1; i < 10; i++) {
+                if (!$(".check_row_"+i)[0]){
+                    numRow = numRow+1;
+                    $(".empty_row_"+numRow).attr('hour',i);                   
+                    var clone =$(".empty_row_"+numRow).clone();   
+                    $("table tr.empty_row_"+numRow).remove();             
+                    $(".empty_row_"+numRow).remove();
+                    $(clone).insertAfter(".update_"+i);
+                    $(".update_"+i).remove();                        
+                }
+                else{
+                    $(".check_row_"+i).attr('hour',i);                  
+                    var clone =$(".check_row_"+i).clone(); 
+                    $("table tr.check_row_"+i).remove();                    
+                   // $(".check_row_"+i).remove();
+                    $(clone).insertAfter(".update_"+i); 
+                    $(".update_"+i).remove();
+
+                }
+
+                $('.empty_row_'+i).eq(1).remove();
+                $('.empty_row_'+i).eq(2).remove();
+                $('.check_row_'+i).eq(1).remove();
+                $('.check_row_'+i).eq(2).remove();                  
+
+            } 
+            
+            setHour =1;
+            $(".hour_display").each(function() {             
+                 $(this).text(setHour);
+                 setHour=setHour+1;          
+            });
+
+        };
+
+        update_tr();
+
+        //update Logbook 
+        $('.logbook-update').on('click', function() {
+            event.preventDefault();            
+            upload_logbook();                
+        });
+
+        //day update
+        $('.day-update').on('click', function() {
+            event.preventDefault(); 
+            $('#id_is_day_update').prop('checked', true);
+            upload_logbook();
+        });
+
+        function upload_logbook() {  
+
+            //Checking non empty field and set hour selected
+            i=0;
+            error=0; 
+            isDataAvailable = 0;
+         
+            $(".formset_row").each(function() {  
+                hour=i+1; 
+                var hour = $("#hour_"+hour).attr('hour'); 
+                            
+                if($("#id_log_book_entry_set-"+i+"-chapter").val() && $('#id_log_book_entry_set-'+i+'-content_delivered').val().trim()  && $('#id_log_book_entry_set-'+i+'-activity').val().trim() ){
+                    $("#id_log_book_entry_set-"+i+"-hour").val(hour);
+                    $("#id_log_book_entry_set-"+i+"-hour").val(hour).change(); 
+                    isDataAvailable = 1;                    
+                                   
+                } 
+                else if ($("#id_log_book_entry_set-"+i+"-chapter").val() && $('#id_log_book_entry_set-'+i+'-content_delivered').val().trim() ==""   && $('#id_log_book_entry_set-'+i+'-activity').val().trim()==""){
+                    alert("Kindly fill row "+ hour +" content and activity.");
+                    error=1;
+                }   
+                else if ($("#id_log_book_entry_set-"+i+"-chapter").val() && $('#id_log_book_entry_set-'+i+'-content_delivered').val().trim()   && $('#id_log_book_entry_set-'+i+'-activity').val().trim() == "" ){
+                    alert("Kindly fill row "+ hour +" activity");
+                    error=1;
+                } 
+                else if ($("#id_log_book_entry_set-"+i+"-chapter").val() && !$('#id_log_book_entry_set-'+i+'-content_delivered').val().trim()   && $('#id_log_book_entry_set-'+i+'-activity').val().trim() ){
+                   alert("Kindly fill row "+hour +" content delivered.");
+                   error=1;
+                } 
+                else if ($("#id_log_book_entry_set-"+i+"-chapter").val()=="" && $('#id_log_book_entry_set-'+i+'-content_delivered').val().trim()   && $('#id_log_book_entry_set-'+i+'-activity').val().trim() ){
+                    alert("Kindly fill row "+ hour +" chapter");
+                    error=1;
+                } 
+                else if ($("#id_log_book_entry_set-"+i+"-chapter").val()=="" && $('#id_log_book_entry_set-'+i+'-content_delivered').val().trim()==""   && $('#id_log_book_entry_set-'+i+'-activity').val().trim() ){
+                    alert("Kindly fill row "+ hour +" Chapter and content delivered");
+                    error=1;
+                }
+                else if ($("#id_log_book_entry_set-"+i+"-chapter").val()=="" && $('#id_log_book_entry_set-'+i+'-content_delivered').val().trim()   && $('#id_log_book_entry_set-'+i+'-activity').val().trim()=="" ){
+                    alert("Kindly fill row "+ hour +" chapter and activity");
+                    error=1;
+                }
+                i = i+1;
+
+            }); 
+
+            if($("#id_is_day_update").prop('checked') == true){
+               if(isDataAvailable==0){
+                   alert('At the very least, one hour of data is required for Day Update.');
+                   error =1;
+                   $('#id_is_day_update').prop('checked', false);
+
+               }
+            }
+         
+
+            if(error==0){
+
+                if($("#id_is_day_update").prop('checked') == true){
+                    $('.day-update').text('Please Wait'); 
+                }
+                else{
+                    $('.logbook-update').text('Please Wait');                    
+                }
+                                         
+                var subject =  this.value;
+                url ="{% url 'log-book' %}?tab={{tab}}";
+                formdata = new FormData($('#logbook_form')[0]);
+
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+                    
+                    success:function(output)
+                    {  
+                        if(output.valid){
+                            location.reload();
+                        } 
+                        else{
+                            alert('Something went Wrong..!');
+                        }                                       
+                    }
+                }); 
+        
+            }
+                
+    };
+    });
+</script>
+{% endblock %}

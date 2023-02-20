@@ -1,0 +1,268 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load multioptions_tags %}
+{% load mathfilters %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+                <div class="row mb-3">
+                   
+                    <div class="col-sm-12">
+                        <a href="{% url 'faculty_classroom' %}" class="btn btn-primary p-2 m-1 rounded-pill">Classroom</a>
+                        <a href="{% url 'view_all_assignment' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Assignments</a>
+                        <a href="{% url 'view_all_test' %}" class="btn btn-primary p-2 m-1 rounded-pill">Tests</a>
+                        <a href="{% url 'view_all_discussion' %}" class="btn btn-primary p-2 m-1 rounded-pill">Discussions</a>
+                        <a href="{% url 'faculty_resource_list' %}" class="btn btn-primary p-2 m-1 rounded-pill">Resources</a>
+                    </div>
+                    
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h3>My Assignments</h3>
+                    </div>
+                    <div class="col-sm-4">
+                      <form id="subject_filter_form">
+                        {% csrf_token %}
+                        <select class="form-control" name="subject" id="subject">
+                           <option value="all">All Subjects</option>
+                            {% for subject_assignment in subject_assignments %}
+                                <option value="{{subject_assignment.id}}">{{subject_assignment}}</option>
+                            {% endfor %}
+                         </select>
+                      </form>
+                    </div>
+                    <div class="col-sm-4">
+                        <a href="#" id="new_assignment" class="p-2 small bg-blue float-right ml-2" style="border-radius: 30px;"> + New Assignment</a> 
+                        <a href="{% url 'view_assignment_report' %}"  class="p-2 small bg-blue float-right" style="border-radius: 30px;">View Report</a>  
+                       
+                      
+                    </div>
+                </div>
+
+
+				
+               
+                
+                <div class="row mb-3">
+                    <table class="table shadow table-striped table-responsive">
+                        <thead>
+                          <tr>
+                            <th scope="col">Assignment Name</th>
+                            <th scope="col">Question</th>
+                            <th scope="col">Classroom</th>
+                            <th scope="col">Programme</th>
+                            <th scope='col'>Due Date</th>
+                            <th scope="col">Total Strength</th>
+                            <th scope="col">Submitted</th>                           
+                            <th scope="col">Not Submitted</th>                           
+                            <th scope="col">Edit</th>
+                            <th scope="col">Delete</th>
+                          </tr>
+                        </thead>
+                        <tbody id="assignment_div">
+
+                            {% for assignment in assignments %}
+                                <tr>
+                                    <td><a href="{% url 'view_submission' assignment.id %}">{{assignment.title}}</a></td>
+                                    <td><a href="{{assignment.afile.url}}">Download</a></td>
+                                    <td>{{assignment.topic.croom.name}}</td>
+                                    <td>{{assignment.topic.croom.subject_assignment.programme}} - {{assignment.topic.croom.subject_assignment.year}}'year-{{assignment.topic.croom.subject_assignment.semester}}'semester</td>
+                                    <td>{{assignment.due_date}}</td>
+                                    <td>{{assignment.strength}}</td>
+                                    <td><a href="{% url 'view_submission' assignment.id %}">{{assignment.submitted_count}}</a></td>
+                                    <td><a href="{% url 'view_assignment_not_submitted' assignment.id %}">{{ assignment.strength|sub:assignment.submitted_count }} </a></td>
+                                    <td><a class="edit_assignment" data-url= "{% url 'ajax_edit_assignment_detail' assignment.id %}" href="#"><img title="Edit Assignment" src="{% static '/images/icons/edit.png' %}"></a></td>
+                                    <td><a class="delete_assignment" data-url= "{% url 'ajax_delete_assignment' assignment.id %}" href="#"><img title="Delete Assignment" src="{% static '/images/icons/delete.png' %}"></a></td>
+                                </tr>
+                            {% endfor %}
+                          
+                        </tbody>
+                      </table>
+
+                </div>
+                            
+                            
+                            
+                            
+                    
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+        
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+    <script>
+        $(document).ready(function(){
+
+            
+            $('#subject').on('change', function() {
+                  var subject =  this.value;
+                  url ="{% url 'ajax_assignment_filter_by_subject'  %}";
+                  formdata = new FormData($('#subject_filter_form')[0]);
+
+                  $.ajax({
+                        url : url,
+                        data : formdata,
+                        method: 'post',
+                        processData: false,
+                        contentType: false,
+                        
+                        success:function(output)
+                        {
+
+                            $('#assignment_div').html(output.html);
+
+                        }
+                  
+                  });
+
+             });
+
+
+
+
+
+
+            $('#new_assignment').click(function(){
+                event.preventDefault();
+                $.ajax({
+                        url : '{%url "ajax_create_assignment_home" %}',
+                        
+                        success:function(output)
+                        {
+                            $('#AjaxModal').html(output.form);
+                            $('#AjaxModal').modal('show');
+                            
+                        },
+                });
+
+            });
+
+            //Create new Assignment
+            $('#AjaxModal').on('click','#create_assignment_btn', function(){
+
+                event.preventDefault();
+                formdata = new FormData($('#AjaxModal #ajax_form')[0]);
+                $.ajax({
+                    url : '{%url "ajax_create_assignment_home" %}',
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+             
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+
+                            $('#AjaxModal').modal('hide');
+                            $('#assignment_div').html(output.html);
+                            $("#subject").val($("#subject    option:first").val());
+                            
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+                    },
+                });
+
+
+            });
+
+             //Edit Popup
+             $('#assignment_div').on('click','.edit_assignment',function(){
+                event.preventDefault();
+                url = $(this).attr('data-url');
+                $.ajax({
+                        url : url,
+                        
+                        success:function(output)
+                        {
+                            $('#AjaxModal').html(output.form);
+                            $('#AjaxModal').modal('show');
+                            
+                        },
+                });
+
+            });
+
+            //update assignment
+            $('#AjaxModal').on('click','#update_assignment_btn', function(){
+            
+                event.preventDefault();
+                url = $(this).attr('data-url');
+                formdata = new FormData($('#AjaxModal #ajax_form')[0]);
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                           location.reload();
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+            
+            
+                    },
+                });
+            });
+
+            //delete Assignment
+
+            $('#assignment_div').on('click','.delete_assignment',function(){
+                event.preventDefault();
+                if (confirm('Are you sure to delete your Assignment?')) {
+                    url = $(this).attr('data-url');
+                    $.ajax({
+                        url : url,
+                        
+                        success:function(output)
+                        {
+                            if(output.valid)
+                            {
+                                $('#assignment_div').html(output.html);
+                            }
+                            else{
+                                alert('Permission Denied');
+                            }
+                            
+                        },
+                    });
+                }
+
+            });
+
+
+
+
+        });
+
+        
+
+    </script>
+
+{% endblock %}

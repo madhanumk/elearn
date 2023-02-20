@@ -1,0 +1,68 @@
+{% extends '../base_2.html' %}
+{% load static %}
+{% block content %} 
+								<div class="kt-portlet kt-portlet--height-fluid">
+									
+									<div class="kt-portlet__body">
+
+
+										
+
+													<div class="row">
+												
+													  <!-- Post Content Column -->
+													  <div class="col-lg-8">
+												
+														<!-- Title -->
+														<h3 class="mt-4">{{post.post_title}}</h3>
+												
+														
+												
+														<!-- Date/Time -->
+														<h6>Posted on {{post.posted_on}}</h6>
+												
+																						
+														<hr>
+												
+														<!-- Post Content -->
+														<p id="post_content text-wrap">{{post.post_body | safe}}</p>
+												
+														<hr>
+
+													</div>
+
+													<div class="kt-pricing-1__item col-lg-3 ml-3 bg-dark-green">
+															<h3 class="kt-pricing-1__subtitle bg-dark-mb-12"> Related Posts</h3>
+															<span class="kt-pricing-1__description ">
+																<div class="kt-widget4">
+			
+																{% for post in posts %}
+																	<div class="kt-widget4__item">
+																		<div class="kt-widget4__pic kt-widget4__pic--icon">
+																				<img width="20px" height="20px" src="{%static 'assets/media/files/news.svg' %}" alt="">
+																		</div>
+																		<a class="kt-widget4__title" href="{% url 'post' post.slug %}">{{post.post_title}} - {{post.post_category.category}}</a>
+																		<div class="kt-widget4__tools">
+																			<a href="#" class="btn btn-clean btn-icon btn-sm">
+																				<i class="flaticon2-download-symbol-of-down-arrow-in-a-rectangle"></i>
+																			</a>
+																		</div>
+																	</div>
+																{% endfor %}
+																	
+																	
+																
+																 
+																</div>
+															</span>
+															
+														</div>
+												</div>
+												
+									</div>
+								</div>
+								<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+								
+								{% endblock %}

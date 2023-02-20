@@ -1,0 +1,116 @@
+{% extends '../base_2.html' %}
+{% load static %}
+{% block content %}
+
+		<div class="kt-portlet kt-portlet--height-fluid">
+			<div class="kt-portlet__body">
+        <div class="kt-pricing-1__items row">
+          <div class="kt-pricing-1__item col-lg-9 ">
+            {% if not file_link %}
+              <iframe src="{% static 'web/viewer.html' %}?file=%2Fmedia/{{file_path}}" style="width:100%;height:600px;"></iframe>
+            {% else %}
+              <iframe src="{% static 'web/viewer.html' %}?file={{file_link}}" style="width:100%;height:600px;"></iframe>
+            {% endif %}
+                                                
+              <div class="kt-widget4__item ">                                                       
+              </div>
+          </div>
+
+          <div class="kt-pricing-1__item col-lg-3 bg-blue" id="dict_content">  
+            <h1 style="visibility: hidden;background-color: black;height:40px;width:45px;right: 0;border-radius: 5px;" id="arrow_close" class="float-right mt-1">
+              <i class="fas fa-angle-double-right p-2"></i>
+            </h1>
+            <h4 class="m-2">{{resource.resource_name}}</h4> 
+            <div class="dropdown show" >
+              <a class="btn btn-secondary dropdown-toggle " style="width:100%;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <b> Select Chapter </b>
+              </a>
+              <div class="dropdown-menu pre-scrollable"  aria-labelledby="dropdownMenuLink" style="width:100%;">
+                  {% for resource_term in resource_terms %}
+                    <a style="color:black;" class="dropdown-item" href="{% url 'resource' resource_term.id %}">{{resource_term}} - {{resource_term.term_no}}</a>
+                  {% endfor %}
+              </div>
+            </div>
+            <br>
+            <h6  class="kt-pricing-1__subtitle">Click on the relevant word to know what it means.</h6>     
+            <h5 class="kt-pricing-1__subtitle p-2 bg-dark-green rounded" style="display: inline-block;">Dictionary</h5>
+                                                    
+            <div class="row mt-3 mb-3">
+              <div class="col-lg-6">
+                <h6  class="kt-pricing-1__subtitle">English</h6>
+                <a href="#" style="display: inline-block;" id="word" class="ml-3 mr-2">Click a Word</a><a id="say_btn" href="#"><img width="20px" height="20px" src="{% static 'assets/media/speaker.png' %}"></a>
+                <audio src="" class="speech" hidden></audio>
+              </div>
+              <div class="col-lg-6">
+                <h6  class="kt-pricing-1__subtitle">{{language}}</h6>
+                <a href="#" id="t_word" class="ml-3"></a>
+              </div>
+            </div>
+            <h5 class="kt-pricing-1__subtitle p-2 bg-dark-green rounded" style="display: inline-block;">Meaning</h5>
+              <span class="kt-pricing-1__description">
+                <p id="mean">
+                </p>
+              </span>
+                                                
+          </div>    
+          
+          
+          <div class="fixed" id="show_mean">
+            <h1>  <i id="arrow_symbol" class="fas fa-angle-double-left p-2"></i>
+                
+            </h1>
+            </div>
+        </div>
+			</div>
+    </div>
+                   
+                              
+<script>
+
+$(document).ready(function(){
+
+    $('#arrow_close').click(function(){
+      
+        $("#arrow_close").css('visibility', 'hidden');
+       
+        $("#arrow_symbol").addClass("fas fa-angle-double-left");
+
+        $("#dict_content").css({
+            'visibility' : 'hidden',           
+           
+        });
+       
+      $("#show_mean").css('visibility', '');    
+
+       });
+
+
+  $("#arrow_symbol").click(function(){        
+    
+    $("#dict_content").css({
+      'position': 'fixed',
+      'width' : '100%',
+      'height' : '100%',
+      'top' :   '50px',
+      'right' : '0px',
+      'overflow':'scroll',
+      'background-color': '#646c9a',
+      'visibility': '',
+     });
+
+     $("#show_mean").css({      
+      'visibility': 'hidden',
+     });
+
+     $("#arrow_symbol").removeClass("fas fa-angle-double-left");
+
+     $("#arrow_close").css('visibility', '');
+   
+  });
+
+});
+        
+
+</script>
+                                
+                {% endblock %}   

@@ -1,0 +1,167 @@
+
+{% extends 'base_2.html' %}
+{% load static %}
+{% block content %}
+{% load status_tags %}
+
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+            <div class="kt-pricing-1__items row">
+                <div class="kt-pricing-1__item col-lg-5 bg-blue">
+                    <h2 class="kt-pricing-1__subtitle">Subjects</h2>
+                    <span class="kt-pricing-1__description">
+                        <ul class="unoderlist">
+                            {% for room in crooms %}
+	                            <li class="p-3">                            
+                                    <h4> 
+                                       {%comment%}
+                                        <a href="#collapseExample-{{room.id}}" class="btn btn-primary chapter" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseExample-{{room.id}}" room={{room.id}} >
+                                           + {{room.name}} 
+                                          </a>
+                                        {%endcomment%}
+                                        <a href="{% url 'classroom_subject' room.id %}" >
+                                             {{room.name}} 
+                                         </a>    
+                                    </h4>
+                                    <!--Toggle content starts-->
+                                    <div class="exampleModal-{{room.id}}">
+                                        {% comment %}
+                                        {%for chapter in chapter%}
+                                            <div class="row ">
+                                                <div class="col">
+                                                    <div class="collapse" id="collapseExample-{{id}}" id="exampleModal">
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                            {% endcomment%}
+                                    </div>
+                                    <!--Toggle content ends-->                                 
+                                </li>
+                            {% empty %}
+                                No classroom found
+                            {% endfor %}
+                        </ul>
+                    </span>
+                                                
+                </div>
+
+         
+
+                <!-- Gap-->
+                <div class="col-lg-2">
+                  
+                                                
+                </div>
+                <div class="kt-pricing-1__item col-lg-5  bg-dark-green" id="div_assignment">
+                    <h2 class="kt-pricing-1__subtitle bg-dark-mb-12">Upcoming Sessions</h2>
+                    <span class="kt-pricing-1__description ">
+                        <div class="kt-widget4">
+                            <ul class="unoderlist">
+
+                                {% for session in upcoming_session %}
+	                            <li class="p-3">                                    
+                                    
+                                        
+                                       <h4> 
+                                             {{session.title}}
+                                             <a target="_blank" class ="float-right btn btn-primary" href="{{session.link}}" >Join </a>
+                                             
+                                             {% if session.password_if_any %}
+                                             <h6 style="color:rgb(15, 15, 14);display:inline">
+                                                Session on: {{session.start_date}}  {{session.start_time}}
+                                             </h6>
+                                              
+
+                                             <h6 style="color:rgb(15, 15, 14);display:inline"> Password: {{session.password_if_any}} </h6>
+                                               
+                                             
+                                            {% else %}
+                                            <h6 style="color:rgb(15, 15, 14);display:inline">Session on: {{session.start_date}}  {{session.start_time}} </h6>
+   
+                                            
+                                             {% endif %}
+                                            
+                                           
+                                            </a>    
+                                       </h4>
+                                       
+                                      
+                                   
+                                        
+                                 
+
+                                </li>
+                            {% empty %}
+                                No Upcoming Session
+                            {% endfor %}
+                               
+
+
+                            </ul>
+
+                        </div>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script>
+
+  //delete Assignment
+
+  $('#div_assignment').on('click','.delete_assignment',function(){
+                event.preventDefault();
+                if (confirm('Are you sure to delete this Submission?')) {
+                    url = $(this).attr('data-url');
+                    $.ajax({
+                        url : url,
+                        
+                        success:function(output)
+                        {
+                            if(output.status)
+                            {
+                                location.reload();
+                            }
+                            else{
+                                alert('Something Went Wrong.!');
+                            }
+                            
+                        },
+                    });
+                }
+
+            });
+        //apend chapter details 
+        $(".chapter").click(function(){
+            var room = $(this).attr('room');
+            $.ajax({
+                url: 'classroom_subject/' + room,
+                type: 'GET',
+                headers:{
+                    "x-CSRFtoken":"{{csrf_token}}"
+                    },
+                success: function (data) {
+                    
+                    $('.exampleModal-'+data.chapter_id +', #collapseExample-'+data.chapter_id).collapse('toggle');
+                   $('.exampleModal-'+data.chapter_id).html(data.chapters);
+                   alert(data.chapters);
+                   //window.location('panelmembers_schedule_view')
+                   //exampleModal').modal('show'); 
+                },
+             
+            });
+            return false;
+        }); 
+        
+ 
+    
+</script>
+                                
+
+
+
+
+{% endblock %}

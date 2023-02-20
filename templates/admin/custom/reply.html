@@ -1,0 +1,10 @@
+{% load static %}
+<div class="mb-3" id="reply_{{reply.id}}">
+    <p>{{reply.description}}</p> 
+    <span>
+        {{reply.posted_on}} {{reply.posted_by.first_name}}
+        <a href="#" class="delete_reply" reply_id="{{reply.id}}" data-url="{% url 'ajax_delete_reply' reply.id %}"><img src="{% static '/images/icons/delete.png' %}"></a>
+
+    </span>
+    <hr>
+</div>

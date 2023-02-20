@@ -1,0 +1,46 @@
+{% extends 'quiz/base.html' %}
+{% load materializecss %}
+
+{% block content %}
+<div class="container">
+    
+        <div class="row">
+            <form method="post" class="col s12">{% csrf_token %}
+                <div class="row">
+                    <div class="input-field col s12">
+                        {{ form.name | materializecss:'icon=create' }}
+                    </div>
+                    <div class="input-field col s12 m6">
+                        {{ form.type | materializecss:'icon=short_text' }}
+                    </div>
+                    <div class="input-field col s12 m6">
+                            {{ form.openDate | materializecss:'icon=date_range' }}
+                    </div>
+                    <div class="input-field col s12 m6">
+                            {{ form.closeDate | materializecss:'icon=date_range' }}
+                    </div>
+                    <div class="input-field col s12 m6">
+                            {{ form.noOfAttempts | materializecss:'icon=add' }}
+                    </div>
+                    <div class="input-field col s12 m6">
+                            {{ form.noOfQuestions | materializecss:'icon=add' }}
+                    </div>
+                    <div class="input-field col s12 m6">
+                            {{ form.maxMarks | materializecss:'icon=add' }}
+                    </div>
+                    <div class="input-field col s12 m6">
+                            {{ form.isActive | materializecss }}
+                    </div>
+                </div>
+                <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+                        <i class="material-icons right">send</i>
+                </button>
+            </form>
+        </div>
+
+
+       
+   
+</div>
+
+{% endblock %}

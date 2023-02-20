@@ -1,0 +1,954 @@
+{% extends 'base_2.html' %}
+{% load mathfilters %}
+{% load static %}
+
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+				<div class="row mb-2">
+                    <h3>College Dashboard</h3>                   
+                </div>
+
+                <div class="row mb-3">
+                    
+                   
+                    <div class="col-sm-12">
+                        <a href="{% url 'college_admin' %}" class="btn btn-primary p-2 m-1 rounded-pill">Home</a>
+                        <a href="{% url 'students' %}" class="btn btn-primary p-2 m-1 rounded-pill">Students</a>
+                        <a href="{% url 'faculty' %}" class="btn btn-primary p-2 m-1 rounded-pill">Faculty</a>
+                        <a href="{% url 'score' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Performance</a>
+                        <a href="{% url 'view_post' %}" class="btn btn-primary p-2 m-1 rounded-pill">Circular</a>
+                        <a href="{% url 'resource_list' %}" class="btn btn-primary p-2 m-1 rounded-pill">Resource</a>
+                    </div>                    
+                    
+                </div>
+                <a class="btn btn-primary" href="{% url 'score' %}">Go back</a>
+
+                <div class="row">             
+ 
+                    <div class="col-sm-4 p-4 border mt-1">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <h4 class="d-inline">{{programme}}-{{section}}-year- Subjects</h4> 
+                            </div>
+
+                            <div class="col-sm-4 ">
+                                <a href="#" class="reset-subject float-right"><u>Reset</u></a>
+                            </div>
+
+                        </div>
+                         
+                        <br>
+                        {% if request.user.school.board.board == "State Board"  %}
+                               {% if grade == "XI" or grade == "XII" %}
+
+                               <label for="cars">Choose a group:</label>                              
+
+                                    <select class="form-control group-change" name="group" id="group">
+                                        <option value="All">All</option>
+                                          {% for group in groups %}
+                                            <option value="{{group.id}}">{{group}}</option>
+                                          {% endfor %}                                       
+                                      
+                                    </select>
+
+                               {% endif %}
+
+                               <br>
+
+                        {% endif %}
+
+                        <div class="sub-data">
+                            {% for subject in subjects %}
+                               <a class="subject-list black" data-url="{% url 'get_subject_report' subject=subject.id section=section %}" href="#">{{subject}}</a>  <hr>
+                            {% endfor %}
+          
+                        </div>
+
+                        
+                        
+                    </div>
+
+                    <div class="col-sm-8 ">
+
+                        <div class="row default">
+
+                            
+                            <div class="col-sm-12">
+                                <h3>Based on last Test Performance </h3>
+
+                                <div id="mychart_div_3">
+                                    <canvas id="myChart_3" width="400" class="p-2" ></canvas>
+                                </div>
+
+                                <div>
+                                    <hr>
+
+                                    <table class="table table-striped" id="print_test_table">
+                                        <thead>
+                                            <tr>
+                                                                        
+                                            <th scope="col">Test Name</th>
+                                            <th scope="col">Open Date</th> 
+                                            <th scope="col">Close Date</th>                                                                  
+                                            <th scope='col'>Duration In Minutes</th>
+                                            <th scope="col">Total Strength</th>
+                                            <th scope="col">Attempted</th>                            
+                                            <th scope="col">Not Atempted</th>
+                                            
+                                            </tr>
+                                        </thead>
+                                        <tbody id="quiz_div">
+                                    
+                                            {% for test_id,subject_id,test_name_list,open_date,close_date,duration,total_strength,attempt,not_attempt in zippedList %}
+                                            
+                                                <tr>                                                                                    
+                                                    <td><a href="#" class="get-test-report" url="{% url 'get_test_report'  pk=test_id subject=subject_id grade=grade section=section %}">{{test_name_list}}</a></td>                                                
+                                                    <td>{{open_date}}</td>
+                                                    <td>{{close_date}}</td>                                          
+                                                    <td>{{duration}}</td>                                               
+                                                    <td>{{total_strength}}</td>
+                                                    <td>{{attempt}}</td>                            
+                                                    <td>{{not_attempt}}</td>
+                                                
+                                                </tr>          
+                                                                            
+                                            {% endfor %}
+                                        </tbody>
+                                        </table>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-12">
+                                <hr>
+                                <h3>Based on last Assignment Performance </h3>
+
+                                <div id="mychart_div_4">
+                                    <canvas id="myChart_4" width="400" class="p-2" ></canvas>
+                                </div>
+
+                                <div>
+                                    <div class="table-responsive">
+
+                                        <table class="table shadow table-striped" id="print_assignment_table">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col">Assignment Name</th>
+                                                <th scope="col">Question</th>
+                                                <th scope="col">Classroom</th>
+                                                <th scope="col">Grade</th>
+                                                <th scope='col'>Due Date</th>
+                                                <th scope="col">Total Strength</th>
+                                                <th scope="col">Submitted</th>                          
+                                                <th scope="col">Not Submitted</th>
+                                                
+                                              </tr>
+                                            </thead>
+                                            <tbody id="assignment_div">
+                                    
+                                                {% for assignment in assignments %}
+                                                    <tr>
+                                                        <td><a class="get_assignment_report" href="#" url="{% url 'get_assignment_report'  assignment.id %}">{{assignment.title}}</a></td>
+                                                        <td><a href="{{assignment.afile.url}}">Download</a></td>
+                                                        <td>{{assignment.topic.croom.name}}</td>
+                                                        <td>{{assignment.topic.croom.subject.group}} - {{assignment.topic.croom.subject.grade}} - {{assignment.topic.croom.section}}</td>
+                                                        <td>{{assignment.due_date}}</td>
+                                                        <td>{{assignment.strength}}</td>
+                                                        <td>{{assignment.submitted_count}}</td>
+                                                        <td>{{ assignment.strength|sub:assignment.submitted_count }} </td>
+                                                    </tr>
+                                            
+                                                {% endfor %}
+                                              
+                                            </tbody>
+                                          </table>
+                                    
+                                    </div>
+                                    
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="row data-append d-none">
+
+
+                            <div class="col-sm-12">
+                                <h3>Test Performance </h3>
+
+
+                                <div id="mychart_div_1">
+                                    <canvas id="myChart_1" width="400" class="p-2" ></canvas>
+                                </div>
+
+                                <div id="test_detail_table">
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-12">
+                                <hr>
+                                <h3>Assignment Performance </h3>
+
+                                <div id="mychart_div_2">
+                                    <canvas id="myChart_2" width="400" class="p-2" ></canvas>
+                                </div>
+
+                                <div id="assignment_detail_table">
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-12">
+                                <hr>
+                                <h3>Material List </h3>                               
+
+                                <div id="material-list">
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-12">
+                                <hr>
+                                <h3>Discussion List </h3>                               
+
+                                <div id="discussion-list">
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+              
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+
+        <div class="modal-dialog  modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">            
+                   
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                  <div class="row">
+        
+                    <div class="col-sm-12">
+                        <h4>Test Performance</h4>
+        
+                    </div>
+        
+                  </div>
+            
+              </div>
+              <div class="modal-footer">
+                <span style="color:red" id="info_text"></span>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>    
+              </div>
+            </div>
+          </div>
+
+        
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>  
+    <script src="https://cdn.datatables.net/buttons/1.6.5/js/buttons.print.min.js"></script>
+
+
+    <script>
+
+        $(document).ready(function(){  
+            
+            $('.group-change').on('change', function() {
+                var groupid = $(this).val();
+                var url = "{% url 'subject-load' %}";
+                var section = "{{section}}";
+                var grade = "{{grade}}";
+
+                $.ajax({
+                    url : url, 
+                    data :{'group':groupid,'grade':grade,'section':section},             
+                    success:function(output)
+                    {  
+                        $('.sub-data').html(output.html);
+
+                    }
+
+                });
+
+            });
+            
+            // DataTable
+            var table = $('#print_test_table').DataTable({
+                "pageLength":10,
+                dom: 'Bfrtip', "ordering": false,
+                buttons: 
+                    [
+                        { extend: 'excel', className: 'btn-primary' }
+                    ],                
+            }); 
+
+            var table = $('#print_assignment_table').DataTable({
+                "pageLength":10,
+                dom: 'Bfrtip', "ordering": false,
+                buttons: 
+                    [
+                        { extend: 'excel', className: 'btn-primary' }
+                    ],                
+            }); 
+
+
+            //default Test chart                                         
+            window.chartColors = {
+                red: 'rgb(255, 99, 132)',
+                orange: 'rgb(255, 159, 64)',
+                yellow: 'rgb(255, 205, 86)',
+                green: 'rgb(75, 192, 192)',
+                blue: 'rgb(54, 162, 235)',
+                purple: 'rgb(153, 102, 255)',
+                grey: 'rgb(231,233,237)'
+            };
+                
+                
+                
+                var line1 = {{test_pass_percentage_list}}
+                
+                var line2 = {{test_top_score_list}}
+
+                var line3 = {{test_avg_score_list}}
+
+                var line4 = {{test_not_submitted_percentage}}
+                
+                var date = {{test_name_list|safe}}
+                var config = {
+                type: 'line',
+                data: {
+                    labels: date,
+                    datasets: [{
+                    label: "Pass Percentage",
+                    backgroundColor: window.chartColors.red,
+                    borderColor: window.chartColors.red,
+                    data: line1,
+                    fill: false,
+                    }, {
+                    label: "Top Score",
+                    fill: false,
+                    backgroundColor: window.chartColors.blue,
+                    borderColor: window.chartColors.blue,
+                    data: line2,
+                    },
+                    {
+                    label: "Avg Score",
+                    fill: false,
+                    backgroundColor: window.chartColors.orange,
+                    borderColor: window.chartColors.orange,
+                    data: line3,
+                    },
+
+                    {
+                    label: "Not Submitted",
+                    fill: false,
+                    backgroundColor: window.chartColors.purple,
+                    borderColor: window.chartColors.purple,
+                    data: line4,
+                    }
+
+                
+                ]
+                },
+                options: {
+                    responsive: true,
+                    title:{
+                    display:true,
+                    text:'Pass Percentage | Top Score | Avg Score | Not Attempt Percentage'
+                    },
+                    tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                    },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                    },
+                    scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                        display: true,
+                        labelString: 'Test'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                        display: true,
+                        },
+                    }]
+                    }
+                }
+                };
+                        
+                        
+            var ctx = document.getElementById("myChart_3").getContext("2d");
+            var myLine = new Chart(ctx, config);
+
+                
+            //assignment chart                                       
+            window.chartColors = {
+                red: 'rgb(255, 99, 132)',
+                orange: 'rgb(255, 159, 64)',
+                yellow: 'rgb(255, 205, 86)',
+                green: 'rgb(75, 192, 192)',
+                blue: 'rgb(54, 162, 235)',
+                purple: 'rgb(153, 102, 255)',
+                grey: 'rgb(231,233,237)'
+            };
+            
+                        
+            
+            var line1 = {{assignment_pass_percentage_list}}
+            
+            var line2 = {{assignment_top_score_list}}
+
+            var line3 = {{assignment_avg_score_list}}
+            var line4 = {{assignment_not_submitted_percentage}}
+            
+            var date = {{assignment_name|safe}}
+            var config = {
+            type: 'line',
+            data: {
+                labels: date,
+                datasets: [{
+                label: "Pass Percentage",
+                backgroundColor: window.chartColors.red,
+                borderColor: window.chartColors.red,
+                data: line1,
+                fill: false,
+                }, {
+                label: "Top Score",
+                fill: false,
+                backgroundColor: window.chartColors.blue,
+                borderColor: window.chartColors.blue,
+                data: line2,
+                },
+                {
+                label: "Avg Score",
+                fill: false,
+                backgroundColor: window.chartColors.orange,
+                borderColor: window.chartColors.orange,
+                data: line3,
+                }
+                ,
+                {
+                    label: "Not Submitted Percentage",
+                    fill: false,
+                    backgroundColor: window.chartColors.purple,
+                    borderColor: window.chartColors.purple,
+                    data: line4,
+                }
+            ]
+            },
+            options: {
+                responsive: true,
+                title:{
+                display:true,
+                text:'Pass Percentage | Top Score | Avg Score | Not Submitted Percentage'
+                },
+                tooltips: {
+                mode: 'index',
+                intersect: false,
+                },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+                },
+                scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                    display: true,
+                    labelString: 'Assignment'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                    display: true,
+                    },
+                }]
+                }
+            }
+            };
+            
+            
+            var ctx = document.getElementById("myChart_4").getContext("2d");
+            var myLine = new Chart(ctx, config);
+            
+
+            //get subject related data
+            $('.reset-subject').click(function() {
+                event.preventDefault();
+                $(".subject-list").css('color','blue');
+                $('.default').removeClass('d-none');
+                $('.data-append').addClass('d-none');
+            });
+
+            //get subject related data
+
+            $('.sub-data').on('click','.subject-list',function(){
+           
+                event.preventDefault();
+                var url = $(this).attr('data-url');
+                
+                $(".subject-list").css('color','blue');
+                $(this).css('color','black');
+
+                $.ajax({
+                    url : url,               
+                    success:function(output)
+                    {   
+
+                        $('#material-list').html(output.materials);
+
+                        $('#discussion-list').html(output.discussions);
+                        $("canvas#myChart_1").remove();
+                        $("canvas#myChart_2").remove();
+                        $("#mychart_div_1").append('<canvas id="myChart_1" width="400" class="p-2" ></canvas>');
+                        $("#mychart_div_2").append('<canvas id="myChart_2" width="400" class="p-2" ></canvas>');
+         
+                      
+                        $('.default').addClass('d-none');
+                        $('.data-append').removeClass('d-none');
+
+                        $('#test_detail_table').html(output.tests);
+
+                        $('#assignment_detail_table').html(output.assignments);
+                
+                       // Test chart                                         
+                        window.chartColors = {
+                        red: 'rgb(255, 99, 132)',
+                        orange: 'rgb(255, 159, 64)',
+                        yellow: 'rgb(255, 205, 86)',
+                        green: 'rgb(75, 192, 192)',
+                        blue: 'rgb(54, 162, 235)',
+                        purple: 'rgb(153, 102, 255)',
+                        grey: 'rgb(231,233,237)'
+                        };
+                        
+                        
+                        
+                        var line1 = output.test_pass_percentage_list 
+                        
+                        var line2 = output.test_top_score_list 
+
+                        var line3 = output.test_avg_score_list 
+
+                        var line4 = output.test_not_submitted_percentage
+                        
+                        var date = output.test
+                        var config = {
+                        type: 'line',
+                        data: {
+                            labels: date,
+                            datasets: [{
+                            label: "Pass Percentage",
+                            backgroundColor: window.chartColors.red,
+                            borderColor: window.chartColors.red,
+                            data: line1,
+                            fill: false,
+                            }, {
+                            label: "Top Score",
+                            fill: false,
+                            backgroundColor: window.chartColors.blue,
+                            borderColor: window.chartColors.blue,
+                            data: line2,
+                            },
+                            {
+                            label: "Avg Score",
+                            fill: false,
+                            backgroundColor: window.chartColors.orange,
+                            borderColor: window.chartColors.orange,
+                            data: line3,
+                            },
+
+                            {
+                            label: "Not Submitted",
+                            fill: false,
+                            backgroundColor: window.chartColors.purple,
+                            borderColor: window.chartColors.purple,
+                            data: line4,
+                            }
+
+                        
+                        ]
+                        },
+                        options: {
+                            responsive: true,
+                            title:{
+                            display:true,
+                            text:'Pass Percentage | Top Score | Avg Score | Not Attempt Percentage'
+                            },
+                            tooltips: {
+                            mode: 'index',
+                            intersect: false,
+                            },
+                        hover: {
+                            mode: 'nearest',
+                            intersect: true
+                            },
+                            scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                display: true,
+                                labelString: 'Test'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                display: true,
+                                },
+                            }]
+                            }
+                        }
+                        };
+                        
+                        
+                        var ctx = document.getElementById("myChart_1").getContext("2d");
+                        var myLine = new Chart(ctx, config);
+
+
+                        //assignment chart                                       
+                        window.chartColors = {
+                        red: 'rgb(255, 99, 132)',
+                        orange: 'rgb(255, 159, 64)',
+                        yellow: 'rgb(255, 205, 86)',
+                        green: 'rgb(75, 192, 192)',
+                        blue: 'rgb(54, 162, 235)',
+                        purple: 'rgb(153, 102, 255)',
+                        grey: 'rgb(231,233,237)'
+                        };
+                        
+                        
+                        
+                        var line1 = output.assignment_pass_percentage_list 
+                        
+                        var line2 = output.assignment_top_score_list
+
+                        var line3 = output.assignment_avg_score_list
+                        var line4 = output.assignment_not_submitted_percentage
+                        
+                        var date = output.assignment_name
+                        var config = {
+                        type: 'line',
+                       
+                        data: {
+                                labels: date,
+                                datasets: [{
+                                label: "Pass Percentage",
+                                backgroundColor: window.chartColors.red,
+                                borderColor: window.chartColors.red,
+                                data: line1,
+                                fill: false,
+                                }, {
+                                label: "Top Score",
+                                fill: false,
+                                backgroundColor: window.chartColors.blue,
+                                borderColor: window.chartColors.blue,
+                                data: line2,
+                                },
+                                {
+                                label: "Avg Score",
+                                fill: false,
+                                backgroundColor: window.chartColors.orange,
+                                borderColor: window.chartColors.orange,
+                                data: line3,
+                                }
+                                ,
+                                {
+                                    label: "Not Submitted Percentage",
+                                    fill: false,
+                                    backgroundColor: window.chartColors.purple,
+                                    borderColor: window.chartColors.purple,
+                                    data: line4,
+                                }
+                            ]
+                            },
+          
+                        options: {
+                            responsive: true,
+                            title:{
+                            display:true,
+                            text:'Pass Percentage | Top Score | Avg Score | Not Submitted Percentage'
+                            },
+                            tooltips: {
+                            mode: 'index',
+                            intersect: false,
+                            },
+                        hover: {
+                            mode: 'nearest',
+                            intersect: true
+                            },
+                            scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                display: true,
+                                labelString: 'Assignment'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                display: true,
+                                },
+                            }]
+                            }
+                        }
+                        };
+                        
+                        
+                        var ctx = document.getElementById("myChart_2").getContext("2d");
+                        var myLine = new Chart(ctx, config);
+
+                        var table = $('#print_test_detail_table').DataTable({
+                            "pageLength":10,
+                            dom: 'Bfrtip', "ordering": false,
+                            buttons: 
+                                [
+                                    { extend: 'excel', className: 'btn-primary' }
+                                ],                
+                        });
+
+                        
+                        var table = $('#print_assignment_detail_table').DataTable({
+                            "pageLength":10,
+                            dom: 'Bfrtip', "ordering": false,
+                            buttons: 
+                                [
+                                    { extend: 'excel', className: 'btn-primary' }
+                                ],                
+                        }); 
+
+                        
+
+                       
+                    },
+                });
+
+ 
+            });
+
+        
+            $('.data-append').on('click','.get-test-report',function(){
+                event.preventDefault();
+
+                var url = $(this).attr('url');
+               
+
+                    $.ajax({
+                        url : url,               
+                        success:function(output)
+                        { 
+
+                            $('#AjaxModal').html(output.html);  
+                            $('#AjaxModal').modal('toggle'); 
+
+                           //data tables
+                           var table = $('.excel-export-4').DataTable({
+                                "pageLength":10,
+                                dom: 'Bfrtip', "ordering": false,
+                                buttons: 
+                                    [
+                                        { extend: 'excel', className: 'btn-primary' }
+                                    ],                
+                            }); 
+                            var table = $('.excel-export-3').DataTable({
+                                "pageLength":10,
+                                dom: 'Bfrtip', "ordering": false,
+                                buttons: 
+                                    [
+                                        { extend: 'excel', className: 'btn-primary' }
+                                    ],                
+                            });
+
+
+                        }
+                    });
+               
+            });
+         
+        
+            $('#quiz_div').on('click','.get-test-report',function(){
+                event.preventDefault();
+
+                var url = $(this).attr('url');
+               
+
+                    $.ajax({
+                        url : url,               
+                        success:function(output)
+                        { 
+
+                            $('#AjaxModal').html(output.html);  
+                            $('#AjaxModal').modal('toggle');
+
+                            //data tables
+                            var table = $('.excel-export-4').DataTable({
+                                "pageLength":10,
+                                dom: 'Bfrtip', "ordering": false,
+                                buttons: 
+                                    [
+                                        { extend: 'excel', className: 'btn-primary' }
+                                    ],                
+                            }); 
+                            var table = $('.excel-export-3').DataTable({
+                                "pageLength":10,
+                                dom: 'Bfrtip', "ordering": false,
+                                buttons: 
+                                    [
+                                        { extend: 'excel', className: 'btn-primary' }
+                                    ],                
+                            }); 
+
+                        }
+                    });
+               
+            });
+         
+            //assignment report
+            $('.data-append').on('click','.get_assignment_report',function(){
+                event.preventDefault();
+
+                var url = $(this).attr('url');
+               
+
+                    $.ajax({
+                        url : url,               
+                        success:function(output)
+                        { 
+
+                            $('#AjaxModal').html(output.html);  
+                            $('#AjaxModal').modal('toggle'); 
+
+                            var table = $('.excel-export-2').DataTable({
+                            "pageLength":10,
+                            dom: 'Bfrtip', "ordering": false,
+                            buttons: 
+                                [
+                                    { extend: 'excel', className: 'btn-primary' }
+                                ],                
+                        }); 
+                        var table = $('.excel-export-1').DataTable({
+                            "pageLength":10,
+                            dom: 'Bfrtip', "ordering": false,
+                            buttons: 
+                                [
+                                    { extend: 'excel', className: 'btn-primary' }
+                                ],                
+                        });    
+
+                        }
+                    });
+               
+            });
+         
+           //assignment report
+           $('#assignment_div').on('click','.get_assignment_report',function(){
+                event.preventDefault();
+                var url = $(this).attr('url');             
+                $.ajax({
+                    url : url,               
+                    success:function(output)
+                    { 
+                        $('#AjaxModal').html(output.html);  
+                        $('#AjaxModal').modal('toggle');
+                
+
+                        var table = $('.excel-export-2').DataTable({
+                            "pageLength":10,
+                            dom: 'Bfrtip', "ordering": false,
+                            buttons: 
+                                [
+                                    { extend: 'excel', className: 'btn-primary' }
+                                ],                
+                        }); 
+                        var table = $('.excel-export-1').DataTable({
+                            "pageLength":10,
+                            dom: 'Bfrtip', "ordering": false,
+                            buttons: 
+                                [
+                                    { extend: 'excel', className: 'btn-primary' }
+                                ],                
+                        });  
+
+
+                    }
+                });
+               
+            });  
+            
+            
+            //expand close            
+            $('#discussion-list').on('click','.hide-all-content',function(){
+                event.preventDefault();                
+                $('.exapand-content').css({display: 'none', overflow: 'hidden'});
+            });
+
+            //exapand            
+            $('#discussion-list').on('click','.show_discussion',function(){
+                event.preventDefault();
+                var id = $(this).attr('id');
+                $('.exapand-content').css({display: 'none', overflow: 'hidden'});
+                $('#discussion_id_'+id).css({ display: 'block',overflow: 'hidden' });            
+            });
+        
+        });
+
+  
+    </script>
+
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            event.preventDefault();
+            if (content.style.display === "block") {
+                
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+                
+            }
+        });
+    }
+</script>
+
+
+{% endblock %}

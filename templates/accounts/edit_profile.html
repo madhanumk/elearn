@@ -1,0 +1,146 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load multioptions_tags %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+	  <div class="kt-portlet__body">
+			<div class="container">
+				<div class="row">
+          <div class="col-md-7">
+            <h3>My Profile</h3>
+            <div class="table-responsive m-2">
+              <table class="table">
+                  <tr>
+                    <td>First Name</td>
+                    <td>{{ user.first_name}}</td>
+                  </tr>
+
+                  <tr>
+                    <td>Last name</td>
+                    <td>{{ user.last_name}}
+                
+                        </td>
+                  </tr>
+
+                  {% if user.student %}
+
+                  <tr>
+                    <td>Learnign Style </td>
+                    <td> 
+                        {% if learning_styles %}
+
+                              {% for learning_style in learning_styles %} {{learning_style}} {% if not forloop.last %} , {% endif %}  {% endfor %}
+
+                        {% else %}
+                          {% comment %}<button class="btn btn-primary"><a class="text-white" href="{% url 'quiz-detail' quiz_id %}">{{quiz_id}}Take Test</a></button> {% endcomment %}
+
+                        {% endif %}
+
+
+                        </td>
+                  </tr>
+
+
+                  {% endif %}
+
+                  <tr>
+                    <td>Email </td>
+                    <td>{{ user.email }}
+                        </td>
+                  </tr>
+
+                  <tr>
+                      <td>Mobile No</td>
+                      <td>{{ user.student.mobile_no }} {{ user.faculty.mobile_no }}
+                          </td>
+                    </tr>
+                  <tr>
+                    <td>DOB</td>
+                    <td>{{ user.student.dob }} {{ user.faculty.dor }}
+                    
+                        
+                        </td>
+                  </tr>
+                  <tr>
+                      <td>Gender</td>
+                      <td> {% if user.student.gender == 'F' %}
+                              Female
+                          {% elif user.student.gender == 'M' %}
+                              Male
+                          {% elif user.faculty.gender == 'F' %}
+                              Female
+                          {% elif user.faculty.gender == 'M' %}
+                              Male
+                          {% else %}
+                              
+                          {% endif %}
+                          </td>
+                    </tr>
+  
+                  <tr>
+                    <td>District</td>
+                    <td>{{ user.student.district}}{{ user.faculty.district}}
+                        </td>
+                  </tr>
+  
+                  <tr>
+                    <td>Pincode</td>
+                    <td>{{ user.student.pincode}}{{ user.faculty.pincode}}
+                    
+                        </td>
+                  </tr>
+
+                  <tr>
+                      <td>Address</td>
+                      <td>
+                        {{ user.student.address}} {{ user.faculty.address}}
+                                
+                      </td>
+                    </tr>
+  
+                  
+                    
+                    <tr>
+                      <td>Degree Category</td>
+                      <td>{{ user.student.programme.department.degree_category}} {{ user.faculty.programme.department}}
+                          </td>
+                    </tr>
+                    {% if request.user|has_group:"student" %} 
+                    <tr>
+                        <td>Gradution</td>
+                        <td>{{ user.student.programme.graduation}}
+                            </td>
+                      </tr>
+    
+                      <tr>
+                        <td>Department</td>
+                        <td>{{ user.student.programme.department.name}}
+                          </td>
+                      </tr>
+    
+
+                        {% elif request.user|has_group:"teacher" %}
+
+                        <tr>
+                          <td>Subjects Handling</td>
+                          <td>
+                            {% for subject in user.faculty.all %}
+                                {{subject.programme}}-{{subject.graduation}}  <br>
+                            {% endfor %}
+                        </td>
+                        </tr>
+
+                        {% endif %}
+              </table>
+            </div>   
+          </div>
+          <div class="col-md-4 " style ="justify-content: center;margin:auto;">
+            <img src="{% static 'assets/media/uni1.png' %}" alt= "myprofile" style="height:400px;width:400px;">
+          </div>
+        </div>
+      </div>   
+    </div>
+  </div>
+
+
+{% endblock %}

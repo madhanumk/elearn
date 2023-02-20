@@ -1,0 +1,68 @@
+{% load static %}
+
+<div class="mb-3 row" id="discussion_div">
+
+    {% for discussion in discussions %}
+
+        <div class="card shadow w-100 m-1">
+            <div class="card-header collapsible">
+               
+                <h5 class="card-title">{{discussion.title}}</h5>
+                <p class="card-text">
+                {{discussion.created_on}}, {{discussion.created_by.first_name}} - {{discussion.created_by.student.grade}} - {{discussion.created_by.student.section}}
+                    
+                <a href='' class="float-right show_discussion" id="{{discussion.id}}"><img title="Show Discussion" src="{% static '/images/icons/open.png' %}"></a>
+                </p>
+                
+              
+            </div>
+            <div class="card-body content exapand-content" id="discussion_id_{{discussion.id}}" style="display: none;overflow: hidden;">
+                
+                <div class="row">
+                    {{discussion.description}}
+
+                </div>
+
+                <h5 class="mt-3">Replies</h5>
+
+                <div id="replies_{{discussion.id}}">
+                    {% for reply in discussion.reply_set.all %}
+                        <div class="mb-3" id="reply_{{reply.id}}">
+                            <p>{{reply.description}}</p> 
+                            <span>
+                           {% if user.groups.all.0.name == "Teacher" %}
+
+                                {{reply.posted_on}} {{reply.posted_by.first_name}}
+                                
+                            {% else %}
+                                {{reply.posted_on}} {{reply.posted_by.first_name}} - {{reply.posted_by.student.grade}} - {{reply.posted_by.student.section}}
+              
+
+                            {% endif %}
+                               
+                            </span>
+                            <hr>
+                        </div>
+                        
+                    {% empty %}
+                            No Replies Found
+                    {% endfor %}
+
+                </div>                            
+
+                <a href="" class="collapsible_inner float-right hide-all-content"><img title= "Hide Discussion" src="{% static '/images/icons/close.png' %}"></a>                                                      
+          
+            </div>
+
+            
+            
+        </div>
+
+    {% empty %}
+        <h3> No Discussion Available.</h3>
+    {% endfor %}
+
+    
+</div>
+            
+        

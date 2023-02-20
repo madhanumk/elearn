@@ -1,0 +1,14 @@
+{% load static %}
+{% for subject in facult_subject_assignment %}
+    <div class="card shadow col-sm-3 m-1 subject_id_{{subject.id}}">
+        <div class="card-body text-center">
+            {%comment%}<h4><a href="{% url 'subject_report' pk=teacher.id subject=subject.subject.id section=subject.section %}">{{subject}} </a></h4>{% endcomment %}
+            <h4><a href="#">{{subject}} </a></h4>
+            <div class="row justify-content-md-center m-2">        
+                <a href="#" class="delete_subject mx-1" data-url="{% url 'remove_subject' subject.id  %}"><img title="Delete Classroom" src="/static/images/icons/delete.png"></a>
+            </div>                                    
+        </div>                                                        
+    </div>   
+{% empty %}
+        <h6>No Subject Assigned</h6>                 
+{% endfor %}

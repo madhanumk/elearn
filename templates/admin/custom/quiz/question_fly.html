@@ -1,0 +1,20 @@
+{% for question in questions %}
+  
+      <tr id="{{question.id}}">
+        <th class="text-center">  <input type="checkbox" class="" name="question" value="{{question.id}}"></th>
+        <td>{{question.description|safe}}</td>
+        <td>
+
+            {% for options in question.option_set.all %}
+
+            <span class="font-weight-bolder d-block font-size-lg">
+              {{options.name|safe}}  
+              </span>
+            {% endfor %}  
+        </td>    
+      </tr>
+
+{% endfor %}
+
+
+

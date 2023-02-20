@@ -1,0 +1,65 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load multioptions_tags %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+          <div class="row mb-2">
+            <h3>College Dashboard</h3>                   
+        </div>
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                      <a href="{% url 'college_admin' %}" class="btn btn-primary  p-2 m-1 rounded-pill">Home</a>
+                      <a href="{% url 'students' %}" class="btn btn-primary p-2 m-1 rounded-pill">Students</a>
+                      <a href="{% url 'faculty' %}" class="btn btn-primary p-2 m-1 rounded-pill">Faculty</a>
+                      <a href="{% url 'score' %}" class="btn btn-primary p-2 m-1 rounded-pill">Performance</a>
+                      <a href="{% url 'view_post' %}" class="btn btn-primary p-2 m-1 rounded-pill">Circular</a>
+                      <a href="{% url 'resource_list' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Resource</a>
+                      </div>                    
+                </div>
+				<div class="row mb-2">
+                   <h3 class="ml-3">Resource  List</h3>            
+                </div>
+                <hr>            
+               
+                <div class="row m-3">
+                     <div class="col-sm-12 table-responsive">
+                          <table class="table table-striped display" id="example">
+                        <thead>
+                          <tr>
+                            <th scope="col">Resource Name</th>             
+                            <th scope="col">View</th>
+                            <th scope="col">Subject Assignment</th>
+
+                            <th scope="col">Term No</th> 
+                            <th scope="col">Video</th>                     
+                          </tr>
+                        </thead>
+                        <tbody id="report_div">
+
+                          {% for resource in resources %}
+                          <tr>
+                            <td>{{resource.resource_name}}</td>                        
+                            <td>{% if resource.resource_file %} <a href="{{resource.resource_file.url}}">View</a> {% else %} <a href="{{resource.resource_link}}">View</a>{% endif %}</td>
+                            <td>{{resource.subject_assignment.all|join:", " }}</td>
+
+                            <td>{{resource.term_no}}</td>
+                            <td><a href="{% url 'video_list' resource.id  %}">View</a></td>
+                          </tr>
+
+                         {% empty %}
+
+                         <tr>
+                            <td colspan="5"><h6 class="text-center">No data available..!</h6></td>                   
+                          </tr>
+                         {% endfor %}                    
+                          
+                        </tbody>
+                      </table>
+                     </div>                 
+                </div>                           
+            </div>
+        </div>
+    </div>
+{% endblock %}

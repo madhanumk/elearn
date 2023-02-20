@@ -1,0 +1,233 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load multioptions_tags %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <a href="{% url 'faculty_classroom' %}" class="btn btn-primary p-2 m-1 rounded-pill">Classroom</a>
+                        <a href="{% url 'view_all_assignment' %}" class="btn btn-primary p-2 m-1 rounded-pill">Assignments</a>
+                        <a href="{% url 'view_all_test' %}" class="btn btn-primary p-2 m-1 rounded-pill">Tests</a>
+                        <a href="{% url 'view_all_discussion' %}" class="btn btn-primary p-2 m-1 rounded-pill">Discussions</a>
+                        <a href="{% url 'faculty_resource_list' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Resources</a>
+                    </div>                
+                </div>
+				<div class="row mb-2">
+                   <h3 class="ml-3">Resource  List</h3> 
+                   <div class="col-sm-6 float-right">
+                    <a href="#" url="{% url 'add_resource' %}" class="add_resource float-right">+ Add Resource</a>
+                 </div>           
+                </div>
+                <hr>            
+               
+                <div class="row m-3">
+                     <div class="col-sm-12 table-responsive">
+                          <table class="table table-striped display" id="example">
+                        <thead>
+                          <tr>
+                            <th scope="col">Resource Name</th>             
+                            <th scope="col">View</th>
+                            <th scope="col">Subject</th>
+                            <!--<th scope="col">Language Medium</th>-->
+                            <th scope="col">Term No</th> 
+                            <th scope="col">Video</th> 
+                            <th scope="col">Edit</th>   
+                            <th scope="col">Delete</th>                    
+                          </tr>
+                        </thead>
+                        <tbody id="report_div">
+
+                          {% for resource in resources %}
+                          <tr>
+                            <td>{{resource.resource_name}}</td>                        
+                            <td>{% if resource.resource_file %} <a href="{{resource.resource_file.url}}">View</a> {% else %} <a href="{{resource.resource_link}}">View</a>{% endif %}</td>
+                            <td>{{resource.subject_assignment.all|join:", " }}</td>
+                            {% comment %}<td>{{resource.language_medium}}</td> {% endcomment %}
+                            <td>{{resource.term_no}}</td>
+                            <td><a href="{% url 'faculty_video_list' resource.id  %}">View</a></td>
+                            <td><a class="edit_resource" url="{% url 'edit_resource' resource.id %}" href="#">Edit</a></td>
+                            <td><a class="delete-resource" url="{% url 'delete_resource' resource.id %}" href="#">Delete</a></td>
+                          </tr>
+
+                         {% empty %}
+
+                         <tr>
+                            <td colspan="5"><h6 class="text-center">No data available..!</h6></td>                   
+                          </tr>
+                         {% endfor %}                    
+                          
+                        </tbody>
+                      </table>
+                     </div>                 
+                </div>                           
+            </div>
+        </div>
+    </div>
+    <div class="modal fade bd-example-modal-lg" data-backdrop="static" data-keyboard="false" href="#" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+        
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+    <script>
+             //add Resource Popup
+             $('.add_resource').click(function() {
+              event.preventDefault();
+              var url = $(this).attr('url');
+              $.ajax({
+                  url : url,               
+                  success:function(output)
+                  {
+                      if(output.valid)
+                      {
+
+                          $('#AjaxModal').html(output.form);  
+                          $('#AjaxModal').modal('toggle');             
+                      }
+                      else
+                      {
+                         $('#AjaxModal').html(output.form); 
+                      }
+                      
+                  },
+              });
+  
+          });
+
+
+        //Add Video
+        $('#AjaxModal').on('click','#create_btn', function(){
+          event.preventDefault();
+          var url = $(this).attr('url');
+
+          
+          formdata = new FormData($('#AjaxModal #resource_form')[0]);
+          $.ajax({
+              url : url,
+              data : formdata,
+              method: 'post',
+              processData: false,
+              contentType: false,
+              beforeSend:function()
+              {
+                  $('#AjaxModal #info_text').text('Please Wait');
+                  
+              },
+              
+              success:function(output)
+              {
+                  if(output.valid)
+                  {
+                      $('#AjaxModal').modal('hide');
+
+                      $('#report_div').html(output.html);
+                      
+                      
+                  }
+                  else
+                  {
+                      $('#AjaxModal').html(output.form);
+                  }
+                  $('#AjaxModal #info_text').text('');
+              },
+          });
+
+
+      });
+
+      //edit Resource Popup
+      $('.edit_resource').click(function() {
+      event.preventDefault();
+      var url = $(this).attr('url');
+      $.ajax({
+          url : url,               
+          success:function(output)
+          {
+              if(output.valid)
+              {
+
+                  $('#AjaxModal').html(output.form);  
+                  $('#AjaxModal').modal('toggle');             
+              }
+              else
+              {
+                  $('#AjaxModal').html(output.form); 
+              }
+              
+          },
+      });
+
+  });
+
+          //Video delete
+          $('#report_div').on('click','.delete-resource', function(){
+            event.preventDefault();
+
+            var url = $(this).attr('url');
+
+            if(confirm('Are you sure want to delete this video?')){
+
+                            
+            $.ajax({
+                url : url,
+                
+        
+                success:function(output)
+                {
+                    if(output.valid)
+                    {
+                        
+                        $('#report_div').html(output.html); 
+                        
+                    }
+                    else
+                    {
+                        alert('Access denied..!')
+                    }
+                    
+                },
+            });
+        };
+        });
+
+            //Edit Resource
+            $('#AjaxModal').on('click','#update_btn', function(){
+                event.preventDefault();
+                var url = $(this).attr('data-url');
+               
+                
+                formdata = new FormData($('#AjaxModal #resource_form')[0]);
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                        
+                    },
+                    
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').modal('hide');
+      
+                            $('#report_div').html(output.html);
+                            
+                            
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+                        $('#AjaxModal #info_text').text('');
+                    },
+                });
+      
+      
+            });
+    </script>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% load static %}
+{% load mathfilters %}
+{% for assignment in assignments %}
+<tr>
+    <td><a href="{% url 'view_submission' assignment.id %}">{{assignment.title}}</a></td>
+    <td><a href="{{assignment.afile.url}}">Download</a></td>
+    <td>{{assignment.topic.croom.name}}</td>
+    <td>{{assignment.topic.croom.subject_assignment.programme}}{{assignment.topic.croom.subject_assignment.year}}'year-{{assignment.topic.croom.subject_assignment.semester}}'semester </td>
+    <td>{{assignment.due_date}}</td>
+    <td>{{assignment.strength}}</td>
+    <td><a href="{% url 'view_submission' assignment.id %}">{{assignment.submitted_count}}</a></td>
+    <td><a href="{% url 'view_assignment_not_submitted' assignment.id %}">{{ assignment.strength|sub:assignment.submitted_count }} </a></td>
+    <td><a class="edit_assignment" data-url= "{% url 'ajax_edit_assignment' assignment.id %}" href="#"><img title="Edit Assignment" src="{% static '/images/icons/edit.png' %}"></a></td>
+    <td><a class="delete_assignment" data-url= "{% url 'ajax_delete_assignment' assignment.id %}" href="#"><img title="Delete Assignment" src="{% static '/images/icons/delete.png' %}"></a></td>
+</tr>
+{% endfor %}
+<tr>
+    <td colspan="10">
+        <a class="float-right" href="{% url 'view_all_assignment' %}">View All Assignments</a>
+    </td>
+</tr>

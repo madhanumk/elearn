@@ -1,0 +1,58 @@
+{% load multioptions_tags %}
+{% load materializecss %}
+{% load static %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML"></script>
+													
+
+		 <div class="col-lg-6 ">
+				<h3 class="float-right mt-3" style="font-size: large;" id="showtime" onclick="examTimer"></h3>
+														
+		 </div>
+
+													
+												
+		<div class="kt-portlet">
+                                                    
+            <div class="kt-portlet__body border border-secondary">
+        
+                <!--begin::Form-->
+                <form class="kt-form ">
+                    <div class="form-group ">
+						<label style="color:black; font-size:14px;">{{ assignment.Question.description|safe}}</label>
+																
+							{% if  assignment.Question.id|checkmultioption %}
+								<div class="kt-checkbox-list ml-2"> 
+									{% for option in assignment.Question.option_set.all %}
+							
+										 <label style="color:black;" class=" radio kt-checkbox kt-checkbox--success">
+                                                <input  name="radio5" 
+												question="{{assignment.Question.id}}" quiz="{{quiz.id}}"
+												option="{{option.id}}" type="checkbox" assignment="{{assignment.id}}"
+												value="{{option.id}}"> 
+												{{option | safe }}<span></span>
+																		
+                                          </label>
+									{% endfor %}
+								</div>
+							{% else %}
+
+								<div class="kt-radio-list mt-2 ml-2"> 
+								    {% for option in assignment.Question.option_set.all %}
+										<label style="color:black; font-size:12px;" class="kt-radio kt-radio--bold kt-radio--success">
+												<input  name="radio5"  
+												question="{{assignment.Question.id}}" quiz="{{quiz.id}}" assignment="{{assignment.id}}"
+												option="{{option.id}}" type="radio"
+												value="{{option.id}}"> 
+												{{option.name | safe }}<span></span>
+									    </label>
+							        {% endfor %}
+								 </div>
+							{% endif %} 
+                    </div>
+                                                         
+                                                        
+                </form>
+        
+            </div>
+		</div>

@@ -1,0 +1,314 @@
+{% extends '../base_2.html' %}
+{% load multioptions_tags %}
+{% load materializecss %}
+
+
+
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<style>
+	
+		
+			.option p{
+			   display: inline;
+		
+				   margin-left: 20px;
+			 };
+		
+			
+		</style>
+		{% endblock %}
+
+
+
+                         {% block content %} 
+								<div class="kt-portlet kt-portlet--height-fluid">
+									<div class="kt-portlet__body">
+                                        <div class="kt-pricing-1__items row">
+                                            <div class="kt-pricing-1__item col-lg-12">
+												<div class="row mb-2">
+													<div class="col-lg-6">
+														
+														<h3 id="quiz_name">{{ quiz.name }}</h3> <p id="question_count" value="{{quiz.question_count}}"></p>
+
+														
+														<p id="test_id" test='{{quiz.id}}'></p>
+															
+													</div>
+
+													<div class="col-lg-6">
+														
+															<h3 class="float-right mt-3" style="font-size: large;" id="showtime" onclick="examTimer"></h3>
+													</div>
+													<div class="col-lg-12"  id="ques_window"> 			
+												
+	
+                                                    <div class="kt-portlet">
+                                                    
+                                                     <div class="kt-portlet__body border border-secondary">
+        
+                                                        <!--begin::Form-->
+                                                        <form class="kt-form ">
+                                                            <div class="form-group ">
+																<label style="color:black; font-size:14px;">{{ assignment.Question.description|safe}}</label>
+																
+																{% if  assignment.Question.id|checkmultioption %}
+																
+
+                                                                 <div class="kt-checkbox-list ml-2"> 
+																	{% for option in assignment.Question.option_set.all %}						
+																
+                                                                     <label style="color:black;" class="kt-checkbox kt-checkbox--success">
+                                                                        <input  name="radio5"  assignment="{{assignment.id}}"
+																		question="{{assignment.Question.id}}" quiz="{{quiz.id}}"
+																		option="{{option.id}}" type="checkbox"
+																		value="{{option.id}}"> 
+																		 {{option | safe }}<span></span>
+																		
+                                                                     </label>
+																	{% endfor %}
+																  </div>
+																{% else %}
+
+																  <div class="kt-radio-list mt-2 ml-2"> 
+																		{% for option in assignment.Question.option_set.all %}
+																	
+																		 <label style="color:black; font-size:12px;" class=" radio kt-radio kt-radio--bold kt-radio--success">
+																			<input  name="radio5" assignment="{{assignment.id}}"
+																			question="{{assignment.Question.id}}" quiz="{{quiz.id}}"
+																			option="{{option.id}}" type="radio"
+																			value="{{option.id}}"> 
+																			 {{option.name | safe }}<span></span>
+																			
+																		 </label>
+																		{% endfor %}
+																  </div>
+																 
+
+																 
+																{% endif %} 
+                                                            </div>
+                                                         
+                                                        
+                                                        
+                                                        </form>
+        
+                                                        <!--end::Form-->
+                                                    </div>
+												</div>
+
+											</div>
+
+												</div>
+
+												{% csrf_token %}
+
+                                                <div class="row">
+                                                    <div class="col-lg-3 pull-left mb-1">
+                                                        <div class="kt-pricing-1__btn">
+                                                            
+															{% if question_count > 1 %}
+															<ul class="pagination float-right">     
+																				
+															   <li>
+																  <a id="prev_ques" href="#" ques_no={{question_prev}} class="ques_nav btn btn-primary mr-2" style="float:right;">Previous
+																  </a>
+															   </li>
+										 
+																<li>
+																   <a id="next_ques" href="#" ques_no={{question_next}} class="ques_nav btn btn-primary mr-2" style="float:right;">Next
+																   </a>
+																</li>              
+															</ul>
+														   {% endif %}
+
+														</div>
+														
+														
+                                                    </div>
+                                                    <div class="col-lg-9 ">
+														<div class="row">
+																<div class="col-lg-9 mb-1 ">
+																		<div class="kt-pricing-1__btn border border-secondary shadow">
+																				<ul class="mt-2" style="list-style-type:none;">
+																						{% for question in questions  %} 
+																							<li style="display: inline-block;">
+																								<a class="ques_nav mt-1 pt-1" style="display:block;width:30px; height:30px; color: black;background: white; border: 2px solid #366CF3; border-radius: 50%;text-align: center;" href="" ques_no="{{ forloop.counter0 }}" questionid="{{question}}" >   {{ forloop.counter }} </a>
+																							</li>
+																						   {% endfor %}
+																				</ul>
+
+																				<ul class="mt-5" style="list-style-type:none;">
+																					<li>
+																							<a class="mt-2 pt-1" style="display:inline-block;width:30px; height:30px; background: white; border: 2px solid #366CF3; border-radius: 50%;text-align: center;">U</a> Un Answered
+																							<a class="mt-2 pt-1" style="color:black;display:inline-block;width:30px; height:30px; background: #366CF3;  border: 2px solid #366CF3; border-radius: 50%;text-align: center;">A</a> Answered
+																					
+																					</li>
+			
+																					
+																				</ul>
+																				
+																		</div>
+																</div>
+																<div class="col-lg-3">
+																	<button class="btn  btn-primary btn-wide btn-bold float-right" type="submit" id="quizdetail">
+																			Submit All and Finish
+																		</button>
+																</div>
+																
+																		
+																
+														</div>
+                                                       
+														<br>
+														
+														
+													</div>
+													
+                                                </div>
+                                                
+                                            </div>
+                                       
+                                           
+                                        </div>
+									</div>
+								</div>
+							
+
+<script>
+
+
+	$('#ques_window').on('change','input',function()
+		{									
+			var value = $( "input:checked" ).attr("question");
+			g=parseInt($( "input:checked" ).attr("question"));  
+			$("a[questionid="+g +"]").css({"background":"#366CF3"});
+			
+
+			//if all checkboxes are unchecked
+			var questionId=  $(this).attr("question");
+			var count =$('[question=' + $(this).attr("question") +']:checked').length;
+			if ( count == 0 )
+			{									
+			$("a[questionid="+questionId +"]").css({"background":"white"});
+			}
+
+		});
+		
+    //if answer selected change color to green
+	var quizarray = JSON.parse(localStorage.getItem("quizarray"));	
+	var lim = quizarray.length;
+	
+
+	for (var i = 0; i < lim; i++) {
+		
+		$("a[questionid="+ quizarray[i].questionid +"]").css({"background":"#366CF3"});
+	}
+	
+	
+</script>
+
+
+{% if quiz.timed_exam %}
+
+  <script language ="javascript" >
+	var tim; 
+	$(document).ready(function()
+	{
+	  
+	  examTimer();
+	});
+  
+	var min = {{mins}};
+	var sec = {{seconds}};
+  
+	/*if (localStorage.getItem("quiz_min") === null)
+	  {
+		var min = {{test.duration_in_minutes}};
+		var sec = 0;
+	  }
+	else
+	  {
+	   var min = localStorage.getItem("quiz_min");
+	   var sec = localStorage.getItem("quiz_sec");
+	  }*/
+  
+  
+  
+	function examTimer() {
+	if (parseInt(min)<0)
+	{
+	  min = 0;
+	  sec = 0;
+	}
+  
+	if (parseInt(sec) >0) {
+	  document.getElementById("showtime").innerHTML = ""+min+" : " + sec+"";
+	  sec = parseInt(sec) - 1;  
+	  //localStorage.setItem("quiz_sec", sec);              
+	  tim = setTimeout("examTimer()", 1000);
+	  }
+	else {
+  
+	   if (parseInt(min)==0  && parseInt(sec)==0){
+		  document.getElementById("showtime").innerHTML = ""+min+" : " + sec+"";
+		  var quizarray = JSON.parse(localStorage.getItem("quizarray"));
+		  if(quizarray.length == 0)
+		   { 
+			 quizarray.push({
+				quizid: $('#test_id').attr("test"),            
+			
+			});
+  
+  
+		  } 
+  
+		  var csrftoken = getCookie('csrftoken');
+		  localStorage.clear();
+  
+  
+	   $.ajax({
+		  type: "POST",
+		  contentType: "application/json",
+		  url : "/quiz/quizdetail",
+		  data : JSON.stringify(quizarray),
+		  dataType: "json",
+		  beforeSend: function(xhr, settings) {
+		  if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+			 xhr.setRequestHeader("X-CSRFToken", csrftoken);
+		   }
+		  },
+		 success: function (data) { 
+  
+
+			  localStorage.clear();
+			  location.href="/quiz/my_scores";
+	
+  
+		  }
+		}); 
+	  }
+  
+	else if (parseInt(sec) == 0) {              
+		document.getElementById("showtime").innerHTML = ""+min+" :" + sec+"";                   
+		min = parseInt(min) - 1;
+		sec=59;
+		//localStorage.setItem("quiz_min", min);
+		//localStorage.setItem("quiz_sec", sec);
+		tim = setTimeout("examTimer()", 1000);
+  
+	   }
+  
+	}
+  
+  }
+  </script>
+
+{% endif %}
+
+	{% block scripts %}
+		<script type="text/javascript" src="{% static '/js/quiz_detail.js' %}"></script>
+	{% endblock %}
+{% endblock %}

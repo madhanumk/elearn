@@ -1,0 +1,109 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load multioptions_tags %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+				<div class="row">
+
+                    {% if attempted %}
+
+
+                        <div class="col-sm-12">
+
+                            <div class="row">
+
+                            <div class="col-sm-4">
+
+                                <h3>My Personality</h3>
+
+                                  <div class="row"> 
+                                      <div class="col-sm-12 card shadow">                                  
+                                       <h4>
+                                        {% if personality|stringformat:"s" == "Visionary" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/Visionary.png' %}">
+                                        {% elif personality|stringformat:"s" == "Creator" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/Creator.png' %}">
+                                        {% elif personality|stringformat:"s" == "Guide" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/Guide.png' %}">
+                                        {% elif personality|stringformat:"s" == "Coordinator" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/Coordinator.png' %}">
+                                        {% elif personality|stringformat:"s" == "Explorer" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/Explorer.png' %}">
+                                        {% elif personality|stringformat:"s" == "Expert" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/Expert.png' %}">
+                                        {% elif personality|stringformat:"s" == "Initiator" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/Initiator.png' %}">
+                                        {% elif personality|stringformat:"s" == "Investigator" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/Investigator.png' %}">
+                                        {% elif personality|stringformat:"s" == "Reformer" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/re-former.png' %}">
+                                        {% elif personality|stringformat:"s" == "Trainer" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/trainer.png' %}">
+                                        {% elif personality|stringformat:"s" == "Go-Getter" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/go-getter.png' %}">
+                                        {% elif personality|stringformat:"s" == "Controller" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/controller.png' %}">
+                                        {% elif personality|stringformat:"s" == "Collaborator" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/Collaborator.png' %}">
+                                        {% elif personality|stringformat:"s" == "Mentor" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/Mentor.png' %}">
+                                        {% elif personality|stringformat:"s" == "Workmate" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/Workmate.png' %}">
+                                        {% elif personality|stringformat:"s" == "Manager" %}
+                                            <img height="70" width="70" class="m-3" src="{% static 'images/Workmate.png' %}">
+                                        {% endif %}  {{personality}} </h4>
+    
+                                       </div>
+                                        
+                                       <div class="col-sm-12 mt-1">
+                                           <div class="row">
+                                                {% for trait in traits %}
+                                                    <div class="col-sm-6 card p-4 text-center shadow"><h4>{{trait}}</h4> </div>
+                                                {% endfor %} 
+                                           </div>
+                                        </div>                                        
+
+                                    </div>
+                                                                      
+
+                            </div>
+
+                            <div class="col-sm-1"></div>       
+                            <div class="col-sm-7">
+
+                                <h3>Career suits for you</h3>
+
+                                <div class="row">
+
+                                    {% for job in jobs %}
+                                        <div class="col-sm-5 card p-4 m-1 text-center shadow"><h4>{{job}} </h4></div>
+                                    {% endfor %}
+
+                                </div>
+                                
+                                
+
+                            </div>
+
+
+                        </div>
+                            
+                    {% else %}
+
+                        <div class="col-sm-12">
+                            <h5>Know your personality in 5 minutes. <a href="http://sc.myboon.org/home/">Click here</a></h5>
+                        </div>
+
+                    {% endif %}
+
+                      
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

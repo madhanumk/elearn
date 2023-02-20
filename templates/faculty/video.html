@@ -1,0 +1,16 @@
+{% for video in videos %}
+<tr >
+    <td>{{video.video_title}}</td>                        
+    <td>Watch</td>
+    <td>{{video.chapter_no }}</td>
+    <td>{{video.get_learning_style_display}}</td>
+    <td><a class="edit_video" url="{% url 'faculty_edit_video' video.id %}" href="#">Edit</a></td>
+    <td><a class="delete-video" url="{% url 'faculty_video_delete' video.id %}" href="#">Delete</a></td>
+    
+</tr>
+
+{% empty %}
+<tr>
+     <td colspan="5"><h6 class="text-center">No data available..!</h6></td>                   
+</tr>
+{% endfor %} 

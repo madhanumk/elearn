@@ -1,0 +1,10 @@
+{% load static %}
+
+<td><a href="{% url 'student_datail' student.id %}">{{student}}</a></td>
+<td>{{student.programme}} - {{student.get_year_display}} - {{student.get_semester_display}}</td>
+<td>{{student.acadmic_year}}</td>
+<td>{{student.get_gender_display}}</td>
+<td>{{student.mobile_no}}</td>
+<td>{{student.user.email}}</td>
+<td><u><a class="password-reset" reset-url="{% url 'password_reset' student.user.id %}" href="#">Reset</a></u></td>
+<td><a class="edit_user" data-url="{% url 'user_edit' role='student' pk=student.id %}" href="#"><img title="Edit Student" src="{% static '/images/icons/edit.png' %}"></a></td>

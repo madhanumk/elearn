@@ -1,0 +1,28 @@
+{% load static %}
+{% load status_tags %}
+
+<ul class="unoderlist">
+    {% for assignment in assignments %}
+
+        {% get_attempt_status assignment.id user as submission %}
+
+        {% if submission == "Not Attended" %}
+                            
+        {% if assignment.date_comparing %}
+                <li class="mt-2"> <i class="fas fa-chevron-right ml-2"></i> <a  id="kt_title" class="ml-1" href="{% url 'assignment' assignment.id %}">{{assignment}}</a></li>                         
+        {% else %}
+                <li class="mt-2"> <i class="fas fa-chevron-right ml-2"></i> <a  id="kt_title" class="ml-1" href="{% url 'assignment' assignment.id %}">{{assignment}}</a> <span class="small">(Over Due)</span></li>                         
+        {% endif %}
+
+    {% else %}                        
+        {% if submission.status == "S"  %}
+            <li class="mt-2"> <i class="fas fa-chevron-right ml-2"></i> <a  id="kt_title" class="ml-1" href="#">{{assignment}} </a> <span class="small">(Submitted)</span> |  <a class="delete_assignment" data-url= "{% url 'ajax_student_delete_submission' submission.id %}?page=home" href="#"><img title="Delete Submission" src="{% static '/images/icons/delete.png' %}"></a></li>                         
+        {% elif  submission.status == "R" %}
+            <li class="mt-2"> <i class="fas fa-chevron-right ml-2"></i> <a  id="kt_title" class="ml-1" href="#">{{assignment}} <span class="small">(Resent)</span> </a> |  <a class="delete_assignment" data-url= "{% url 'ajax_student_delete_submission' submission.id %}?page=home" href="#"><img title="Delete Submission" src="{% static '/images/icons/delete.png' %}"></a></li>                         
+        {% endif %}
+
+    {% endif %}       
+     {% empty %}
+        No assignment found                                    
+    {% endfor %}
+</ul>

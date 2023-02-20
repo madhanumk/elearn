@@ -1,0 +1,1293 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load multioptions_tags %}
+{% load mathfilters %}
+{% block message %}
+    <p id="message_txt" class="ml-2" style="color:red;"></p>
+{% endblock %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+				<div class="row mb-2">
+                    <h3>Faculty Dashboard</h3>
+                    
+                   
+                </div>
+
+                <div class="row mb-3">
+                    
+                   
+                    <div class="col-sm-12">
+                        <a href="{% url 'faculty_classroom' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Classroom</a>
+                        <a href="{% url 'view_all_assignment' %}" class="btn btn-primary p-2 m-1 rounded-pill">Assignments</a>
+                        <a href="{% url 'view_all_test' %}" class="btn btn-primary p-2 m-1 rounded-pill">Tests</a>
+                        <a href="{% url 'view_all_discussion' %}" class="btn btn-primary p-2 m-1 rounded-pill">Discussions</a>
+                        <a href="{% url 'faculty_resource_list' %}" class="btn btn-primary p-2 m-1 rounded-pill">Resources</a>
+                    </div>
+                    
+                </div>
+
+                
+                    <h4 class="d-inline">My Classrooms</h4>  
+                    <!--<a href="#" id="new_class" class="p-2 small bg-blue float-right" style="border-radius: 30px;"> + New Classroom</a>-->
+                
+                <hr>
+                <div class="row mb-5" id="classroom_div">
+                    
+                    {% for classroom in classrooms %}
+                        <div class="col-sm-3">
+                            <div class="card shadow mb-3">
+                                <div class="card-body text-center" style="min-height:150px;">
+                                    <h4><a href="{% url 'chapter_detail' classroom.id %}">{{classroom.subject_assignment.subject.subject_title}}</a></h4>
+                                    <p>{{classroom.subject_assignment.subject.course_code}}</p>
+                                    <div class="row justify-content-md-center m-2">
+                                        
+                                       
+                                    </div>
+                                    {% if not classroom.activate %}
+                                        <button data-url="{% url 'ajax_activate_classroom' classroom.id %}" class="activate_btn btn btn-primary">Activate</button>
+                                    {% endif %}
+                                </div>
+                            </div>                        
+                        </div>
+                        
+                    {% empty %}
+                        No Class rooms created
+                    {% endfor %}
+                </div>
+                
+
+                <h4 class="d-inline">My Session</h4>  
+
+
+                <a href="#" id="new_session" class="p-2 small bg-blue float-right" style="border-radius: 30px;"> + New Session</a> 
+                <hr>
+
+                <div class="row mb-5" id="session_div">
+                    
+                    {% for session in sessions %}
+                        <div class="card shadow col-sm-3 m-1 p-2">
+                           
+                            <h6 class="d-inline">{{session.title}}</h6>
+                                                              
+                                           
+                            <ul class="list-unstyled ml-1">
+                                
+                                <li>{{session.start_date}} {{session.start_time}}</li>
+                                
+                                
+                                <li>
+                                    {{session.classroom.name}}, <a target="_blank" href="{{session.link}}">Link</a>
+                                    {% if session.password_if_any != None %}
+                                        Passsword : {{session.password_if_any}}
+                                    {% endif %}
+                                    <a href='' class="edit_session mx-1" data-url="{% url 'ajax_edit_session' session.id %}"><img title="Edit Session" src="{% static '/images/icons/edit.png' %}"></a>
+                                    <a href='' class="delete_session mx-1" data-url="{% url 'ajax_delete_session' session.id %}"><img title="Delete Session" src="{% static '/images/icons/delete.png' %}"></a>
+                                
+                                </li>
+                            </ul>
+                           
+                            
+                                                    
+                        </div>
+                        
+                    {% empty %}
+                        No Sessions found
+                    {% endfor %}
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h3>My Assignments</h3>
+                    </div>
+                    <div class="col-sm-4">
+                      <form id="assignment_subject_filter_form">
+                        {% csrf_token %}
+                        <select class="form-control" name="subject" id="assignment_subject">
+                           <option value="all">All Subjects</option>
+                            {% for subject in subject_assignments %}
+                                <option value="{{subject.id}}">{{subject}}</option>
+                            {% endfor s%}
+                         </select>
+                      </form>
+                    </div>
+                    <div class="col-sm-4">
+                        <a href="#" id="new_assignment" class="p-2 small bg-blue float-right ml-2" style="border-radius: 30px;"> + New Assignment</a>
+                        <a href="{% url 'view_assignment_report' %}"  class="p-2 small bg-blue float-right" style="border-radius: 30px;">View Report</a>
+                    </div>
+                </div>
+                <hr>
+
+            
+
+                <div class="row  mb-5">
+                    <table class="table shadow table-striped table-responsive">
+                        <thead>
+                          <tr>
+                            <th scope="col">Assignment Name</th>
+                            <th scope="col">Question</th>
+                            <th scope="col">Classroom Name</th>
+                            <th scope="col">Programme</th>
+                            <th scope='col'>Due Date</th>
+                            <th scope="col">Total Strength</th>
+                            <th scope="col">Submitted</th>                          
+                            <th scope="col">Not Submitted</th>
+                            <th scope="col">Edit</th>
+                            <th scope="col">Delete</th>
+                          </tr>
+                        </thead>
+                        <tbody id="assignment_div">
+
+                            {% for assignment in assignments %}
+                                <tr>
+                                    <td><a href="{% url 'view_submission' assignment.id %}">{{assignment.title}}</a></td>
+                                    <td><a href="{{assignment.afile.url}}">Download</a></td>
+                                    <td>{{assignment.topic.croom.name}}</td>
+                                    <td>{{assignment.topic.croom.subject_assignment.programme}}-{{assignment.topic.croom.subject_assignment.get_year_display}} - {{assignment.topic.croom.subject_assignment.get_semester_display}}</td>
+                                    <td>{{assignment.due_date}}</td>
+                                    <td>{{assignment.strength}}</td>
+                                    <td><a href="{% url 'view_submission' assignment.id %}">{{assignment.submitted_count}}</a></td>
+                                    <td><a href="{% url 'view_assignment_not_submitted' assignment.id %}">{{ assignment.strength|sub:assignment.submitted_count }} </a></td>
+                                    <td><a class="edit_assignment" data-url= "{% url 'ajax_edit_assignment' assignment.id %}" href="#"><img title="Edit Assignment" src="{% static '/images/icons/edit.png' %}"></a></td>
+                                    <td><a class="delete_assignment" data-url= "{% url 'ajax_delete_assignment' assignment.id %}" href="#"><img title="Delete Assignment" src="{% static '/images/icons/delete.png' %}"></a></td>
+                                </tr>
+                            {% endfor %}
+                            <tr>
+                                <td colspan="10">
+                                    <a class="float-right" href="{% url 'view_all_assignment' %}">View All Assignments</a>
+                                </td>
+                            </tr>
+                          
+                        </tbody>
+                      </table>
+
+                </div>
+
+                <!-- Test -->
+
+                <h4 class="d-inline mb-5">My Tests</h4>  
+                <a href="#" id="new_test" class="p-2 ml-2 small bg-blue float-right" style="border-radius: 30px;"> + New Test</a> 
+                 <a class="p-2 small bg-blue float-right" href="{% url 'test_view_report' %}" style="border-radius: 30px;">View Report</a>
+                <hr>
+
+                <div class="row m-3">
+                    <table class="table table-striped table-responsive">
+                        <thead>
+                          <tr>
+                            <th scope="col">Status</th>                            
+                            <th scope="col">Test Name</th>
+                            <th scope="col">Course</th>
+                            <th scope="col">Open Date</th>                            
+                            <th scope='col'>Duration In Minutes</th>
+                            <th scope="col">Total Strength</th>
+                            <th scope="col">Attempted</th>                            
+                            <th scope="col">Not Atempted</th>
+                            <th scope="col">Edit</th>
+                            <th scope="col">Delete</th>
+                          </tr>
+                        </thead>
+                        <tbody id="quiz_div">
+
+                            {% for quiz in quizes %}
+                                {% if quiz.created_by == user %}
+                                    <tr>
+                                        <td>                                        
+                                            {% if quiz.isActive %}
+                                            Activated
+                                            {% else %}
+                                            <button data-url="{% url 'ajax_activate_quiz' quiz.id %}" class="activate_quiz_btn btn btn-primary">Activate</button>
+                                            {% endif %}
+                                        
+                                        </td>                                    
+                                        <td><a href="{% url 'view_test' quiz.id %}">{{quiz.name}}</a></td>
+                                        <td>{{ quiz.subject_assignment.all|join:", " }}</td>
+                                        <td>{{quiz.openDate}}</td>
+                                        
+
+                                        {% if quiz.timed_exam %}
+                                        <td>{{quiz.duration_in_minutes}}</td>
+                                        {% else %}
+                                        <td>NA</td>
+                                        {% endif %}
+                                        
+                                        <td>{{quiz.strength}}</td>
+                                        <td><a href="{% url 'view_report' quiz.id %}">{{quiz.submitted_count}}</a></td>                            
+                                        <td><a   href="{% url 'view_not_attempt' quiz.id %}">{{ quiz.strength|sub:quiz.submitted_count }} </a></td>
+                                        <td> <a class="edit_quiz" data-url= "{% url 'ajax_edit_quiz' quiz.id %}" href="#"><img src="{% static '/images/icons/edit.png' %}"></a></td>
+                                        <td><a class="delete_quiz" data-url= "{% url 'ajax_delete_home_quiz' quiz.id %}" href="#"><img src="{% static '/images/icons/delete.png' %}"></a></td>
+                                    </tr>
+                                {% else %}
+
+                                    <tr>
+                                        <td>                                        
+                                            {% if quiz.isActive %}
+                                              Activated
+                                            {% else %}
+                                              Not Activated
+                                            {% endif %}
+                                        
+                                        </td>                                    
+                                        <td><a href="{% url 'view_test' quiz.id %}">{{quiz.name}}</a></td>
+                                        <td>{{ quiz.subjects.all|join:", " }}</td>
+                                        <td>{{quiz.openDate}}</td>
+                                        
+
+                                        {% if quiz.timed_exam %}
+                                        <td>{{quiz.duration_in_minutes}}</td>
+                                        {% else %}
+                                        <td>NA</td>
+                                        {% endif %}
+                                        
+                                        <td>{{quiz.strength}}</td>
+                                        <td><a href="{% url 'view_report' quiz.id %}">{{quiz.submitted_count}}</a></td>                            
+                                        <td><a   href="{% url 'view_not_attempt' quiz.id %}">{{ quiz.strength|sub:quiz.submitted_count }} </a></td>
+                                        <td> -</td>
+                                        <td>-</td>
+                                    </tr>
+
+
+                                {% endif %}
+                                
+                            {% endfor %}
+                            <tr>
+                                <td colspan="12">
+                                    <a class="float-right" href="{% url 'view_all_test' %}">View All Tests</a>
+                                </td>
+                            </tr>
+                          
+                        </tbody>
+                      </table>
+
+                </div>
+
+
+
+                <!--End  Test-->
+               
+
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h3>My Student Discussions</h3>
+                    </div>
+                    <div class="col-sm-4">
+                      <form id="subject_filter_form">
+                        {% csrf_token %}
+                        <select class="form-control" name="subject" id="subject">
+                           <option value="all">All Subjects</option>
+                            {% for subject in subject_assignments %}
+                                <option value="{{subject.id}}">{{subject}}</option>
+                            {% endfor %}
+                         </select>
+                      </form>
+                    </div>
+                    <div class="col-sm-4">
+                      
+                    </div>
+                </div>
+                <hr>
+
+
+                <div class="mb-5 row" id="discussion_div">
+
+                    {% for discussion in discussions %}
+
+                    <div class="card shadow w-100 m-1">
+                        <div class="card-header collapsible">
+                           
+                            <h5 class="card-title">{{discussion.title}}</h5>
+                            <p class="card-text">
+                              {{discussion.created_on}}, {{discussion.created_by.first_name}} - {{discussion.created_by.student.grade}} - {{discussion.created_by.student.section}}
+                          
+                                
+                            <a href='' class="float-right" id="discussion_{{discussion}}"><img title="Show Discussion" src="{% static '/images/icons/open.png' %}"></a>
+                            </p>
+                            
+                        </div>
+                        <div class="card-body content" style="display: none;overflow: hidden;">
+                            <a class="float-right" href="{% url 'delete_post' discussion.id %}" onclick="return confirm('Are you sure?')"><img src="{% static '/images/icons/delete.png' %}"></a>
+                            <div class="row">
+                                {{discussion.description}}
+                    
+                            </div>
+                    
+                            <h5 class="mt-3">Replies</h5>
+                    
+                            <div id="replies_{{discussion.id}}">
+                                {% for reply in discussion.reply_set.all %}
+                                    <div class="mb-3" id="reply_{{reply.id}}">
+                                        <p>{{reply.description}}</p> 
+                                        <span>
+                                       {% if user.groups.all.0.name == "Teacher" %}
+                    
+                                            {{reply.posted_on}} {{reply.posted_by.first_name}}
+                                            <a href="#" class="delete_reply" reply_id="{{reply.id}}" data-url="{% url 'ajax_delete_reply' reply.id %}"><img src="{% static '/images/icons/delete.png' %}"></a>
+                                        {% else %}
+                                            {{reply.posted_on}} {{reply.posted_by.first_name}} - {{reply.posted_by.student.grade}} - {{reply.posted_by.student.section}}
+                                           <a href="#" class="delete_reply" reply_id="{{reply.id}}" data-url="{% url 'ajax_delete_reply' reply.id %}"><img src="{% static '/images/icons/delete.png' %}"></a>
+                    
+                    
+                                        {% endif %}
+                                           
+                                        </span>
+                                        <hr>
+                                    </div>
+                                    
+                                {% empty %}
+                                        No Replies Found
+                                {% endfor %}
+                    
+                            </div>
+                    
+                            <form discussion_id="{{discussion.id}}" data-url="{% url 'ajax_post_reply' discussion.id %}">
+                                {% csrf_token %}
+                                {{form|crispy}}
+                    
+                                <input type="submit" class="btn btn-primary" value="post">
+                    
+                            </form>
+                    
+                            <a href="" class="collapsible_inner float-right"><img title= "Hide Discussion" src="{% static '/images/icons/close.png' %}"></a>                                                      
+                      
+                        </div>
+                    
+                        
+                        
+                    </div>
+
+                    {% empty %}
+
+                    <h3> No Discussion Available.</h3>
+                    
+                    {% endfor %}
+
+                    
+                </div>
+                <a class="float-right" href="{% url 'view_all_discussion' %}">View All Discussions</a>
+               
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+        
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+
+
+    <script>
+
+        
+        $(document).ready(function(){
+
+            //Show subject related Section
+            $('#AjaxModal').on('change','#id_subject',function(){
+
+                var subject = $(this).val();
+                url = '/load_section/'+subject+'/classroom';
+                if(subject!=''){
+                    $.ajax({
+                    url : url,                                    
+                    beforeSend:function()
+                    {
+                       $('#message_txt').text('Please Wait...');
+                       $('#id_section').prop('disabled', true);
+                       
+                    },    
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {                            
+                            $('#id_section').html(output.section);
+                           
+                            $('#id_section').prop('disabled', false);
+
+            
+                        }
+                        else
+                        {
+                            alert('Something Went Wrong..');
+                        }
+                        $('#message_txt').text('');
+                    },
+                });
+
+
+                    
+                }
+
+            });
+
+            //Reply Post
+
+            $('#discussion_div').on('click','.delete_reply',function(){
+                event.preventDefault();
+                reply_id = $(this).attr('reply_id');
+                url = $(this).attr('data-url');
+                $.ajax({
+                    url : url,
+                                    
+                    beforeSend:function()
+                    {
+                       $('#message_txt').text('Please Wait...');
+                       
+                    },    
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+
+                            
+                            $('#reply_'+reply_id).remove();
+
+            
+                        }
+                        else
+                        {
+                            alert('access denied');
+                        }
+                        $('#message_txt').text('');
+                    },
+                });
+
+
+            });
+
+            // discussion filter by subject            
+            $('#subject').on('change', function() {
+                  var subject =  this.value;
+                  url ="{% url 'ajax_home_discussion_filter_by_subject'  %}";
+                  formdata = new FormData($('#subject_filter_form')[0]);
+
+                  $.ajax({
+                        url : url,
+                        data : formdata,
+                        method: 'post',
+                        processData: false,
+                        contentType: false,
+                        
+                        success:function(output)
+                        {
+
+                            $('#discussion_div').html(output.html);
+
+                        }
+                  
+                  });
+
+             });
+
+
+
+            $('#discussion_div').on('submit','form', function(){
+
+                event.preventDefault();
+                discussion_id = $(this).attr('discussion_id');
+                url = $(this).attr('data-url');
+                formdata = $(this).serialize();
+                $(this).find('#id_description').val('');
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    beforeSend:function()
+                    {
+                       $('#message_txt').text('Please Wait...');
+                       
+                    },    
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#replies_'+discussion_id).append(output.html);                                                      
+            
+                        }
+                        else
+                        {
+                            alert('access denied');
+                        }
+                        $('#message_txt').text('');
+                    },
+                });
+
+
+            });
+
+            $('#discussion_div').on('click','.collapsible_inner',function(){
+                event.preventDefault();
+                
+                $(this).parent('.card-body').css('display','none');
+            });
+
+                //assignment filter by subject            
+                $('#assignment_subject').on('change', function() {
+                  var subject =  this.value;
+                  url ="{% url 'ajax_home_assignment_filter_by_subject'  %}";
+                  formdata = new FormData($('#assignment_subject_filter_form')[0]);
+
+                  $.ajax({
+                        url : url,
+                        data : formdata,
+                        method: 'post',
+                        processData: false,
+                        contentType: false,
+                        
+                        success:function(output)
+                        {
+
+                            $('#assignment_div').html(output.html);
+
+                        }
+                  
+                  });
+
+             });
+
+
+
+            
+
+            //New Assignment Popup
+
+            $('#new_assignment').click(function(){
+                event.preventDefault();
+               
+
+                $.ajax({
+                    url : '{%url "ajax_create_assignment_home" %}',
+                   
+                    beforeSend:function()
+                    {
+                       $('#message_txt').text('Please Wait...');
+                       
+                    },        
+                    success:function(output)
+                    {
+                        $('#AjaxModal').html(output.form);
+                        $('#AjaxModal').modal('show');
+                        $('#message_txt').text('');
+                            
+                    },
+                    
+                });
+
+            });
+
+            //Create new Assignment
+            $('#AjaxModal').on('click','#create_assignment_btn', function(){
+
+                event.preventDefault();
+                formdata = new FormData($('#AjaxModal #ajax_form')[0]);
+                $.ajax({
+                    url : '{%url "ajax_create_assignment_home" %}',
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+                    
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+
+                            $('#AjaxModal').modal('hide');
+                            $('#assignment_div').html(output.html);
+                            $("#assignment_subject").val($("#assignment_subject option:first").val()); 
+                            
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+                        $('#AjaxModal #info_text').text('');
+                    },
+                });
+
+
+            });
+
+            //Edit Popup
+            $('#assignment_div').on('click','.edit_assignment',function(){
+                event.preventDefault();
+                url = $(this).attr('data-url');
+                $.ajax({
+                        url : url,
+                        
+                    beforeSend:function()
+                    {
+                       $('#message_txt').text('Please Wait...');
+                       
+                    },        
+                    success:function(output)
+                        {
+                            $('#AjaxModal').html(output.form);
+                            $('#AjaxModal').modal('show');
+                            $('#message_txt').text('');
+                        },
+                });
+
+            });
+
+            //update assignment
+            $('#AjaxModal').on('click','#update_assignment_btn', function(){
+            
+                event.preventDefault();
+                url = $(this).attr('data-url');
+                formdata = new FormData($('#AjaxModal #ajax_form')[0]);
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+       
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+
+                            $('#AjaxModal').modal('hide');
+                            $('#assignment_div').html(output.html);
+                            $("#assignment_subject").val($("#assignment_subject option:first").val()); 
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+                        $('#AjaxModal #info_text').text('');
+            
+                    },
+                });
+            });
+
+            //delete Assignment
+
+            $('#assignment_div').on('click','.delete_assignment',function(){
+                event.preventDefault();
+                if (confirm('Are you sure to delete your Assignment?')) {
+                    url = $(this).attr('data-url');
+                    $.ajax({
+                        url : url,
+                        
+                    beforeSend:function()
+                    {
+                       $('#message_txt').text('Please Wait...');
+                       
+                    },        
+                    success:function(output)
+                        {
+                            if(output.valid)
+                            {
+                                $('#assignment_div').html(output.html);
+                            }
+                            else{
+                                alert('Permission Denied');
+                            }
+                            $('#message_txt').text('');
+                            
+                        },
+                    });
+                }
+
+            });
+
+            //New Session
+            $('#new_session').click(function(){
+                event.preventDefault();
+                $.ajax({
+                        url : '{%url "ajax_create_session" %}',
+                        
+                    beforeSend:function()
+                    {
+                       $('#message_txt').text('Please Wait...');
+                       
+                    },        
+                    success:function(output)
+                        {
+                            $('#AjaxModal').html(output.form);
+                            $('#AjaxModal').modal('show');
+                            $('#message_txt').text('');
+                            
+                        },
+                });
+
+            });
+
+            //Edit Session
+
+            $('#session_div').on('click','.edit_session',function(){
+                event.preventDefault();
+                url = $(this).attr('data-url');
+                $.ajax({
+                        url : url,
+                        
+                    beforeSend:function()
+                    {
+                       $('#message_txt').text('Please Wait...');
+                       
+                    },        
+                    success:function(output)
+                        {
+                            $('#AjaxModal').html(output.form);
+                            $('#AjaxModal').modal('show');
+                            $('#message_txt').text('');
+                        },
+                });
+
+            });
+
+            //update session
+            $('#AjaxModal').on('click','#update_session_btn', function(){
+            
+                event.preventDefault();
+                url = $(this).attr('data-url');
+                formdata = new FormData($('#AjaxModal #ajax_form')[0]);
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+       
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+                    
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+
+                            $('#AjaxModal').modal('hide');
+                            $('#session_div').html(output.html)
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+                        $('#AjaxModal #info_text').text('');
+            
+                    },
+                });
+            });
+
+            //delete Assignment
+
+            $('#session_div').on('click','.delete_session',function(){
+                event.preventDefault();
+                if (confirm('Are you sure to delete your Session?')) {
+                    url = $(this).attr('data-url');
+                    $.ajax({
+                        url : url,
+                        
+                    beforeSend:function()
+                    {
+                       $('#message_txt').text('Please Wait...');
+                       
+                    },        
+                    success:function(output)
+                        {
+                            if(output.valid)
+                            {
+                                $('#session_div').html(output.html);
+                            }
+                            else{
+                                alert('Permission Denied');
+                            }
+                            $('#message_txt').text('');
+                            
+                        },
+                    });
+                }
+
+            });
+
+
+            //New Classroom Popup
+            $('#new_class').click(function(){
+                event.preventDefault();
+                $.ajax({
+                    url : '{%url "ajax_create_classroom" %}',
+                    beforeSend:function()
+                    {
+                       $('#message_txt').text('Please Wait...');
+                       
+                    },    
+                        
+                    success:function(output)
+                        {
+                            $('#AjaxModal').html(output.form);
+                            $('#AjaxModal').modal('show');
+                            $('#message_txt').text('');
+                            $('#id_section').prop('disabled', true);
+                            
+                        },
+                });
+
+            });
+
+            //Create new session
+            $('#AjaxModal').on('click','#create_session_btn', function(){
+
+                event.preventDefault();
+                form = $('#AjaxModal #ajax_form').serialize();
+                $.ajax({
+                        url : '{%url "ajax_create_session" %}',
+                        data : form,
+                        method: 'post',
+                    
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+                        
+                    success:function(output)
+                        {
+                            
+                            if(output.valid)
+                            {
+
+                                $('#AjaxModal').modal('hide');
+                                $('#session_div').html(output.html)
+                            }
+                            else
+                            {
+                                $('#AjaxModal').html(output.form);
+                            }
+                           
+                            $('#AjaxModal #info_text').text('');
+                            
+                        },
+                });
+
+
+            });
+
+
+             //Create new classroom
+             $('#AjaxModal').on('click','#create_btn', function(){
+                event.preventDefault();
+                var name = $('#id_name').val();
+                var subject = $('#id_subject').val();
+                var section = $('#id_section').val();
+                if (name === "" || subject === "" || section === "")
+                 {
+                    alert('Please fill the required fields');
+
+                }
+                 else{
+                     
+
+                   form = $('#AjaxModal #classroom_form').serialize();
+                   $.ajax({
+                        url : '{%url "ajax_create_classroom" %}',
+                        data : form,
+                        method: 'post',
+                        beforeSend:function()
+                        {
+                            $('#AjaxModal #info_text').text('Please Wait');
+                        
+                        },                      
+                        
+                        success:function(output)
+                        {
+                            if(output.valid)
+                            {
+                                $('#AjaxModal').modal('hide');
+                                $('#classroom_div').html(output.html)
+                            }
+                            else
+                            {
+                                $('#AjaxModal').html(output.form);
+                            }
+                            $('#AjaxModal #info_text').text('');
+                
+                
+                        },
+                   });
+                
+                 }
+                
+
+                
+
+            });
+
+            //Edit Class Form
+
+            $('#classroom_div').on('click','.edit_class',function(){
+                event.preventDefault();
+                url = $(this).attr('data-url');
+                
+                $.ajax({
+                        url : url,
+                        
+                    beforeSend:function()
+                    {
+                       $('#message_txt').text('Please Wait...');
+                       
+                    },        
+                    success:function(output)
+                        {
+                            $('#AjaxModal').html(output.form);
+                            $('#AjaxModal').modal('show');
+                            $('#message_txt').text('');
+
+                            var subject = $('#id_subject').val();
+                            var selectedsection = $('#id_section').val();
+                            url = '/load_section/'+subject+'/classroom';
+
+                            $.ajax({
+                                url : url,                                    
+                                beforeSend:function()
+                                {
+                                $('#message_txt').text('Please Wait...');
+                                
+                                
+                                },    
+                                success:function(output)
+                                {
+                                    if(output.valid)
+                                    {                            
+                                        $('#id_section').html(output.section);                                    
+                                
+                                        $('#id_section option[value='+selectedsection+']').attr('selected','selected');
+
+                        
+                                    }
+                                    else
+                                    {
+                                        alert('Something Went Wrong..');
+                                    }
+                                    $('#message_txt').text('');
+                                },
+                            });
+
+
+                    
+               
+
+                            
+                        },
+                });
+
+            });
+       
+
+        //Update Classroom
+        $('#AjaxModal').on('click','#update_btn', function(){            
+            event.preventDefault();
+
+            var name = $('#id_name').val();
+            var subject = $('#id_subject').val();
+            var section = $('#id_section').val();
+            if (name === "" || subject === "" || section === "")
+                {
+                    alert('Please fill the required fields');
+                }
+            else{
+                url = $(this).attr('data-url');
+                form = $('#AjaxModal #classroom_form').serialize();
+                $.ajax({
+                    url : url,
+                    data : form,
+                    method: 'post',
+        
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                        
+                    },
+
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+
+                            $('#AjaxModal').modal('hide');
+                            $('#classroom_div').html(output.html)
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+                
+                        $('#AjaxModal #info_text').text('');
+                    },
+                });    
+
+            }
+        });
+
+
+        //Delete Classroom
+        $('#classroom_div').on('click','.delete_class',function(){
+                event.preventDefault();
+                if (confirm('Are you sure to delete your Classroom?')) {
+                    url = $(this).attr('data-url');
+                    $.ajax({
+                        url : url,
+                    
+                    beforeSend:function()
+                    {
+                       $('#message_txt').text('Please Wait...');
+                       
+                    },    
+                        
+                    success:function(output)
+                        {
+                            if(output.valid)
+                            {
+                                $('#classroom_div').html(output.html);
+                            }
+                            else{
+                                alert('Permission Denied');
+                            }
+                            $('#message_txt').text('');
+                        },
+                    });
+                }
+
+            });
+
+            //Activate Classroom
+            
+        $('#classroom_div').on('click','.activate_btn',function(){
+                event.preventDefault();
+                if (confirm('Are you sure to publish your classroom?')) {
+                    url = $(this).attr('data-url');
+                    $.ajax({
+                        url : url,
+                        
+                    beforeSend:function()
+                    {
+                       $('#message_txt').text('Please Wait...');
+                       
+                    },    
+                    success:function(output)
+                        {
+                            if(output.valid)
+                            {
+                                $('#classroom_div').html(output.html);
+                            }
+                            else{
+                                alert('Permission Denied');
+                            }
+                            $('#message_txt').text('');
+                            
+                        },
+                    });
+                }
+
+            });
+
+        
+            
+        //Activate Quiz
+            
+       $('#quiz_div').on('click','.activate_quiz_btn',function(){
+                event.preventDefault();
+                if (confirm('Are you sure to activate your quiz?')) {
+                    url = $(this).attr('data-url');
+                    $.ajax({
+                        url : url,
+                        
+                        success:function(output)
+                        {
+                            if(output.valid)
+                            {
+                                location.reload();
+                            }
+                            else{
+                                alert(output.response);
+                            }
+                            
+                        },
+                    });
+                }
+
+            });
+
+
+
+            
+
+
+           //New Test Popup
+
+            $('#new_test').click(function(){
+                event.preventDefault();
+                $.ajax({
+                        url : '{%url "ajax_create_test_home" %}',
+                        
+                        success:function(output)
+                        {
+
+                            $('#AjaxModal').html(output.form);
+                            $('#AjaxModal').modal('show');
+                            
+                        },
+                });
+
+            });
+
+
+
+            
+            //Create new Test
+            $('#AjaxModal').on('click','#create_quiz_btn', function(){
+
+               event.preventDefault();
+               formdata = new FormData($('#AjaxModal #quiz_form')[0]);
+               $.ajax({
+                    url : '{%url "ajax_create_test_home" %}',
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+
+                    success:function(output)
+                      {
+                        if(output.valid)
+                           {
+
+                              $('#AjaxModal').modal('hide');
+                              $('#quiz_div').html(output.html);
+            
+                            }
+                        else
+                            {
+                              $('#AjaxModal').html(output.form);
+                            }
+                    },
+                });
+
+
+            });
+
+
+
+             //Edit Test Form
+
+            $('#quiz_div').on('click','.edit_quiz',function(){
+                event.preventDefault();
+                
+                url = $(this).attr('data-url');
+                $.ajax({
+                        url : url,
+                        
+                        success:function(output)
+                        {
+                            $('#AjaxModal').html(output.form);
+                            $('#AjaxModal').modal('show');
+                            
+                        },
+                });
+
+            });
+
+        //Update Classroom
+        $('#AjaxModal').on('click','#update_quiz_btn', function(){
+            
+            event.preventDefault();
+            url = $(this).attr('data-url');
+            form = $('#AjaxModal #quiz_form').serialize();
+            $.ajax({
+                url : url,
+                data : form,
+                method: 'post',
+
+                beforeSend:function()
+                {
+                    $('#AjaxModal #info_text').text('Please Wait');                       
+                },
+       
+                success:function(output)
+                {
+                    if(output.valid)
+                    {
+
+                        $('#AjaxModal').modal('hide');
+                        $('#quiz_div').html(output.html)
+                    }
+                    else
+                    {
+                        $('#AjaxModal').html(output.form);
+                    }
+            
+            
+                },
+            });
+        });
+
+         //delete Quiz
+
+         $('#quiz_div').on('click','.delete_quiz',function(){
+                event.preventDefault();
+                if (confirm('Are you sure to delete your Test?')) {
+                    url = $(this).attr('data-url');
+                    $.ajax({
+                        url : url,
+                        
+                        success:function(output)
+                        {
+                            if(output.valid)
+                            {
+                                $('#quiz_div').html(output.html);
+                            }
+                            else{
+                                alert('Permission Denied');
+                            }
+                            
+                        },
+                    });
+                }
+
+            });
+
+        });
+
+    </script>
+    <script>
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+    
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                event.preventDefault();
+                if (content.style.display === "block") {
+                    
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "block";
+                    
+                }
+            });
+        }
+    </script>
+
+{% endblock %}

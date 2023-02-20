@@ -1,0 +1,21 @@
+
+<table class="table table-striped excel-export" >
+    <thead>
+        <tr>                                   
+            <th scope="col">Quiz Name</th>
+            <th scope="col">Status</th> 
+            <th scope="col">Mark</th>                                                                  
+            <th scope='col'>Due Date</th>       
+        </tr>
+    </thead>
+    <tbody id="quiz_div">
+        {% for test_name,attempt_status,test_mark,test_due_date in tests %}        
+            <tr>                                                                                    
+                <td>{{test_name}}</td>                                                
+                <td>{{attempt_status}}</td>
+                <td>{{test_mark}}</td>                                          
+                <td>{{test_due_date}}</td>                                                         
+            </tr>                                
+        {% endfor %}
+    </tbody>
+</table>

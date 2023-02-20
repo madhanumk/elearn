@@ -1,0 +1,10 @@
+
+
+     <tr class="post-list post_id_{{post.id}}">
+        <td><a href="">{{post.post_title}}</a></td>
+        <td>{{post.expires_on}} </td>                                          
+        <td>{{post.post_category}}</td>
+        <td>{{post.programme}}</td>                                          
+        <td><u><a class="edit_post" url="{% url 'post_edit' post.id %}" href="#">Edit</a></u></td>
+        <td><a class="delete-post" url="{% url 'post_delete' post.id %}" href="#">Delete</td>                                           
+    </tr>

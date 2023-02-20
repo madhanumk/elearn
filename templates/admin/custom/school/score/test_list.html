@@ -1,0 +1,40 @@
+
+<table class="table table-striped" id="print_test_detail_table">
+    <thead>
+        <tr>
+                                    
+        <th scope="col">Test Name</th>
+        <th scope="col">Open Date</th> 
+        <th scope="col">Close Date</th>                                                                  
+        <th scope='col'>Duration In Minutes</th>
+        <th scope="col">Total Strength</th>
+        <th scope="col">Attempted</th>                            
+        <th scope="col">Not Atempted</th>
+        
+        </tr>
+    </thead>
+    <tbody id="quiz_div">
+
+        {% for test_id,test_name_list,open_date,close_date,duration,total_strength,attempt,not_attempt in zippedList %}
+        
+            <tr>                                                                                    
+                <td><a href="#" class="get-test-report" url="{% url 'get_test_report'  pk=test_id subject=subject.id grade=grade.id section=section %}">{{test_name_list}}</a></td>                                                
+                <td>{{open_date}}</td>
+                <td>{{close_date}}</td>                                          
+                <td>{{duration}}</td>                                               
+                <td>{{total_strength}}</td>
+                <td>{{attempt}}</td>                            
+                <td>{{not_attempt}}</td>
+            
+            </tr>           
+
+            
+        {% empty %}
+            <tr>
+                <td colspan="12">
+                    <h6 class="text-center">No Test Available..!</h6>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    </table>

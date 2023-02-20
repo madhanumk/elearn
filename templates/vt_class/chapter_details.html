@@ -1,0 +1,162 @@
+
+{% extends 'base_2.html' %}
+{% load static %}
+{% load multioptions_tags %}
+{% block content %} 
+
+
+<div class="kt-portlet kt-portlet--height-fluid">
+    <div class="kt-portlet__body">       
+        <div class="kt-pricing-1__items align-items-start row">
+
+            <div class="kt-pricing-1__item col-lg-8 mb-1">
+                <h4>{{subject_assignment}}</h4>  
+            </div>
+          
+
+            <div class="kt-pricing-1__item col-lg-4 mb-1">
+                <select class="form-control" id="handleSelect">
+
+                    {% for subject_assignment in subject_assignments %}
+                         <option value="{% url 'chapter_list' subject_assignment.id %}"> <a href="{% url 'chapter_list' subject_assignment.id %}">{{subject_assignment.subject}}</a></option>
+                    {% endfor %}
+
+                </select>
+            </div>
+
+            
+
+            <div class="kt-pricing-1__item col-lg-4 bg-blue" id="height1">
+                
+                <h5 class="kt-pricing-1__subtitle">Books & Videos</h5>
+                <span class="kt-pricing-1__description">                                                        
+                        {% for resource in resources %}														
+                            <ul class="unoderlist">
+                                    <li>
+                                        <div class="row h-100">
+                                            <div class="col-sm-12 align-self-center">
+                                                    <a href="{% url 'resource' resource.id %}" > <img class="pl-3" width="55px" height="40px" src="{%static 'assets/media/files/pdf.png' %}" alt=""></a>
+                                                    <a href="{% url 'videos' resource.id %}" class="pl-1" > <img width="40px" height="40px" src="{% static 'assets/media/files/play.png' %}"> </a>
+                                                
+                                                    <a class="ml-2 kt_title" href="{% url 'resource' resource.id %}" >{{resource.resource_name}}</a>
+
+                                            </div>
+                                                                
+                                        </div>
+                                    </li>
+                            </ul>
+                                                                                               
+                        {% endfor %}                                                       
+
+                </span>
+
+             
+                
+            </div>
+
+            <div class="kt-pricing-1__item col-lg-4" id="height1">
+                <div class="bg-gray">
+                                                         
+                    <h5 class="kt-pricing-1__subtitle">Quizes</h5>
+                    
+                    <span class="kt-pricing-1__description">
+
+                    <ul class="list-group list-unstyled">
+                        {% for quiz in quizes %}                                                                                                            
+                            <li class="mt-2"> <i class="fas fa-chevron-right ml-2"></i> <a  id="kt_title" class="ml-1" href="{% url 'quiz-detail' quiz.id %}">{{quiz.name}}</a></li>
+                        {% empty %} 
+                            <li>No data available..!</li>                             
+                        {% endfor %}
+                    </ul>
+
+                    </span> 
+
+                </div>
+            </div>
+         
+
+
+
+
+            <div class="kt-pricing-1__item col-lg-4 bg-dark-green scrollkit" id="height2">
+                <h5 class="kt-pricing-1__subtitle bg-dark-mb-12">Chapters</h5>
+                <span class="kt-pricing-1__description ">
+                    <div class="kt-widget4">
+
+                    {% for chapter in chapters %}
+                        <div class="kt-widget4__item">
+                            <div class="kt-widget4__pic kt-widget4__pic--icon">
+                                    <img width="20px" height="20px" src="{%static 'assets/media/files/news.svg' %}" alt="">
+                            </div>
+                            <a class="kt-widget4__title" href="{% url 'topic' chapter.id %}">{{chapter}}</a>
+                            <div class="kt-widget4__tools">
+                                <a href="#" class="btn btn-clean btn-icon btn-sm">
+                                    <i class="flaticon2-download-symbol-of-down-arrow-in-a-rectangle"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                        
+                        
+                    
+                     
+                    </div>
+                </span>
+                
+            </div>
+        </div>
+       
+
+
+    </div>
+</div>
+
+
+<script>
+    $( document ).ready(function() {        
+        var height1=$("#height1").height();
+        var height2=$("#height2").height();
+        if(height1){
+        height1=height1+26;
+        var str2="px";
+        var height2 = height1 + str2 ;
+
+            document.getElementById("height2").style.height=height2;
+        }
+
+
+
+
+      $('#child_page').on('click','#say_btn',function(e){
+          e.preventDefault();
+          text = $('#word').html();
+          var msg = new SpeechSynthesisUtterance(text);
+          window.speechSynthesis.speak(msg);
+          
+      });
+
+
+      $( "#child_page" ).on('click','#t_word',function(e) {
+          e.preventDefault();
+          put_tamil_mean();
+      });
+
+
+      $( "#child_page" ).on('click','#word',function(e) {
+          e.preventDefault();
+          put_english_mean();
+          
+      });
+
+      $("#handleSelect").on('change', function() {
+        window.location.replace( this.value );
+        });
+
+    
+
+    });
+</script>                
+
+
+{% endblock %}
+

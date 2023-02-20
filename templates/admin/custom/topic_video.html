@@ -1,0 +1,30 @@
+{% load static %}
+<div class="col-sm-8">
+                                
+    <div class="embed-responsive embed-responsive-16by9">
+        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/"></iframe>
+    </div>
+</div>
+<div class="col-sm-4 bg-blue">
+    
+    <ul class="list-unstyled">
+        {% for video in videos %}
+
+        <li> 
+            <img src="{% static '/images/icons/video.png' %}">
+            <a href="#" class="play_video" video-url="{{video.link}}">{{video.title}}</a>
+            <span class="float-right">
+                <a class="ajax_operation" href="#" data-url="{%url 'ajax_edit' model_name='Video' pk=video.id parent_pk=video.topic.chapter.id  %}"><img src="{% static '/images/icons/edit.png' %}"></a>
+                <a class="ajax_delete" href="#" data-url="{%url 'ajax_delete' model_name='Video' pk=video.id parent_pk=video.topic.chapter.id %}"><img src="{% static '/images/icons/delete.png' %}"></a>
+            </span>
+        </li>
+
+        {% empty %}
+
+            No Videos Found
+
+        {% endfor %}
+
+    </ul>
+    
+</div>

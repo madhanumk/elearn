@@ -1,0 +1,18 @@
+{% load static %}
+<ul class="list-unstyled mt-3">
+    {% for topic in topics %}
+    <li class="mt-2">
+        <img src="{% static '/images/icons/list.png' %}">
+                                    
+        <a class="topic_detail" href="#" topic-url="{% url 'ajax_topic_detail' topic.id %}" >{{topic.title}} </a>
+        
+        <span class="float-right">
+            <a class="ajax_operation" href="#" data-url="{%url 'ajax_edit' model_name='Topic' pk=topic.id parent_pk=topic.chapter.id  %}"><img src="{% static '/images/icons/edit.png' %}"></a>
+            <a class="ajax_delete" href="#" data-url="{%url 'ajax_delete' model_name='Topic' pk=topic.id parent_pk=topic.chapter.id %}"><img src="{% static '/images/icons/delete.png' %}"></a>
+        </span>
+    
+    </li>
+    {% empty %}
+        No topics found
+    {% endfor %}
+</ul>

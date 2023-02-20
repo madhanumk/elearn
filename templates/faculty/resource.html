@@ -1,0 +1,19 @@
+
+
+{% for resource in resources %}
+    <tr>
+    <td>{{resource.resource_name}}</td>                        
+    <td>{% if resource.resource_file %} <a href="{{resource.resource_file.url}}">View</a> {% else %} <a href="{{resource.resource_link}}">View</a>{% endif %}</td>
+    <td>{{resource.subject_assignment.all|join:", " }}</td>
+    {% comment %}<td>{{resource.language_medium}}</td> {% endcomment %}
+    <td>{{resource.term_no}}</td>
+    <td><a href="{% url 'faculty_video_list' resource.id  %}">View</a></td>
+    <td><a class="edit_video" url="{% url 'edit_resource' resource.id %}" href="#">Edit</a></td>
+    <td><a class="delete-resource" url="{% url 'delete_resource' resource.id %}" href="#">Delete</a></td>
+    </tr>
+    {% empty %}
+
+    <tr>
+       <td colspan="5"><h6 class="text-center">No data available..!</h6></td>                   
+     </tr>
+{% endfor %}

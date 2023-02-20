@@ -1,0 +1,87 @@
+{% extends '../base_2.html' %}
+{% load static %}
+{% block content %} 
+{% load login_form_tags %}
+								<div class="kt-portlet kt-portlet--height-fluid">
+									
+									<div class="kt-portlet__body">
+
+
+											<div class="container">
+
+													<div class="row">
+
+                                                        <div class="col-sm-12 ">
+                                                            <div class="row mb-2">              
+                               
+                                                                <div class="col-sm-6">              
+                                                                    <a href="{% url 'topic' topic.chapter.id %}" class="btn btn-primary p-1 m-1 rounded-pill">Topic</a>
+                                                                    <a href="{% url 'view_discussion' topic.id %}" class="btn btn-primary p-1 m-1 rounded-pill">View Discussion</a>
+                                                                </div>
+                                                
+                                                                <div class="col-sm-6"> </div>                
+                                                            </div>
+                                                        </div>
+                                                       
+                                                        
+												
+													  <!-- Post Content Column -->
+													  <div class="col-lg-12">
+												
+														<!-- Title -->
+														<h5 class="mt-4">                                                       
+
+                                                          Ask your Questions in {{topic.title|safe}}
+ 
+                                                         </h5>			
+                           
+								                     {% if topic %}
+                                                         <form  enctype="multipart/form-data" method="post"  >
+
+                                                            {% csrf_token %}
+
+                                                            <div class="row">
+                                                                <div class="col-4">
+                                                                    <h6>Question Title</h6>                                  
+                                                                    {{ form.title| addclass:"form-control" }}
+                                                                </div>
+
+                                                                <div class="col-4">
+                                                                    <h6>Visible To</h6>
+                                                                    {{ form.visible_to| addclass:"form-control" }}
+                                                                </div>
+                                                            </div>
+                                                                 <br>
+
+                                                                 <h6>Question Detail</h6>         
+
+                                                                   {{ form.description| addclass:"form-control" }}
+
+                                                                   <br><br>
+
+                                                            <input type="submit" class="btn btn-primary float-right" value="Post Question">
+        
+         
+                                                            </form>
+
+                                                        {% else %}
+                                                        
+                                                            <h1>No topics found</h1>
+
+                                                        {% endif %}
+                            	
+
+													</div>
+												</div>
+												</div>
+									</div>
+                </div>
+                
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+                <script>
+                    $("#id_sfiles").click(function(){
+                        $("#adding").append('<input type="file" name="sfile" id="id_sfile" class="form-control"><br>');
+                    });
+                </script>
+{% endblock %}

@@ -1,0 +1,200 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load multioptions_tags %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                      <a href="{% url 'college_admin' %}" class="btn btn-primary  p-2 m-1 rounded-pill">Home</a>
+                      <a href="{% url 'students' %}" class="btn btn-primary p-2 m-1 rounded-pill">Students</a>
+                      <a href="{% url 'faculty' %}" class="btn btn-primary p-2 m-1 rounded-pill">Faculty</a>
+                      <a href="{% url 'score' %}" class="btn btn-primary p-2 m-1 rounded-pill">Performance</a>
+                      <a href="{% url 'view_post' %}" class="btn btn-primary p-2 m-1 rounded-pill">Circular</a>
+                      <a href="{% url 'resource_list' %}" class="btn btn-primary p-2 m-1 rounded-pill">Resource</a>
+                      <a href="{% url 'programme_list' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Programme</a>
+                      </div>                    
+                </div>
+                <a href="#" target="_blank" href="#" data-toggle="modal"  data-target="#ImportModal" class="p-2 ml-2 small bg-blue  float-right"  style="border-radius: 30px;">Bulk Upload</a>            
+
+				<div class="row mb-2">
+                   <h3 class="ml-3">Chapter</h3> 
+                </div>
+
+                <hr> 
+                <div class="row">
+                           
+                  
+                    
+                        <div class="col-sm-12 table-responsive">
+                              <table class="table table-striped display" id="example">
+                            <thead>
+                              <tr>
+                                <th scope="col">Chapter Name</th>             
+                                <th scope="col">subject assignment</th>
+                                      
+                              </tr>
+                            </thead>
+                            <tbody id="report_div">
+                                
+                              {% for chapter in chapters %}
+                              <tr>
+                                <td>{{chapter.name }}</td>                        
+                                <td>{{chapter.subject_assignment.subject}}</td>
+                                
+                              </tr>
+
+                            {% empty %}
+
+                            <tr>
+                                <td colspan="5"><h6 class="text-center">No data available..!</h6></td>                   
+                              </tr>
+                            {% endfor %}                    
+                                
+                            </tbody>
+                          </table>
+                        </div>                 
+                </div>
+                
+                <div class="modal fade bd-example-modal-xl ImportModal" id="ImportModal"  role="dialog" aria-labelledby="ImportModal" aria-hidden="true">
+                    <div class="modal-dialog">
+                      
+                      <!-- Modal content-->
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          
+                          <h4 class="modal-title">Import Chapter</h4>
+                
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                       
+                          <form method="POST" id="importform" >  
+                            
+                            {% csrf_token %}
+                            {%comment%}
+                            <label for="grade">Programme *</label>
+                            <select  id="import_grade" required class="form-control" name="grade" >
+                              <option value="0">Choose Programme</option>
+                                {% for grade in grades %}
+                                  <option value={{grade.id}}>{{grade}}</option>
+                                {% endfor %}
+                              
+                            </select>
+                
+                            <label for="subject">Subject *</label>
+                  
+                            <select id="import_subject" required class="form-control"  name="subject">
+                                <option value="0">Choose Subject Assignment</option>
+                                  {% for subject in subject_assignment %}
+                                    <option value={{subject.id}}>{{subject}}</option>
+                                  {% endfor %}
+                            </select>
+                            {%endcomment%}
+                            <input required class="form-control mt-2" name="question_file" id="question_file"  type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"> 
+                            <br><a download href="{% static 'sample_question_Format.xlsx' %}">Download Sample Question Format</a> <br>
+                             
+                
+                          </form>
+                
+                    
+                        </div>
+                        <div class="modal-footer">
+                
+                          <div class="row">     
+                            <div class="col-sm-12">             
+                              <button class="btn btn-primary" type="submit" id="import"  value="Submit" >Import</button>
+                            </div>
+                        </div>
+                
+                         
+                        </div>
+                      </div>
+                
+                    </div>
+                  </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+         //upload questions
+
+       $('#ImportModal').on('click','#import', function(){            
+        event.preventDefault();
+
+
+
+          if ($('#question_file').val() =='')
+
+          {
+             alert('Choose Question File')
+
+          }
+
+          else{
+
+                
+                url = '/create_chapter/'+{{id}};
+                form = new FormData($('#ImportModal #importform')[0]);
+              
+                $.ajax({
+                    url : url,        
+                    data : form,
+                    method: 'POST',
+                    processData: false, 
+                    contentType: false, 
+                
+
+                    beforeSend:function()
+                        {
+                            $('#ImportModal #import').text('Please Wait');
+                            $('#ImportModal #import').attr("disabled", true);
+                          
+                        },
+          
+                    success:function(data)
+                    {
+                        
+                        /*if(output.valid)
+                        {
+                          $('#ImportModal').modal('toggle');
+                          $('#ImportModal').modal('hide');
+                          $('.modal-backdrop').removeClass('modal-backdrop');
+                          $('.fade').removeClass('fade');
+                          $('.in').removeClass('in');
+                          $('html, body').css({
+                            'overflow': 'auto',
+                            'height': 'auto'
+                           });
+
+                           $('#question_file').val('');
+                           $('#ImportModal #import').text('Import');
+                           $('#ImportModal #import').attr("disabled", false);
+                                                   
+                          $('#assignment_div').html(output.assigned_questions);
+                          $('#AjaxModal').html(output.status);
+                          $('#AjaxModal').modal('show');                                               
+                        }
+                        else
+                        {
+                            alert('Access Denied..!');
+                        }
+                        */
+                        //$('#report_div').html(data.output); 
+                        window.location="/view_chapters/"+data.id;
+                    }
+                });
+          }
+
+
+    });
+
+
+
+    </script>
+{% endblock %}

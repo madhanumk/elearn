@@ -1,0 +1,107 @@
+{% load crispy_forms_tags %}
+<div class="modal-dialog  modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">           
+            Update Student          
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" id="student_form">
+           
+            {% csrf_token %}
+
+            <div class="row">
+
+                <div class="col-sm-4">
+                    <div style="color:red">{{user_form.first_name.errors}}</div>
+                    {{user_form.first_name.label}}  *
+                    {{user_form.first_name}}
+                </div>
+                <div class="col-sm-4">
+                    <div style="color:red"> {{user_form.last_name.errors}}</div>
+                    {{user_form.last_name.label}}
+                    {{user_form.last_name}}
+                </div>
+                <div class="col-sm-4">
+                    <div style="color:red"> {{user_form.email.errors}} </div>
+                    {{user_form.email.label}} *
+                    {{user_form.email}}
+                </div>
+
+
+                <div class="col-sm-4">
+                    <div style="color:red"> {{student_form.programme.errors}}</div>
+                    {{student_form.programme.label}}  *
+                    {{student_form.programme}}
+                </div>
+
+                <div class="col-sm-4">
+                    <div style="color:red"> {{student_form.year.errors}}</div>
+                    {{student_form.year.label}}  *
+                    {{student_form.year}}
+                </div>
+                <div class="col-sm-4">
+                    <div style="color:red"> {{student_form.semester.errors}} </div>
+                    {{student_form.semester.label}}  
+                    {{student_form.semester}}
+                </div>
+                <div class="col-sm-4">
+                    <div style="color:red"> {{student_form.acadmic_year.errors}} </div>
+                    {{student_form.acadmic_year.label}}   
+                    {{student_form.acadmic_year}}
+                </div>
+
+                <div class="col-sm-4">
+                    <div style="color:red">{{student_form.dob.errors}}</div>
+                    {{student_form.dob.label}}  *
+                    {{student_form.dob}}
+                </div>
+
+                <div class="col-sm-4">
+                    <div style="color:red"> {{student_form.gender.errors}}</div>
+                    {{student_form.gender.label}}  *
+                    {{student_form.gender}}
+                </div>
+                <div class="col-sm-4">
+                    <div style="color:red">{{student_form.mobile_no.errors}} </div>
+                    {{student_form.mobile_no.label}}  *
+                    {{student_form.mobile_no}}
+                </div>
+
+                <div class="col-sm-4">
+                    <div style="color:red"> {{student_form.district.errors}} </div>
+                    {{student_form.district.label}}  *
+                    {{student_form.district}}
+                </div>
+                <div class="col-sm-4">
+                    <div style="color:red">{{student_form.address.errors}} </div>
+                    {{student_form.address.label}}  *
+                    {{student_form.address}}
+                </div>
+                <div class="col-sm-4">
+                    <div style="color:red">{{student_form.pincode.errors}} </div>
+                    {{student_form.pincode.label}} 
+                    {{student_form.pincode}}
+                </div>
+       
+            </div>
+
+                  
+            
+            
+        </form>
+      </div>
+      <div class="modal-footer">
+        <span style="color:red" id="info_text"></span>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    
+        <button type="button" id="update_btn" student-id="{{pk}}" data-url= "{% url 'user_edit' role='student' pk=pk %}" class="btn btn-primary">Update</button>   
+       
+        
+      </div>
+    </div>
+  </div>

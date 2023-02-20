@@ -1,0 +1,404 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load multioptions_tags %}
+{% load mathfilters %}
+{% block message %}
+    <p id="message_txt" class="ml-2" style="color:red;"></p>
+{% endblock %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+				<div class="row mb-2">
+                    <h3>{{user.college}} - Dashboard</h3>                   
+                </div>
+
+                <div class="row mb-3">
+                    
+                   
+                    <div class="col-sm-12">
+                        <a href="{% url 'college_admin' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Home</a>
+                        <a href="{% url 'students' %}" class="btn btn-primary p-2 m-1 rounded-pill">Students</a>
+                        <a href="{% url 'faculty' %}" class="btn btn-primary p-2 m-1 rounded-pill">Faculty</a>
+                        <a href="{% url 'score' %}" class="btn btn-primary p-2 m-1 rounded-pill">Performance</a>
+                        <a href="{% url 'view_post' %}" class="btn btn-primary p-2 m-1 rounded-pill">Circular</a>
+                        <a href="{% url 'resource_list' %}" class="btn btn-primary p-2 m-1 rounded-pill">Resource</a>
+                        <a href="{% url 'programme_list' %}" class="btn btn-primary p-2 m-1 rounded-pill">Subject Assignment</a>
+                    </div>
+                    
+                </div>
+
+
+                <div class="row">               
+
+                    <div class="card shadow col-sm-3 m-1">
+                        <div class="card-body text-center">
+                            <img height="40" height="50" src="{% static '/images/student.svg' %}">
+                            <h4 class="mt-1"><a href="{% url 'students' %}"> Students -{{student_count}} </a></h4>                          
+                        </div>                                                
+                    </div>
+
+
+                    <div class="card shadow col-sm-3 m-1">
+                        <div class="card-body text-center">
+                            <img height="40" height="50" src="{% static '/images/teacher.svg' %}">
+                            <h4 class="mt-1"><a href="{% url 'faculty' %}">Faculty - {{teacher_count}}</a></h4>          
+                        </div>                                                
+                    </div>
+
+                    <div class="card shadow col-sm-3 m-1">
+                        <div class="card-body text-center">
+                            <img height="40" height="50" src="{% static '/images/post.svg' %}">
+                            <h4 class="mt-1"><a href="{% url 'view_post' %}">Circulars - {{post_count}}</a></h4>                          
+                        </div>                                                
+                    </div>
+
+                    <div class="card shadow col-sm-3 m-1">
+                        <div class="card-body text-center">
+                            <img height="40" height="50" src="{% static '/images/book.svg' %}">
+                            <h4 class="mt-1"><a href="{% url 'resource_list' %}">Resources - {{resource_count}}</a></h4>                          
+                        </div>                                                
+                    </div>
+
+
+                    <div class=" col-sm-12 m-1">  <hr>  </div>
+                </div>
+
+                <div class="row mt-1">
+                   
+
+                      <div class="col-sm-12 mt-2">
+                        <h4 class="d-inline">Students List</h4>                    
+                        <hr>
+
+                        <table class="table shadow table-striped mt-2">
+                            <thead>
+                              <tr>
+                                <th scope="col">Student Name</th>
+                                <th scope="col">Programme</th>
+                                <th scope="col">Year</th>
+                                <th scope="col">Semester</th>                                                                    
+                                <th scope="col">Academic Year</th>    
+                                <th scope="col">Gender</th> 
+                                <th scope="col">Mobile No</th> 
+                                <th scope="col">Email</th> 
+                                            
+                                <th scope="col">Password Reset</th>           
+                                <th scope="col">Edit</th>              
+                              </tr>
+                            </thead>
+                            <tbody id="students_div">
+        
+                                {% for student in students %}
+                                    <tr class="student_id_{{student.id}}">
+                                        <td><a href="{% url 'student_datail' student.id %}">{{student}}</a></td>
+                                        <td>{{student.programme}} </td>
+                                        <td>{{student.get_year_display}}</td>
+                                        <td>{{student.get_semester_display}}</td>
+                                        <td>{{student.acadmic_year}}</td>
+                                        <td>{{student.get_gender_display}}</td>
+                                        <td>{{student.mobile_no}}</td>
+                                        <td>{% if student.user.email %}  {{student.user.email}} {% else %} - {% endif %}</td>
+                                        <td><u><a class="password-reset" reset-url="{% url 'password_reset' student.user.id %}" href="#">Reset</a></u></td>
+                                        <td><a class="edit_user" data-url="{% url 'user_edit' role='student' pk=student.id %}" href="#"><img title="Edit Student" src="{% static '/images/icons/edit.png' %}"></a></td>
+                                       
+                                    </tr>
+                                {% endfor %}
+
+                                <tr>
+                                    <td colspan="8">
+                                        <a class="float-right" href="{% url 'students' %}">View All Students</a>
+                                    </td>
+                                </tr>
+                           
+                              
+                            </tbody>
+                        </table>
+
+
+                        
+
+
+                    </div>
+
+                    <div class="col-sm-12 mt-2">
+                        <h4 class="d-inline">Faculty List</h4>                    
+                        <hr>
+
+                        <table class="table shadow table-striped mt-2">
+                            <thead>
+                              <tr>
+                                <th scope="col">Faculty Name</th>                                                                                                   
+                                    <th scope="col">Programme</th>  
+                                    <th scope="col">Mobile No</th> 
+                                    <th scope="col">Email</th> 
+                                    <th scope="col">Department</th>  
+                                    <th scope="col">Log Book</th> 
+                                                                                   
+                                    <th scope="col">Password Reset</th>           
+                                    <th scope="col">Edit</th>              
+                              </tr>
+                            </thead>
+                            <tbody id="teachers_div">
+        
+                                {% for teacher in teachers %}
+                                <tr class="teacher_id_{{teacher.id}}">
+                                    <td><a href="{% url 'view_teacher' teacher.id %}">{{teacher}}</a></td>
+                                    
+                                    <td>{{teacher.programme}}</td>                                            
+                                    <td>{{teacher.mobile_no}}</td>
+                                    <td>{% if teacher.user.email %}{{teacher.user.email}}{% else %} - {% endif %}</td>
+                                    <td>{{teacher.department}}</td>
+                                    <td><u><a href="{% url 'logbook-history' teacher.id   %}">View</a></u></td>
+                                    <td><u><a class="password-reset" reset-url="{% url 'password_reset' teacher.user.id %}" href="#">Reset</a></u></td>
+                                    <td><a data-url="{% url 'user_edit' role='teacher' pk=teacher.id %}" class="edit_user" href="#"><img title="Edit Teacher" src="{% static '/images/icons/edit.png' %}"></a></td>
+                                   
+                                </tr>
+                            {% endfor %}
+
+                                <tr>
+                                    <td colspan="8">
+                                        <a class="float-right" href="{% url 'faculty' %}">View All Faculty's</a>
+                                    </td>
+                                </tr>
+                           
+                              
+                            </tbody>
+                        </table>
+
+
+                        
+
+
+                    </div>
+
+                </div>
+
+
+
+           
+               
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+        
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+
+    <script>
+
+        $(document).ready(function(){
+            //form submit
+            $('.form-submit').change(function() {
+                $("#filter-form").submit();
+            });
+
+            //Teacher password reset       
+            $('#teachers_div').on('click','.password-reset',function(){
+                event.preventDefault();
+                var url = $(this).attr('reset-url');
+                $.ajax({
+                    url : url,
+               
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').html(output.html);  
+                            $('#AjaxModal').modal('toggle'); 
+
+            
+                        }
+                        else
+                        {
+                            alert('access denied');
+                        }
+                       
+                    },
+                });
+
+            });
+
+            
+            //Teacher edit popup           
+            $('#teachers_div').on('click','.edit_user',function(){
+                event.preventDefault();
+                var teacher_id = $(this).attr('teacher-id');
+                $('.teacher_id').attr('teacher-id',teacher_id);
+
+
+                var url = $(this).attr('data-url');
+                $.ajax({
+                    url : url,
+               
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').html(output.form);  
+                            $('#AjaxModal').modal('toggle'); 
+
+            
+                        }
+                        else
+                        {
+                            alert('access denied');
+                        }
+                       
+                    },
+                });
+
+
+           
+
+            });
+
+
+            //Update Teacher Form
+            $('#AjaxModal').on('click','.update_teacher_btn', function(){
+                event.preventDefault();
+                var url = $(this).attr('data-url');
+                var teacherId = $(this).attr('teacher-id');
+                formdata = new FormData($('#AjaxModal #teacher_form')[0]);
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+                    
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').modal('hide');
+                            $('.teacher_id_'+teacherId).html(output.html);
+                           
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+                        $('#AjaxModal #info_text').text('');
+                    },
+                });
+
+
+            });
+
+       
+
+     
+            //Student password reset         
+            $('#students_div').on('click','.password-reset',function(){
+                event.preventDefault();
+                var url = $(this).attr('reset-url');
+                $.ajax({
+                    url : url,
+               
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').html(output.html);  
+                            $('#AjaxModal').modal('toggle'); 
+
+            
+                        }
+                        else
+                        {
+                            alert('access denied');
+                        }
+                       
+                    },
+                });
+
+
+           
+
+            });
+
+
+            
+            //Student edit popup           
+            $('#students_div').on('click','.edit_user',function(){
+                event.preventDefault();
+                var url = $(this).attr('data-url');
+                $.ajax({
+                    url : url,
+               
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').html(output.form);  
+                            $('#AjaxModal').modal('toggle'); 
+
+            
+                        }
+                        else
+                        {
+                            alert('access denied');
+                        }
+                       
+                    },
+                });
+
+
+           
+
+            });
+
+
+            //Update Student Form
+            $('#AjaxModal').on('click','#update_btn', function(){
+                event.preventDefault();
+                var url = $(this).attr('data-url');
+                var studentId = $(this).attr('student-id');
+                formdata = new FormData($('#AjaxModal #student_form')[0]);
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+                    
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').modal('hide');
+                            $('.student_id_'+studentId).html(output.html);
+                           
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+                        $('#AjaxModal #info_text').text('');
+                    },
+                });
+
+
+            });
+
+        });
+
+  
+    </script>
+
+{% endblock %}

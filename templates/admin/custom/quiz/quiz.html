@@ -1,0 +1,68 @@
+{% load static %}
+{% load mathfilters %}
+
+{% for quiz in quizes %}
+
+{% if quiz.created_by == user %}
+<tr>
+    <td>                                        
+        {% if quiz.isActive %}
+          Activated
+        {% else %}
+          <button data-url="{% url 'ajax_activate_quiz' quiz.id %}" class="activate_quiz_btn btn btn-primary">Activate</button>
+        {% endif %}
+    
+    </td>                                    
+    <td><a href="{% url 'view_test' quiz.id %}">{{quiz.name}}</a></td>
+    <td>{{ quiz.subjects.all|join:", " }}</td>
+    <td>{{quiz.openDate}}</td>                                
+
+    {% if quiz.timed_exam %}
+    <td>{{quiz.duration_in_minutes}}</td>
+    {% else %}
+    <td>NA</td>
+    {% endif %}
+    
+    <td>{{quiz.strength}}</td>
+    <td><a href="{% url 'view_report' quiz.id %}">{{quiz.submitted_count}}</a></td>                            
+    <td><a   href="{% url 'view_not_attempt' quiz.id %}">{{ quiz.strength|sub:quiz.submitted_count }} </a></td>
+    <td> <a class="edit_quiz" data-url= "{% url 'ajax_edit_quiz' quiz.id %}" href="#"><img src="{% static '/images/icons/edit.png' %}"></a></td>
+    <td><a class="delete_quiz" data-url= "{% url 'ajax_delete_home_quiz' quiz.id %}" href="#"><img src="{% static '/images/icons/delete.png' %}"></a></td>
+</tr>
+{% else %}
+
+<tr>
+    <td>                                        
+        {% if quiz.isActive %}
+          Activated
+        {% else %}
+          Not Activated
+        {% endif %}
+    
+    </td>                                    
+    <td><a href="{% url 'view_test' quiz.id %}">{{quiz.name}}</a></td>
+    <td>{{ quiz.subjects.all|join:", " }}</td>
+    <td>{{quiz.openDate}}</td>
+    
+
+    {% if quiz.timed_exam %}
+    <td>{{quiz.duration_in_minutes}}</td>
+    {% else %}
+    <td>NA</td>
+    {% endif %}
+    
+    <td>{{quiz.strength}}</td>
+    <td><a href="{% url 'view_report' quiz.id %}">{{quiz.submitted_count}}</a></td>                            
+    <td><a   href="{% url 'view_not_attempt' quiz.id %}">{{ quiz.strength|sub:quiz.submitted_count }} </a></td>
+    <td> -</td>
+    <td>-</td>
+</tr>
+{% endif %}
+
+
+{% endfor %}
+<tr>
+<td colspan="12">
+    <a class="float-right" href="{% url 'view_all_test' %}">View All Tests</a>
+</td>
+</tr>

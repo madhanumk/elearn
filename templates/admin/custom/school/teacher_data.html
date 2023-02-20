@@ -1,0 +1,10 @@
+{% load static %}
+
+<td><a href="{% url 'view_teacher' teacher.id %}">{{teacher}}</a></td>
+<td>{{teacher.medium}}</td>                                            
+<td>{{teacher.mobile_no}}</td>
+<td>{% if teacher.user.email %}{{teacher.user.email}}{% else %} - {% endif %}</td>
+<td>{{teacher.district}}</td>
+<td><u><a href="{% url 'logbook-history' teacher.id   %}">View</a></u></td>
+<td><u><a class="password-reset" reset-url="{% url 'password_reset' teacher.user.id %}" href="#">Reset</a></u></td>
+<td><a data-url="{% url 'user_edit' role='teacher' pk=teacher.id %}" class="edit_user" href="#"><img title="Edit Teacher" src="{% static '/images/icons/edit.png' %}"></a></td>

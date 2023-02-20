@@ -1,0 +1,312 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load school_tags %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+				<div class="row mb-2">
+                    <h3>College Dashboard</h3>                   
+                </div>
+
+                <div class="row mb-3">
+                    
+                   
+                    <div class="col-sm-12">
+                        <a href="{% url 'college_admin' %}" class="btn btn-primary p-2 m-1 rounded-pill">Home</a>
+                        <a href="{% url 'students' %}" class="btn btn-primary p-2 m-1 rounded-pill">Students</a>
+                        <a href="{% url 'faculty' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Faculty</a>
+                        <a href="{% url 'score' %}" class="btn btn-primary p-2 m-1 rounded-pill">Performance</a>
+                        <a href="{% url 'view_post' %}" class="btn btn-primary p-2 m-1 rounded-pill">Circular</a>
+                        <a href="{% url 'resource_list' %}" class="btn btn-primary p-2 m-1 rounded-pill">Resource</a>
+                    </div>
+                    
+                </div>
+
+                <div class="row">
+
+                    <div class="col-sm-3  p-4 shadow">                        
+                        <form method="get" id="filter-form">
+
+                            <div class="row">
+
+                                <div class="col-sm-6">
+                                    <h4 class="d-inline">Filter</h4>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <a class="float-right" href="{% url 'faculty' %}"><u>Reset</u></a>
+                                </div>
+
+
+                                <div class="col-sm-12">
+
+                                    <div class="input-group">
+                                       
+                                        <input type="text" name="name" {% if name %} value="{{name}}" {% endif %} class="form-control" placeholder="Search by name">
+                                        <div class="input-group-append">
+                                          <button class="btn btn-secondary" type="submit">
+                                            <i class="fa fa-search"></i>
+                                          </button>
+                                        </div>
+                                      </div>
+
+
+                                    
+                               </div>
+                               <div class="col-sm-12">
+                                    <label for="id_grade">Programme:</label>
+                                    <select name="grade" class="form-control form-submit" id="id_grade">
+                                        <option value="" {% if not grade %} selected {% endif %}>All</option>
+                                            
+                                        {% for grade_object in grade_list %}
+                                           {% if grade == grade_object %}
+                                             <option value="{{grade_object.id}}" selected>{{grade_object}}</option>
+                                           {% else %}
+                                             <option value="{{grade_object.id}}">{{grade_object}}</option>
+                                            {% endif%}
+                                        {% endfor %}
+                                          
+
+                                    </select>
+                                </div>
+                                
+                                <div class="col-sm-12">
+                                    <label for="id_section">Department:</label>
+
+                                
+                                    <select name="department" class="form-control form-submit" id="id_section">
+                                     
+                                        <option value="" {% if not department %} selected {% endif %}>All</option>
+                                    
+                                        {% for department_list in department_option %}                                               
+                                            {% if department == department_list %}
+                                                <option value="{{department_list.id}}" selected>{{department_list}}</option>
+                                            {% else %}
+                                                <option value="{{department_list.id}}">{{department_list}}</option>
+                                            {% endif %}
+                                        {% endfor %}                                  
+
+                                    </select>
+                                </div>
+
+                               
+
+                            </div>
+                          
+                        </form>
+                    </div>
+ 
+                    <div class="col-sm-9 p-4">
+                        <h4 class="d-inline">Faculty List</h4>  
+
+                        
+                        <div class="row table-responsive">
+
+                            <table class="table shadow table-striped  mt-2">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Faculty Name</th>                                                                                                   
+                                    <th scope="col">Programme</th>  
+                                    <th scope="col">Mobile No</th> 
+                                    <th scope="col">Email</th> 
+                                    <th scope="col">Department</th>   
+                                    <th scope="col">Log Book </th>                                          
+                                    <th scope="col">Password Reset</th>           
+                                    <th scope="col">Edit</th>              
+                                  </tr>
+                                </thead>
+                                <tbody id="teachers_div">            
+                                    {% for teacher in teachers_list %}
+                                        <tr class="teacher_id_{{teacher.id}}">
+                                            <td><a href="{% url 'view_teacher' teacher.id %}">{{teacher}}</a></td>
+                                            
+                                            <td>{{teacher.programme}}</td>                                            
+                                            <td>{{teacher.mobile_no}}</td>
+                                            <td>{% if teacher.user.email %}{{teacher.user.email}} {% else %} - {% endif %}</td>
+                                            <td>{{teacher.department}}</td>
+                                            <td><u><a href="{% url 'logbook-history' teacher.id   %}">View</a></u></td>
+                                            <td><u><a class="password-reset" reset-url="{% url 'password_reset' teacher.user.id %}" href="#">Reset</a></u></td>
+                                            <td><a data-url="{% url 'user_edit' role='teacher' pk=teacher.id %}" class="edit_user" href="#" teacher-id="{{teacher.id}}"><img title="Edit Teacher" src="{% static '/images/icons/edit.png' %}"></a></td>
+                                           
+                                        </tr>
+
+                                    {% empty %}
+
+                                    <tr>
+                                        <td colspan="7"><h6 class="text-center">No data available..!</h6></td>
+                                    </tr>
+                                    {% endfor %}
+                               
+                                  
+                                </tbody>
+                            </table>
+
+                         
+        
+                         
+        
+                        </div>
+        
+                        
+                    </div>
+
+                </div>
+              
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bd-example-modal-lg" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+        
+    </div>
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+
+    <script>
+
+        $(document).ready(function(){
+            //form submit
+            $('.form-submit').change(function() {
+                $("#filter-form").submit();
+            });
+
+            $('.grade-select').on('change', function() {
+                var grade = $(this).val();                
+                var url  = "/teacher_subject_load/"+grade;
+                $.ajax({
+                    url : url,               
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('.subject-list').append(output.html);
+            
+                        }
+                        else
+                        {
+                            alert('access denied');
+                        }
+                       
+                    },
+                });           
+
+            });
+
+                  
+            //password reset         
+            $('#teachers_div').on('click','.password-reset',function(){
+                event.preventDefault();
+                var url = $(this).attr('reset-url');
+                $.ajax({
+                    url : url,
+               
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').html(output.html);  
+                            $('#AjaxModal').modal('toggle'); 
+
+            
+                        }
+                        else
+                        {
+                            alert('access denied');
+                        }
+                       
+                    },
+                });
+
+
+           
+
+            });
+
+
+            
+            //Teacher edit popup           
+            $('#teachers_div').on('click','.edit_user',function(){
+                event.preventDefault();
+                var teacher_id = $(this).attr('teacher-id');
+                $('.teacher_id').attr('teacher-id',teacher_id);
+
+
+                var url = $(this).attr('data-url');
+                $.ajax({
+                    url : url,
+               
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').html(output.form);  
+                            $('#AjaxModal').modal('toggle'); 
+
+            
+                        }
+                        else
+                        {
+                            alert('access denied');
+                        }
+                       
+                    },
+                });
+
+
+           
+
+            });
+
+
+            //Update Teacher Form
+            $('#AjaxModal').on('click','#update_btn', function(){
+                event.preventDefault();
+                var url = $(this).attr('data-url');
+                var teacherId = $(this).attr('teacher-id');
+                formdata = new FormData($('#AjaxModal #teacher_form')[0]);
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+                    
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').modal('hide');
+                            $('.teacher_id_'+teacherId).html(output.html);
+                           
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+                        $('#AjaxModal #info_text').text('');
+                    },
+                });
+
+
+            });
+
+
+        });
+
+      
+      
+
+  
+    </script>
+
+
+{% endblock %}

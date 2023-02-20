@@ -1,0 +1,95 @@
+{% extends '../base_2.html' %}
+{% load static %}
+{% block content %}
+{% load answered_option_tags %}
+
+<div class="kt-portlet kt-portlet--height-fluid">
+									
+        <div class="kt-portlet__body">
+
+
+            <div class="container">
+
+                <h4>{{ quiz.name }}</h4>
+                <p>{{quiz.type}}</p>                    
+                       
+         
+                {% for assignment in page_obj %}                
+
+                <div class="row">
+                    
+                        <div class="card w-100 border border-primary m-2 p-2">
+                                <h5>Question:</h5>
+                                <span class="card-title">{{ assignment.Question.description | safe }}</span>
+                                
+                            <h5>Options:</h5>
+                            
+                            <ul>
+
+                                {% for option in assignment.Question.options %}
+                                
+                                    <p>
+                                       
+                                            <span> {{option.name | safe}}</span>
+                                        
+                                    </p>
+                               
+                                {% endfor %}
+                            </ul>
+                            
+
+                                
+                            <h5> You Answered:</h5> 
+                            <ul>
+                                {% if assignment.id|check_answer:request.user %} 
+                           
+                                  <p>                               
+                                     <span>
+                                            {{assignment.id|check_answer:request.user |safe}}
+                        
+                                     </span>
+                                  </p>
+
+                                {% else %}
+
+                                   <p>                               
+                                      <span>                                
+                                             Not Answered 
+                                      </span>
+                                    </p>    
+
+                                {% endif %}
+                            
+                        
+                        
+                        
+                        </ul>
+
+                            <h5>Correct Answer :</h5>  
+                                {% for option1 in assignment.Question.answers %}
+                                    <h6 class="pt-2 pl-2"style="background-color: turquoise;display: inline-block;">{{option1.name | safe}}</h6>
+                                {% endfor %}
+                            
+                        </div>
+                    
+                </div>
+
+
+                {% endfor %}
+                {% csrf_token %}
+                <div>
+                    <ul class="pagination" style="float:right">
+                        {% if page_obj.has_previous %}
+                            <li style="background-color: dodgerblue; " class="waves-effect"><a href="?page={{ page_obj.previous_page_number }}" style="color:white;"> &lt;&lt;Previous</a></li>
+                        {% endif %}
+                    
+                        {% if page_obj.has_next %}
+                            <li style="background-color: dodgerblue; " class="waves-effect"><a href="?page={{ page_obj.next_page_number }}" style="color:white;">Next &gt;&gt;</a></li>
+                        {% endif %}
+                    </ul>
+                </div>      
+            </div>
+        </div>
+    
+    {% endblock %}
+

@@ -1,0 +1,20 @@
+{% load static %}
+{% for classroom in classrooms %}
+<div class="card col-3 m-1">
+    <div class="card-body text-center">
+        <h4><a href="{% url 'classroom_detail' classroom.id %}">{{classroom.subject_assignment}}</a></h4>
+        <div class="row justify-content-md-center m-2">
+            <a href="#" class="report_class mx-1" data-url="{% url 'ajax_edit_classroom' classroom.id %}" ><img src="{% static '/images/icons/report.png' %}"></a>
+            <a href="#" class="edit_class mx-1" data-url="{% url 'ajax_edit_classroom' classroom.id %}" ><img src="{% static '/images/icons/edit.png' %}"></a>
+            <a href="#" class="delete_class mx-1" data-url="{% url 'ajax_delete_classroom' classroom.id %}" ><img src="{% static '/images/icons/delete.png' %}"></a>
+        </div>
+        {% if not classroom.activate %}
+            <button data-url="{% url 'ajax_activate_classroom' classroom.id %}" class="activate_btn btn btn-primary">Activate</button>
+        {% endif %}
+    </div>
+                            
+</div>
+
+{% empty %}
+    No Class rooms created
+{% endfor %}

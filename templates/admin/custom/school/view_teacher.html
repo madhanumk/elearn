@@ -1,0 +1,355 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load school_tags %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+				<div class="row mb-2">
+                    <h3>College Dashboard</h3>                   
+                </div>
+
+                <div class="row mb-3">
+                    
+                   
+                    <div class="col-sm-12">
+                        <a href="{% url 'college_admin' %}" class="btn btn-primary p-2 m-1 rounded-pill">Home</a>
+                        <a href="{% url 'students' %}" class="btn btn-primary p-2 m-1 rounded-pill">Students</a>
+                        <a href="{% url 'faculty' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Faculty</a>
+                        <a href="{% url 'score' %}" class="btn btn-primary p-2 m-1 rounded-pill">Performance</a>
+                        <a href="{% url 'view_post' %}" class="btn btn-primary p-2 m-1 rounded-pill">Circular</a>
+                        <a href="{% url 'resource_list' %}" class="btn btn-primary p-2 m-1 rounded-pill">Resource</a>
+                    </div>
+                   
+                    <a class="btn btn-primary m-2" href="{% url 'faculty' %}">Go Back</a>
+                    <hr>
+
+                 
+                    <div class="col-sm-12">
+                         <hr>
+                        <h5>{{teacher}} General Details:</h5>
+                        <div class="table-responsive" id="student_table">
+                            <table class="table table-striped  display">
+                              <thead>
+                                <tr>
+                                  <th scope="col">Faculty Name</th>                              
+                                  <th scope="col">Mobile No</th>
+                                  <th scope="col">Email</th>
+                                  <th scope="col">District</th>                              
+                                  <th scope="col">Address</th>                           
+                                  <th scope="col">Pincode</th>                                 
+                              
+                                </tr>
+                              </thead>
+                              <tbody id="report_div">     
+                              
+                                <tr>
+                                  <td>{{teacher|capfirst}}</td>                              
+                                  <td>{{teacher.mobile_no}}</td>
+                                  <td>{{teacher.user.email}}</td>
+                                  <td>{{teacher.district}}</td>                              
+                                  <td>{{teacher.address}}</td>                                
+                                  <td>{{teacher.pincode}}</td>                            
+                              
+                                </tr>
+
+                              </tbody>
+                            </table>
+                       
+                        </div>
+    
+                    </div>
+                </div>
+
+                <div class="row">                   
+                    <div class="col-sm-12">
+                        <hr>
+                        <h4 class="d-inline">Subjects Assignment</h4>
+                        <a href="#" id="add_subject" class="p-2 small bg-blue float-right" style="border-radius: 30px;"> + Assign Subject</a>                      
+
+                    </div>
+                   <div class="col-sm-12">
+                        <div class="row subject_div">
+                             {% comment%}        
+                            {% if  teacher %}
+
+                            <div class="card shadow col-sm-3 m-1 subject_id_{{teacher.id}}">
+                                <div class="card-body text-center">
+                                    <h4><a href="{% url 'subject_report' pk=teacher.id subject=teacher.subject_category.id  %}">{{teacher.subject_category}} - {{teacher.programme}}</a></h4>
+                                    <div class="row justify-content-md-center m-2">        
+                                        <a href="#" class="delete_subject mx-1" data-url="{% url 'remove_subject' teacher.id  %}"><img title="Delete Classroom" src="/static/images/icons/delete.png"></a>
+                                    </div>                                    
+                                </div>                                                        
+                            </div>
+
+                        {% else %}
+
+                            <p>No subjects Assigned</p>
+
+                        {% endif %}
+                            {% endcomment %}
+                        {% if  teacher %}
+                            {% for subject_assigment in facult_subject_assignment %}
+                            <div class="card shadow col-sm-3 m-1 subject_id_{{teacher.id}}">
+                                <div class="card-body text-center">
+                                    {% comment %}<h4><a href="{% url 'subject_report' pk=teacher.id subject=teacher.subject_category.id  %}">{{subject_assigment}}</a></h4>{% endcomment %}
+                                    <h4>{{subject_assigment}}</h4>
+                                    <div class="row justify-content-md-center m-2">        
+                                        <a href="#" class="delete_subject mx-1" data-url="{% url 'remove_subject' teacher.id  %}"><img title="Delete Classroom" src="/static/images/icons/delete.png"></a>
+                                    </div>                                    
+                                </div>                                                        
+                            </div>
+                            {% endfor %}
+                        {% else %}
+        
+                            <p>No subjects Assigned</p>
+        
+                        {% endif %}
+                        </div>
+
+                       
+
+                    </div>
+              
+                         
+
+
+                </div>
+
+    
+              
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bd-example-modal-lg" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+        
+    </div>
+
+
+    <div id="Subject_Modal" class="modal fade shadow" role="dialog" style="z-index:1600;">
+        <div class="modal-dialog">
+          <!-- Modal content-->
+          <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    Choose Course
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            
+            <div class="modal-body">
+
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        <h6>Programme</h6>
+
+                        <select name="grade" class="form-control w-50 grade-select" id="grade">
+                          <option value="">Choose Programme</option>
+                          {% for prog in programme %}
+                            <option value="{{prog.id}}">{{prog}}</option>
+                          {% endfor %}
+                       
+                        </select>
+
+                    </div>
+
+                    <div class="col-sm-6">
+
+                        <h6 class="mt-2">Choose Course</h6>
+
+                        <select name="subject" class="form-control subject-list" id="subject">
+                          <option value="">Choose Course</option>
+                          {% comment "" %}
+                            {% for sub in subject %}
+                                <option value="{{sub.id}}">{{sub}}</option>
+                            {% endfor %}   
+                          {% endcomment %}  
+                       
+                       
+                        </select>
+
+                    </div>
+                    
+                    <div class="col-sm-6">
+
+                        <h6 class="mt-2">Choose Section</h6>
+
+                        <select name="grade" class="form-control section-list" id="section">
+                          <option value="">Choose Section</option>
+                          {% for section in section_options %}
+                            <option value="{{section}}">{{section}}</option>
+                          {% endfor %}
+                       
+                        </select>
+
+                    </div>
+                    
+                </div>
+                                
+            </div> 
+            
+            <div class="modal-footer">
+                <span style="color:red" id="info_text_1"></span>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+               
+                <button  type="button" id="add_btn" class="teacher_id btn btn-primary">Add</button>
+               
+                
+              </div>
+          </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+
+    <script>
+
+        $(document).ready(function(){
+        
+            //remove Subject
+            $('.subject_div').on('click','.delete_subject', function(){
+                event.preventDefault();
+                var url = $(this).attr('data-url');
+
+                if(confirm('Are you sure want to remove?')){
+
+                    $.ajax({
+                        url : url,
+                        beforeSend:function()
+                        {
+                            $('#AjaxModal #info_text').text('Please Wait');
+                        
+                        },
+                        
+                        success:function(output)
+                        {
+                            if(output.valid)
+                            {
+                            
+                                $('.subject_id_'+output.pk).remove();
+                            
+                            }
+                            else
+                            {
+                                alert('Access Denied');
+                            }
+                            $('#AjaxModal #info_text').text('');
+                        },
+                    });
+                }          
+                
+             });
+
+               
+            //Add subject Model
+            $('#add_subject').click(function(){
+                event.preventDefault();            
+                $('#Subject_Modal').modal('toggle');
+             });
+
+            //subject load
+
+            $('.grade-select').on('change', function() {
+                var grade = $(this).val();                
+                var url  = "/teacher_subject_load/"+grade;
+                $.ajax({
+                    url : url,               
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('.subject-list').html(output.html);            
+                        }
+                        else
+                        {
+                          alert('access denied');
+                        }
+                       
+                    },
+                });           
+
+            });
+
+                  
+        
+
+
+            //add Subject
+            $('#Subject_Modal').on('click','#add_btn', function(){
+                event.preventDefault();
+                var teacher_id = $(this).attr('teacher-id');
+               
+                var subject = $('.subject-list :selected').text();
+                var section =$('.section-list :selected').text();
+                if (subject == "Choose Subject" || section == "Choose Section"  )
+
+                    {
+                        alert('Some fields are missing');
+                    }
+                else{
+
+                    var url = '/subject_assignment/'+{{teacher.id}};
+                    subject = $('.subject-list :selected').val();
+                    
+                    var fd = new FormData();
+                    fd.append('section',section);
+                    fd.append('subject',subject);
+
+              
+                    $.ajax({
+                        headers: { "X-CSRFToken": '{{csrf_token}}' },
+                        url : url,
+                        data : fd,
+                        method: 'post',
+                        processData: false,
+                        contentType: false,
+                        beforeSend:function()
+                        {
+                            $('#Subject_Modal #info_text_1').text('Please Wait');
+                            
+                        
+                        },
+                        
+                        success:function(output)
+                        {
+                            if(output.valid)
+                            {
+                                $('.subject_div').html(output.html);
+                                $('#Subject_Modal').modal('toggle');
+                                $("#grade").val($("#grade option:first").val());
+                                $("#subject").val($("#subject option:first").val());
+                                $("#section").val($("#section option:first").val());
+
+                            }
+                            else
+                            {
+                                alert(output.response);
+                            }
+                            $('#Subject_Modal #info_text_1').text('');
+                        },
+                    });
+
+
+
+                }
+                
+        
+            });
+
+       
+
+             
+
+        });
+
+  
+    </script>
+
+
+{% endblock %}

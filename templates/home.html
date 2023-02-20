@@ -1,0 +1,213 @@
+{% extends 'base_2.html' %}
+{% load static %} 
+{% load multioptions_tags %} 
+{% load status_tags %}
+{% block content %}
+								<div class="kt-portlet kt-portlet--height-fluid">
+                                    <!--strats welcome display-->
+                                    <div class="mt-4 mb-4">
+                                    {% if user.student %}
+                                    <div class="kt-subheader__main">
+                                        <div class="row m-1">
+                                            <div class="col-8">
+                                                <h4 class="kt-subheader__title ml-1" style="padding:1rem;">
+                                                    Welcome {{ user.first_name }}  {{ user.last_name }}, {{ user.student.programme}},{{ user.student.get_year_display}}- {{ user.student.section}} 
+                                                </h4>
+                                            </div>
+                                            <div class="col-4">
+                                                <h4  style="text-align:right;">Portal Usage: {{portal_usage}}</h4>
+                                            </div>
+
+                                        </div>
+                                        
+
+                                        
+                                    <!--</div>-->
+                                {% else %}
+
+                                    <div class="kt-subheader__main">
+                                        <div class="row">
+                                            <div class="col-8">
+                                            <h4 class="kt-subheader__title ml-1"style="padding:1rem;">
+                                                Welcome {{ user.first_name }}  {{ user.last_name }},  {{ user.faculty.programme}}												
+                                            </h4>
+                                            </div>
+                                            <div class="col-4">
+                                                <a href="{% url 'log-book' %}" class="btn  btn-primary ml-2 add_log_book_entry" style="text-align:right;">
+                                                    My Log Book
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                     
+                                   <div class="kt-subheader__toolbar">
+                                        <div class="kt-subheader__wrapper">                                         
+                                        </div>
+                                    </div>
+                                    
+                                {% endif %}
+                                </div>
+                                    <!--ends welcome display-->
+									<div class="kt-portlet__body">
+                                        <div class="kt-pricing-1__items align-items-start row">
+                                            <div class="kt-pricing-1__item col-lg-7 bg-gray" id="height1">
+                                                <h4 class="d-inline">My Courses</h4>
+                                                <hr>
+
+                                                <div class="row">
+                                                    {% for subject_assignment in subject_assignments %}
+                                                    <div class="col-sm-4 mt-2">
+                                                        <div class="card shadow">
+                                                            <div class="card-body text-center" style="min-height:100px;">
+                                                                <h4><a href="{% url 'chapter_list' subject_assignment.id %}">{{subject_assignment.subject.subject_title}}</a></h4>
+                                                                <p>{{subject_assignment.subject.course_code}}</p>                                                            
+                                                            </div>
+                                                        </div>                        
+                                                    </div>
+                                                    {% endfor %}
+
+
+
+                                                </div>
+
+
+
+                                             
+                                            </div>
+
+                                            <div class="kt-pricing-1__item col-lg-1" ></div>
+                                          
+                                            
+                                            <div class="kt-pricing-1__item col-lg-4 bg-dark-green scrollkit" id="height2">
+                                                <h5 class="kt-pricing-1__subtitle bg-dark-mb-12">Posts</h5>
+                                                <span class="kt-pricing-1__description ">
+                                                    <div class="kt-widget4">
+
+													{% for post in posts %}
+                                                        <div class="kt-widget4__item">
+															<div class="kt-widget4__pic kt-widget4__pic--icon">
+																	<img width="20px" height="20px" src="{%static 'assets/media/files/news.svg' %}" alt="">
+                                                            </div>
+                                                            <a class="kt-widget4__title" href="{% url 'post' post.slug %}">{{post.post_title}} - {{post.post_category.category}}</a>
+                                                            <div class="kt-widget4__tools">
+                                                                <a href="#" class="btn btn-clean btn-icon btn-sm">
+                                                                    <i class="flaticon2-download-symbol-of-down-arrow-in-a-rectangle"></i>
+                                                                </a>
+                                                            </div>
+														</div>
+													{% endfor %}
+                                                        
+                                                        
+                                                    
+                                                     
+                                                    </div>
+                                                </span>
+                                                
+                                            </div>
+                                            
+                                        </div> 
+                                        {% comment %}
+                                        
+                                        <div class="kt-pricing-1__items row mt-2">
+                                            <div class="kt-pricing-1__item col-lg-4 bg-blue">
+                                                <h5 class="kt-pricing-1__subtitle">Word of the day</h5>
+                                                <span class="kt-pricing-1__description">
+                                                        
+                                                    <div class="row mt-3 mb-3">
+                                                        <div class="col-lg-6">
+                                                                <h6  class="kt-pricing-1__subtitle">English</h6>
+                                                                <a href="#" style="display: inline-block;" id="word" class="ml-3 mr-2">Curiosity</a><a id="say_btn" href="#"><img width="20px" height="20px" src="{% static 'assets/media/speaker.png' %}"></a>
+                                                                <audio src="" class="speech" hidden></audio>
+                                                        </div>
+                                                        
+                                                    </div>
+
+                                                    <h5 class="kt-pricing-1__subtitle p-2 bg-dark-green rounded" style="display: inline-block;">Meaning</h5>
+                                                
+                                                <span class="kt-pricing-1__description">
+                                                    <h6>Definition:</h6>
+                                                    <p>A strong desire to know or learn something.</p>
+                                                    <h6>Example::</h6>
+                                                    <p>Filled with curiosity, she peered through the window</p>
+                                                    <br>
+                                                   
+
+                                                </span>
+                                                    
+                                                        
+
+                                                </span>
+                                                
+                                            </div>
+                                            <div class="kt-pricing-1__item col-lg-4">
+                                              <!--Center Empty Space-->
+                                            </div>
+                                            <div class="kt-pricing-1__item col-lg-4 bg-dark-green">
+                                                <h5 class="kt-pricing-1__subtitle bg-dark-mb-12">Amazing Facts</h5>
+                                                <span class="kt-pricing-1__description ">
+                                                    <div class="kt-widget4">
+
+
+                                                        <ul class="unoderlist ">
+                                                         <li class="kt_title "><i class="fas fa-chevron-right"></i> It Takes 68 Days to Swim the Full Length of the Mississippi River</li>
+                                                         <li class="kt_title"><i class="fas fa-chevron-right"></i> Penguins Used to Be Six Feet Tall</li>
+                                                         <li class="kt_title"><i class="fas fa-chevron-right"></i> The Slinky Was Created by Accident</li>
+                                                         <li class="kt_title"><i class="fas fa-chevron-right"></i> A Million Earths Would Fit Inside the Sun</li>
+                                                         <li class="kt_title"><i class="fas fa-chevron-right"></i> The Chills You Get When Listening to Music Are Caused by Your Brain Releasing Dopamine</li>
+                                                        </ul>
+                                                        
+
+												
+                                                        
+                                                        
+                                                    
+                                                     
+                                                    </div>
+                                                </span>
+                                                
+                                            </div>
+                                        </div>
+								
+                                        {% endcomment %}
+
+
+									</div>
+                                </div>
+                                
+
+<!-- Amazing Facts & Word of the day--> 
+
+
+<script>
+    $( document ).ready(function() {        
+        $('#div_assignment').on('click','.delete_assignment',function(){
+            event.preventDefault();
+            if (confirm('Are you sure to delete this Submission?')) {
+                url = $(this).attr('data-url');
+                $.ajax({
+                    url : url,
+                    
+                    success:function(output)
+                    {
+                        if(output.status)
+                        {
+                            $('#div_assignment').html(output.html);
+                        }
+                        else{
+                            alert('Something Went Wrong.!');
+                        }
+                        
+                    },
+                });
+            }
+
+        });
+
+    });
+</script>                
+
+
+                                
+
+{% endblock %}

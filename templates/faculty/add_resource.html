@@ -1,0 +1,35 @@
+{% load crispy_forms_tags %}
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+            {% if operation == 'Add' %}
+                Add Resource
+            {% else %}
+                Edit Resource
+            {% endif %}
+           
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" id="resource_form">           
+                {% csrf_token %}
+                {{form|crispy}}
+                
+        </form>
+      </div>
+      <div class="modal-footer">    
+        <span style="color:red" id="info_text"></span>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        {% if operation == 'Add' %}
+            <button type="button" url="{% url 'add_resource'  %}" id="create_btn" class="btn btn-primary">Save</button>
+        {% else %}
+            <button type="button" id="update_btn" data-url= "{% url 'edit_resource' resource.id%}" class="btn btn-primary">Update</button>   
+        {% endif %}
+        
+      </div>
+    </div>
+  </div>

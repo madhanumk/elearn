@@ -1,0 +1,17 @@
+<tbody id="report_div">
+                                
+    {% for chapter in chapters %}
+    <tr>
+      <td>{{chapter.name }}</td>                        
+      <td>{{chapter.subject_assignmnet}}</td>
+      
+    </tr>
+
+  {% empty %}
+
+  <tr>
+      <td colspan="5"><h6 class="text-center">No data available..!</h6></td>                   
+    </tr>
+  {% endfor %}                    
+      
+  </tbody>

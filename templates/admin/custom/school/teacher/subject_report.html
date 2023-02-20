@@ -1,0 +1,600 @@
+{% extends 'base_2.html' %}
+{% load mathfilters %}
+{% load static %}
+
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+				<div class="row mb-2">
+                    <h3>School Dashboard</h3>                   
+                </div>
+
+                <div class="row mb-3">
+                    
+                   
+                    <div class="col-sm-12">
+                        <a href="{% url 'college_admin' %}" class="btn btn-primary p-2 m-1 rounded-pill">Home</a>
+                        <a href="{% url 'students' %}" class="btn btn-primary p-2 m-1 rounded-pill">Students</a>
+                        <a href="{% url 'faculty' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Teachers</a>
+                        <a href="{% url 'score' %}" class="btn btn-primary p-2 m-1 rounded-pill">Performance</a>
+                        <a href="{% url 'view_post' %}" class="btn btn-primary p-2 m-1 rounded-pill">Circular</a>
+                        <a href="{% url 'resource_list' %}" class="btn btn-primary p-2 m-1 rounded-pill">Resource</a>
+                    </div>                    
+                    
+                </div>
+                <a class="btn btn-primary" href="{% url 'view_teacher' teacher.id %}">Go back</a>
+
+                <div class="row">             
+ 
+
+                    <div class="col-sm-12 ">                   
+
+                        <div class="row data-append">
+                            
+                            <div class="col-sm-12">
+                                 <h3>{{teacher}} - {{subject.subject}} - {{subject.grade}} -{{section}} </h3>
+                                 <hr>
+                                <h3 class="mt-2"> Test Performance </h3>
+
+                                <div id="mychart_div_1">
+                                    <canvas id="myChart_1" width="400" class="p-2" ></canvas>
+                                </div>
+
+                                <div id="test_detail_table">                                    
+                                    <table class="table table-striped" id="print_test_detail_table">
+                                        <thead>
+                                            <tr>
+                                                                        
+                                            <th scope="col">Test Name</th>
+                                            <th scope="col">Open Date</th> 
+                                            <th scope="col">Close Date</th>                                                                  
+                                            <th scope='col'>Duration In Minutes</th>
+                                            <th scope="col">Total Strength</th>
+                                            <th scope="col">Attempted</th>                            
+                                            <th scope="col">Not Atempted</th>
+                                            
+                                            </tr>
+                                        </thead>
+                                        <tbody id="quiz_div">
+
+                                            {% for test_id,test_name_list,open_date,close_date,duration,total_strength,attempt,not_attempt in zippedList %}
+                                            
+                                                <tr>                                                                                    
+                                                    <td><a href="#" class="get-test-report" url="{% url 'get_test_report'  pk=test_id subject=subject.id grade=grade section=section %}">{{test_name_list}}</a></td>                                                
+                                                    <td>{{open_date}}</td>
+                                                    <td>{{close_date}}</td>                                          
+                                                    <td>{{duration}}</td>                                               
+                                                    <td>{{total_strength}}</td>
+                                                    <td>{{attempt}}</td>                            
+                                                    <td>{{not_attempt}}</td>
+                                                
+                                                </tr>           
+
+                                                
+                                            {% empty %}
+                                                <tr>
+                                                    <td colspan="12">
+                                                        <h6 class="text-center">No Test Available..!</h6>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-12">
+                                <hr>
+                                <h3>Assignment Performance </h3>
+
+                                <div id="mychart_div_2">
+                                    <canvas id="myChart_2" width="400" class="p-2" ></canvas>
+                                </div>
+
+                                <div id="assignment_detail_table">
+
+                                    <div class="table-responsive">
+
+                                        <table class="table shadow table-striped" id="print_assignment_detail_table">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col">Assignment Name</th>
+                                                <th scope="col">Question</th>
+                                                <th scope="col">Classroom</th>
+                                                <th scope="col">Grade</th>
+                                                <th scope='col'>Due Date</th>
+                                                <th scope="col">Total Strength</th>
+                                                <th scope="col">Submitted</th>                          
+                                                <th scope="col">Not Submitted</th>
+                                                
+                                              </tr>
+                                            </thead>
+                                            <tbody id="assignment_div">
+                                    
+                                                {% for assignment in assignments %}
+                                                    <tr>
+                                                        <td><a class="get_assignment_report" href="#" url="{% url 'get_assignment_report'  assignment.id %}">{{assignment.title}}</a></td>
+                                                        <td><a href="{{assignment.afile.url}}">Download</a></td>
+                                                        <td>{{assignment.topic.croom.name}}</td>
+                                                        <td>{{assignment.topic.croom.subject.grade}} - {{assignment.topic.croom.section}}</td>
+                                                        <td>{{assignment.due_date}}</td>
+                                                        <td>{{assignment.strength}}</td>
+                                                        <td>{{assignment.submitted_count}}</td>
+                                                        <td>{{ assignment.strength|sub:assignment.submitted_count }} </td>
+                                                    </tr>
+                                                {% empty %}
+                                                    <tr>
+                                                        <td colspan="10">
+                                                            <h6 class="text-center">No Assignments Available..!</h6>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                              
+                                            </tbody>
+                                          </table>
+                                    
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            
+                            <div class="col-sm-12">
+                                <hr>
+                                <h3>Material List </h3>                               
+
+                                <div id="material-list">
+                                    <table class="table table-striped e display" id="example">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">Material Name</th>             
+                                            <th scope="col">Topic</th>
+                                            <th scope="col">Content</th>
+                                            <th scope="col">Added By</th>
+                                            <th scope="col">Added On</th>
+                                      
+                                          </tr>
+                                        </thead>
+                                        <tbody id="report_div">
+                
+                                          {% for material in materials %}
+                                          <tr>
+                                            <td>{{material}}</td>                        
+                                            <td>{{material.topic}}</td>
+                                            <td><a href="{{material.material.url}}" download>Download</a></td>
+                                            <td>{{material.topic.croom.created_by.get_full_name}}</td>
+                                            <td>{{material.added_on}}</td>
+                                          </tr>
+                                         {% endfor %}                     
+                                          
+                                        </tbody>
+                                      </table>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-12">
+                                <hr>
+                                <h3>Discussion List </h3>                               
+
+                                <div id="discussion-list">                                                                        
+                                    <div class="mb-3 row" id="discussion_div">
+
+                                        {% for discussion in discussions %}
+
+                                            <div class="card shadow w-100 m-1">
+                                                <div class="card-header collapsible">
+                                                
+                                                    <h5 class="card-title">{{discussion.title}}</h5>
+                                                    <p class="card-text">
+                                                    {{discussion.created_on}}, {{discussion.created_by.first_name}} - {{discussion.created_by.student.grade}} - {{discussion.created_by.student.section}}
+                                                        
+                                                    <a href='' class="float-right show_discussion" id="{{discussion.id}}"><img title="Show Discussion" src="{% static '/images/icons/open.png' %}"></a>
+                                                    </p>
+                                                    
+                                                
+                                                </div>
+                                                <div class="card-body content exapand-content" id="discussion_id_{{discussion.id}}" style="display: none;overflow: hidden;">
+                                                    
+                                                    <div class="row">
+                                                        {{discussion.description}}
+
+                                                    </div>
+
+                                                    <h5 class="mt-3">Replies</h5>
+
+                                                    <div id="replies_{{discussion.id}}">
+                                                        {% for reply in discussion.reply_set.all %}
+                                                            <div class="mb-3" id="reply_{{reply.id}}">
+                                                                <p>{{reply.description}}</p> 
+                                                                <span>
+                                                            {% if user.groups.all.0.name == "Teacher" %}
+
+                                                                    {{reply.posted_on}} {{reply.posted_by.first_name}}
+                                                                    
+                                                                {% else %}
+                                                                    {{reply.posted_on}} {{reply.posted_by.first_name}} - {{reply.posted_by.student.grade}} - {{reply.posted_by.student.section}}
+                                                
+
+                                                                {% endif %}
+                                                                
+                                                                </span>
+                                                                <hr>
+                                                            </div>
+                                                            
+                                                        {% empty %}
+                                                                No Replies Found
+                                                        {% endfor %}
+
+                                                    </div>                            
+
+                                                    <a href="" class="collapsible_inner float-right hide-all-content"><img title= "Hide Discussion" src="{% static '/images/icons/close.png' %}"></a>                                                      
+                                            
+                                                </div>
+
+                                                
+                                                
+                                            </div>
+
+                                        {% empty %}
+                                            <h3> No Discussion Available.</h3>
+                                        {% endfor %}
+
+                                        
+                                    </div>      
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+              
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+
+
+        
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>  
+    <script src="https://cdn.datatables.net/buttons/1.6.5/js/buttons.print.min.js"></script>
+
+
+    <script>
+
+        $(document).ready(function(){    
+            //model close
+            $('.close').click(function(){
+                event.preventDefault();
+                $('#AjaxModal').modal('toggle');
+            });
+
+            //expand close            
+            $('#discussion-list').on('click','.hide-all-content',function(){
+                event.preventDefault();                
+                $('.exapand-content').css({display: 'none', overflow: 'hidden'});
+            });
+
+            //exapand            
+            $('#discussion-list').on('click','.show_discussion',function(){
+                event.preventDefault();
+                var id = $(this).attr('id');
+                $('.exapand-content').css({display: 'none', overflow: 'hidden'});
+                $('#discussion_id_'+id).css({ display: 'block',overflow: 'hidden' });            
+            });
+            
+            // DataTable
+            var table = $('#print_test_table').DataTable({
+                "pageLength":10,
+                dom: 'Bfrtip', "ordering": false,
+                buttons: 
+                    [
+                        { extend: 'excel', className: 'btn-primary' }
+                    ],                
+            }); 
+
+            var table = $('#print_assignment_table').DataTable({
+                "pageLength":10,
+                dom: 'Bfrtip', "ordering": false,
+                buttons: 
+                    [
+                        { extend: 'excel', className: 'btn-primary' }
+                    ],                
+            }); 
+
+
+            //default Test chart                                         
+            window.chartColors = {
+                red: 'rgb(255, 99, 132)',
+                orange: 'rgb(255, 159, 64)',
+                yellow: 'rgb(255, 205, 86)',
+                green: 'rgb(75, 192, 192)',
+                blue: 'rgb(54, 162, 235)',
+                purple: 'rgb(153, 102, 255)',
+                grey: 'rgb(231,233,237)'
+            };
+                
+                
+                
+                var line1 = {{test_pass_percentage_list}}
+                
+                var line2 = {{test_top_score_list}}
+
+                var line3 = {{test_avg_score_list}}
+
+                var line4 = {{test_not_submitted_percentage}}
+                
+                var date = {{test_name_list|safe}}
+                var config = {
+                type: 'line',
+                data: {
+                    labels: date,
+                    datasets: [{
+                    label: "Pass Percentage",
+                    backgroundColor: window.chartColors.red,
+                    borderColor: window.chartColors.red,
+                    data: line1,
+                    fill: false,
+                    }, {
+                    label: "Top Score",
+                    fill: false,
+                    backgroundColor: window.chartColors.blue,
+                    borderColor: window.chartColors.blue,
+                    data: line2,
+                    },
+                    {
+                    label: "Avg Score",
+                    fill: false,
+                    backgroundColor: window.chartColors.orange,
+                    borderColor: window.chartColors.orange,
+                    data: line3,
+                    },
+
+                    {
+                    label: "Not Submitted",
+                    fill: false,
+                    backgroundColor: window.chartColors.purple,
+                    borderColor: window.chartColors.purple,
+                    data: line4,
+                    }
+
+                
+                ]
+                },
+                options: {
+                    responsive: true,
+                    title:{
+                    display:true,
+                    text:'Pass Percentage | Top Score | Avg Score | Not Submitted Percentage'
+                    },
+                    tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                    },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                    },
+                    scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                        display: true,
+                        labelString: 'Test'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                        display: true,
+                        },
+                    }]
+                    }
+                }
+                };
+                        
+                        
+            var ctx = document.getElementById("myChart_1").getContext("2d");
+            var myLine = new Chart(ctx, config);
+
+                
+            //assignment chart                                       
+            window.chartColors = {
+                red: 'rgb(255, 99, 132)',
+                orange: 'rgb(255, 159, 64)',
+                yellow: 'rgb(255, 205, 86)',
+                green: 'rgb(75, 192, 192)',
+                blue: 'rgb(54, 162, 235)',
+                purple: 'rgb(153, 102, 255)',
+                grey: 'rgb(231,233,237)'
+            };
+                        
+                
+                
+                var line1 = {{assignment_pass_percentage_list}}
+                
+                var line2 = {{assignment_top_score_list}}
+
+                var line3 = {{assignment_avg_score_list}}
+                var line4 = {{assignment_not_submitted_percentage}}
+                
+                var date = {{assignment_name|safe}}
+                var config = {
+                type: 'line',
+                data: {
+                    labels: date,
+                    datasets: [{
+                    label: "Pass Percentage",
+                    backgroundColor: window.chartColors.red,
+                    borderColor: window.chartColors.red,
+                    data: line1,
+                    fill: false,
+                    }, {
+                    label: "Top Score",
+                    fill: false,
+                    backgroundColor: window.chartColors.blue,
+                    borderColor: window.chartColors.blue,
+                    data: line2,
+                    },
+                    {
+                    label: "Avg Score",
+                    fill: false,
+                    backgroundColor: window.chartColors.orange,
+                    borderColor: window.chartColors.orange,
+                    data: line3,
+                    }
+                    ,
+                    {
+                        label: "Not Submitted Percentage",
+                        fill: false,
+                        backgroundColor: window.chartColors.orange,
+                        borderColor: window.chartColors.orange,
+                        data: line4,
+                    }
+                ]
+                },
+                options: {
+                    responsive: true,
+                    title:{
+                    display:true,
+                    text:'Pass Percentage | Top Score | Avg Score'
+                    },
+                    tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                    },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                    },
+                    scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                        display: true,
+                        labelString: 'Assignment'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                        display: true,
+                        },
+                    }]
+                    }
+                }
+                };
+                
+                
+                var ctx = document.getElementById("myChart_2").getContext("2d");
+                var myLine = new Chart(ctx, config);
+                
+
+            //get subject related data
+            $('.reset-subject').click(function() {
+                event.preventDefault();
+                $(".subject-list").css('color','blue');
+                $('.default').removeClass('d-none');
+                $('.data-append').addClass('d-none');
+            });
+
+     
+        
+            $('.data-append').on('click','.get-test-report',function(){
+                event.preventDefault();
+
+                var url = $(this).attr('url');
+               
+
+                    $.ajax({
+                        url : url,               
+                        success:function(output)
+                        { 
+
+                            $('#AjaxModal').html(output.html);  
+                            $('#AjaxModal').modal('toggle'); 
+
+                           //data tables
+                           var table = $('.excel-export-4').DataTable({
+                                "pageLength":10,
+                                dom: 'Bfrtip', "ordering": false,
+                                buttons: 
+                                    [
+                                        { extend: 'excel', className: 'btn-primary' }
+                                    ],                
+                            }); 
+                            var table = $('.excel-export-3').DataTable({
+                                "pageLength":10,
+                                dom: 'Bfrtip', "ordering": false,
+                                buttons: 
+                                    [
+                                        { extend: 'excel', className: 'btn-primary' }
+                                    ],                
+                            });
+
+
+                        }
+                    });
+               
+            });
+         
+       
+            //assignment report
+            $('.data-append').on('click','.get_assignment_report',function(){
+                event.preventDefault();
+
+                var url = $(this).attr('url');
+               
+
+                    $.ajax({
+                        url : url,               
+                        success:function(output)
+                        { 
+
+                            $('#AjaxModal').html(output.html);  
+                            $('#AjaxModal').modal('toggle'); 
+
+                            var table = $('.excel-export-2').DataTable({
+                            "pageLength":10,
+                            dom: 'Bfrtip', "ordering": false,
+                            buttons: 
+                                [
+                                    { extend: 'excel', className: 'btn-primary' }
+                                ],                
+                        }); 
+                        var table = $('.excel-export-1').DataTable({
+                            "pageLength":10,
+                            dom: 'Bfrtip', "ordering": false,
+                            buttons: 
+                                [
+                                    { extend: 'excel', className: 'btn-primary' }
+                                ],                
+                        });    
+
+                        }
+                    });
+               
+            });
+         
+     
+        
+        });
+
+  
+    </script>
+
+
+{% endblock %}

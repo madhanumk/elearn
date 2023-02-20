@@ -1,0 +1,292 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load school_tags %}
+{% load multioptions_tags %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                      <a href="{% url 'college_admin' %}" class="btn btn-primary  p-2 m-1 rounded-pill">Home</a>
+                      <a href="{% url 'students' %}" class="btn btn-primary p-2 m-1 rounded-pill">Students</a>
+                      <a href="{% url 'faculty' %}" class="btn btn-primary p-2 m-1 rounded-pill">Faculty</a>
+                      <a href="{% url 'score' %}" class="btn btn-primary p-2 m-1 rounded-pill">Performance</a>
+                      <a href="{% url 'view_post' %}" class="btn btn-primary p-2 m-1 rounded-pill">Circular</a>
+                      <a href="{% url 'resource_list' %}" class="btn btn-primary p-2 m-1 rounded-pill">Resource</a>
+                      <a href="{% url 'programme_list' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Subject Assignment</a>
+                      </div>                    
+                </div>
+                <a href="#" target="_blank" href="#" data-toggle="modal"  data-target="#ImportModal" class="p-2 ml-2 small bg-blue  float-right"  style="border-radius: 30px;">Bulk Upload</a>            
+
+				<div class="row mb-2">
+                   <h3 class="ml-3">Subject Assignment</h3> 
+                </div>
+
+                <hr> 
+                <div class="row">
+                    <!--filters starts-->
+                    <div class="col-sm-3  p-4 shadow">                        
+                      <form method="get" id="filter-form">
+
+                          <div class="row">
+                              <div class="col-sm-6">
+                                  <h4 class="d-inline">Filter</h4>
+                              </div>
+
+                              <div class="col-sm-6">
+                                  <a class="float-right" href="{% url 'programme_list' %}"><u>Reset</u></a>
+                              </div>
+                              <div class="col-sm-12">                                    
+                                  <div class="input-group">                                       
+                                      <input type="text" name="title" {% if title %} value="{{title}}" {% endif %} class="form-control" placeholder="Search by title">
+                                      <div class="input-group-append">
+                                        <button class="btn btn-secondary" type="submit">
+                                          <i class="fa fa-search"></i>
+                                        </button>
+                                      </div>
+                                  </div>                                    
+                            </div>
+                              
+                              <div class="col-sm-12 mt-2">
+                               
+                                {{ subject_assignment.form.programme.label_tag }}
+                                {% render_field subject_assignment.form.programme class="form-control" %}
+                                  
+                              </div>
+                              <div class="col-sm-12 mt-2">
+                               
+                                {{ subject_assignment.form.subject.label_tag }}
+                                {% render_field subject_assignment.form.subject class="form-control" %}
+                                  
+                              </div>
+                              <div class="col-sm-12 mt-2">
+                               
+                                {{ subject_assignment.form.year.label_tag }}
+                                {% render_field subject_assignment.form.year class="form-control" %}
+                                  
+                              </div>
+                              <div class="col-sm-12 mt-2">
+                               
+                                {{ subject_assignment.form.semester.label_tag }}
+                                {% render_field subject_assignment.form.semester class="form-control" %}
+                                  
+                              </div>
+
+                            {% comment %}
+                              <div class="col-sm-12">
+                                  {{ filter.form.language_medium.label_tag }}
+                                  {% render_field filter.form.language_medium class="form-control form-submit" %}
+                              </div>
+                              {% endcomment %}
+                              
+                              <div class="col-sm-12 mt-2">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                              </div>
+                              
+                          </div>
+                        
+                      </form>
+                  </div>
+                  <!--filters end-->            
+                  
+                    
+                        <div class="col-sm-9 table-responsive">
+                              <table class="table table-striped display" id="example">
+                            <thead>
+                              <tr>
+                                <th scope="col">Subject</th>             
+                                <th scope="col">Programme</th>
+                                <th scope="col">Year</th> 
+                                <th scope="col">Semester</th>                     
+                              </tr>
+                            </thead>
+                            <tbody id="report_div">
+                                
+                              {% for subject in dataqs.object_list %}
+                              <tr>
+                                <td><a href="{% url 'view_chapters' subject.id%}">{{subject.subject }}</a></td>                        
+                                <td>{{subject.programme}}</td>
+                                <td>{{subject.year}}</td>
+
+                                <td>{{subject.semester}}</td>
+                              </tr>
+
+                            {% empty %}
+
+                            <tr>
+                                <td colspan="5"><h6 class="text-center">No data available..!</h6></td>                   
+                              </tr>
+                            {% endfor %}                    
+                                
+                            </tbody>
+                          </table>
+                        </div> 
+                                      
+                </div>
+                 <!--pagination starts-->
+                <div class="row"> 
+                 <div class="col-sm-9"></div> 
+                 <div class="col-sm-3 mt-1 text-center" >
+                    <div class="float-end">
+                      <div class="pagination ">
+                          <span class="h5">
+                              <span class="current">
+                                  Page {{ dataqs.number }} of {{ dataqs.paginator.num_pages }} 
+                              </span>
+
+                              {% if dataqs.has_previous %}
+                                  <a href="?{% query_transform request page=1 %}" class="btn btn-primary">&laquo; First</a>
+                                  <a href="?{% query_transform request page=dataqs.previous_page_number %}" class="btn btn-primary">Previous</a>
+                              {% endif %}                      
+                          
+                              {% if dataqs.has_next %}
+                                  <a href="?{% query_transform request page=dataqs.next_page_number %}" class="btn btn-primary">Next</a>
+                                  <a href="?{% query_transform request page=dataqs.paginator.num_pages %}" class="btn btn-primary">Last &raquo;</a>
+                              {% endif %}
+                          </span>
+                      </div>
+                    </div>
+                </div>
+              </div>
+                  <!--Pagination ends--> 
+                <div class="modal fade bd-example-modal-xl ImportModal" id="ImportModal"  role="dialog" aria-labelledby="ImportModal" aria-hidden="true">
+                    <div class="modal-dialog">
+                      
+                      <!-- Modal content-->
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          
+                          <h4 class="modal-title">Import Subject</h4>
+                
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                       
+                          <form id="importform">  
+                            
+                            {% csrf_token %}
+                            {%comment%}
+                            <label for="grade">Programme *</label>
+                            <select  id="import_grade" required class="form-control" name="grade" >
+                              <option value="0">Choose Programme</option>
+                                {% for grade in grades %}
+                                  <option value={{grade.id}}>{{grade}}</option>
+                                {% endfor %}
+                              
+                            </select>
+                
+                            <label for="subject">Subject *</label>
+                  
+                            <select id="import_subject" required class="form-control"  name="subject">
+                                <option value="0">Choose Subject Assignment</option>
+                                  {% for subject in subject_assignment %}
+                                    <option value={{subject.id}}>{{subject}}</option>
+                                  {% endfor %}
+                            </select>
+                            {%endcomment%}
+                            <input required class="form-control mt-2" name="question_file" id="question_file"  type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"> 
+                            <br><a download href="{% static 'sample_question_Format.xlsx' %}">Download Sample Question Format</a> <br>
+                             
+                
+                          </form>
+                
+                    
+                        </div>
+                        <div class="modal-footer">
+                
+                          <div class="row">     
+                            <div class="col-sm-12">             
+                              <button class="btn btn-primary" type="submit" id="import"  value="Submit">Import</button>
+                            </div>
+                        </div>
+                
+                         
+                        </div>
+                      </div>
+                
+                    </div>
+                  </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+         //upload questions
+
+       $('#ImportModal').on('click','#import', function(){            
+        event.preventDefault();
+
+
+
+          if ($('#question_file').val() =='')
+
+          {
+             alert('Choose Question File')
+
+          }
+
+          else{
+
+                
+                url = "{% url 'programme_list'  %}";
+                form = new FormData($('#ImportModal #importform')[0]);
+              
+                $.ajax({
+                    url : url,        
+                    data : form,
+                    method: 'POST',
+                    processData: false, 
+                    contentType: false, 
+                
+
+                    beforeSend:function()
+                        {
+                            $('#ImportModal #import').text('Please Wait');
+                            $('#ImportModal #import').attr("disabled", true);
+                          
+                        },
+          
+                    success:function(output)
+                    {
+                        /*if(output.valid)
+                        {
+                          $('#ImportModal').modal('toggle');
+                          $('#ImportModal').modal('hide');
+                          $('.modal-backdrop').removeClass('modal-backdrop');
+                          $('.fade').removeClass('fade');
+                          $('.in').removeClass('in');
+                          $('html, body').css({
+                            'overflow': 'auto',
+                            'height': 'auto'
+                           });
+
+                           $('#question_file').val('');
+                           $('#ImportModal #import').text('Import');
+                           $('#ImportModal #import').attr("disabled", false);
+                                                   
+                          $('#assignment_div').html(output.assigned_questions);
+                          $('#AjaxModal').html(output.status);
+                          $('#AjaxModal').modal('show');                                               
+                        }
+                        else
+                        {
+                            alert('Access Denied..!');
+                        }
+                        */
+                        alert('Added Successfully');
+                    },
+                });
+          }
+
+
+    });
+
+
+
+    </script>
+{% endblock %}

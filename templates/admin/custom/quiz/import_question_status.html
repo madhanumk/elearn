@@ -1,0 +1,54 @@
+<div class="modal-dialog modal-lg">
+          
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        
+        <h4 class="modal-title">Import Question Status</h4>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body">
+        {% for error_row in error_rows %}
+
+        {% if forloop.counter == 1 %}
+            <p class="float-left"  style="color:#a6252e;">The following rows have issues -
+
+        {% endif %}
+            {{error_row}} , 
+
+        {% endfor %}
+
+             </p>
+
+
+      <table  class="table table-head-custom table-vertical-center table-responsive">
+
+            {% for row in excel_data %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td style="color:green;">Success</td>
+                    {% for cell in row %}
+                        <td> {{ cell }} </td>
+                    {% endfor %}
+                </tr> 
+                
+            {% endfor %}
+     </table>
+  
+
+      </div>
+      <div class="modal-footer">
+
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+      </div>
+    </div>
+    
+  </div>
+
+
+
+              

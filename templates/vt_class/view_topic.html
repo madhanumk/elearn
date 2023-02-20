@@ -1,0 +1,156 @@
+
+{% extends 'base_2.html' %}
+{% load static %}
+{% block content %}
+{% load status_tags %}
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+            <div class="kt-pricing-1__items row">
+                <div class="kt-pricing-1__item col-lg-5 bg-blue">
+                    <h2 class="kt-pricing-1__subtitle">Topics</h2>
+                    <span class="kt-pricing-1__description">
+                        <ul class="unoderlist">
+                            {% for topic in topics %}
+													
+	                            <li class="p-3">
+                                    <h4>
+                                         <a href="{% url 'topic_resource' topic.id %}" >{{topic.title}} </a>    
+                                           <span class="float-right lead">
+                                             
+                                             <a href="{% url 'view_discussion' topic.id %}">View discussions</a>
+                                          </span>                                 
+                                    </h4>
+                                </li>
+
+                            {% empty %}
+
+                                No topic found for this classroom
+
+                            {% endfor %}
+                        </ul>
+                    </span>                                                
+                </div>
+
+                 <!---Gap-->
+                 <div class="kt-pricing-1__item col-lg-2 bg-dark-white">
+                    
+                </div>
+
+
+
+                <div class="kt-pricing-1__item col-lg-4  bg-dark-green" id="div_assignment">
+                    <h2 class="kt-pricing-1__subtitle bg-dark-mb-12">Assignments</h2>
+                    <span class="kt-pricing-1__description ">
+                        <div class="kt-widget4">
+                            <ul class="unoderlist">
+                                {% for assignment in assignment %}
+                                 <li class="p-3">
+                                    {% get_attempt_status assignment.id user as submission %}
+
+                                    {% if submission == "Not Attended" %}
+
+                                       {% if assignment.date_comparing %}
+                                                                              
+                                           <a href="{% url 'assignment' assignment.id %}" >
+                                            <h4> {{assignment}}</h4>
+                                          </a>
+                                          <a href="{% url 'assignment' assignment.id %}" >
+                                            <h6 style="color:rgb(29, 14, 238)">Pending</h6>
+                                          </a>
+
+                                        {% else %}
+
+                                        <a href="{% url 'assignment' assignment.id %}" > 
+                                            <h4> 
+                                                  {{assignment}}
+                                           </h4>
+                                        </a>
+                                        <a href="{% url 'assignment' assignment.id %}" >
+                                           <h6 style="color:red">Over Due</h6>
+                                         </a> 
+
+                                        {% endif %}
+
+                                    {% else %}
+
+                                        {% if submission.status == "A" %}
+
+                                            <h4>
+                                                 {{assignment}} 
+                                            </h4>
+                                            <h6 style="color:chartreuse;display:inline">Accepted</h6>
+                                            <p style="display:inline">( Score : {{submission.marks}} )</p>
+                                             {% if submission.sfile %}
+                                                  <a href="{{submission.sfile.url}}" download>Download</a>
+                                             {% endif %}
+
+                                        {% elif submission.status == "S"  %} 
+
+                                            <h4>
+                                                {{assignment}}                                                                                                                                                                                                                                                    
+                                            </h4> 
+                                            <h6 style="color:black;display:inline">Submitted </h6> 
+                                            <a class="delete_assignment" data-url= "{% url 'ajax_student_delete_submission' submission.id %}" href="#">Delete Submission</a>
+                                        
+
+                                        {% elif  submission.status == "R" %}
+
+                                           <h4>
+                                                {{assignment}}                                                                                                                                         
+                                           </h4>
+                                          <h6  style="color:black;display:inline"> Resent</h6>                                                    
+                                          <a class="delete_assignment" data-url= "{% url 'ajax_student_delete_submission' submission.id %}" href="#">Delete Submission</a>
+                               
+                               
+
+                                        {% endif %}
+
+                                    {% endif %}
+
+                                </li>
+                                 {% empty %}
+                                    No assignment found                                    
+                                {% endfor %}
+                            </ul>
+
+                        </div>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script>
+    
+      //delete Assignment
+    
+      $('#div_assignment').on('click','.delete_assignment',function(){
+                    event.preventDefault();
+                    if (confirm('Are you sure to delete this Submission?')) {
+                        url = $(this).attr('data-url');
+                        $.ajax({
+                            url : url,
+                            
+                            success:function(output)
+                            {
+                                if(output.status)
+                                {
+                                    location.reload();
+                                }
+                                else{
+                                    alert('Something Went Wrong.!');
+                                }
+                                
+                            },
+                        });
+                    }
+    
+                });
+    
+     
+        
+    </script>
+                                              
+
+{% endblock %}

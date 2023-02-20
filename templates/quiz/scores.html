@@ -1,0 +1,22 @@
+<div  class="table-responsive "> 
+                                                                    
+    <table class="table" >
+     <thead class="thead-dark">
+        <tr  class="p-3">
+            <th>Quiz Name</th>
+            <th>Attempted on</th>
+            <th>Score</th>
+            <th>Answer</th>
+        </tr>
+        </thead>
+    {% for attempt in Attempts %}
+        <tr class="p-3">
+            <td>{{attempt.Quiz.name}}</td>
+            <td>{{attempt.date}}</td>
+            <td>{{attempt.score}}</td>
+            <td><a href="{% url 'quiz-answer-detail' attempt.Quiz.id  %}">View Answers</a> </td>
+        </tr>
+    {% endfor %}
+</table>
+
+</div>    

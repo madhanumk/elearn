@@ -1,0 +1,188 @@
+{% extends 'base_2.html' %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+{% block content %} 
+
+<script type="text/javascript" src="/static/ckeditor/ckeditor-init.js" data-ckeditor-basepath="/static/ckeditor/ckeditor/" id="ckeditor-init-script"></script>
+<script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
+<script type="text/javascript" src="/static/ckeditor/ckeditor/ckeditor.js"></script>
+
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+                <div class="row mb-3">
+                  <div class="col-sm-8">
+                    <a href="{% url 'faculty_classroom' %}" class="btn btn-primary p-2 m-1 rounded-pill">Classroom</a>
+                    <a href="{% url 'view_all_assignment' %}" class="btn btn-primary p-2 m-1 rounded-pill">Assignments</a>
+                    <a href="{% url 'view_all_test' %}" class="btn btn-primary p-2 m-1 rounded-pill">Tests</a>
+                    <a href="{% url 'view_all_discussion' %}" class="btn btn-primary p-2 m-1 rounded-pill">Discussions</a>
+                    <a href="{% url 'view_test' quiz.id %}" class="btn btn-primary p-2 m-1 rounded-pill float-right">Go Back</a>
+                 
+                  </div>
+                  <div class="col-sm-4"></div>
+                    
+                </div>
+			          <div id="quiz_detail"> 
+
+                      <h3 class="d-inline mb-5"> {{operation}} Question </h3>        
+                      <p>The question will be saved, and it will be assigned to <a href="{% url 'view_test' quiz.id %}">{{quiz}}</a></p>          
+                             
+                </div>
+
+                <hr>
+                
+                <div class="row m-3">                   
+             
+    
+                        <div class="col-sm-8" id="question_form_div">
+                          <form method="post" id="question_form">                   
+                             
+                              {{ form.media }}
+                              {{ form|crispy }} 
+                  
+                              {{ options.management_form }}
+                              <h2>Option</h2>
+                              <table class="table">
+                                {{ familymembers.management_form|crispy }}
+                    
+                                {% for form in options.forms %}
+                                    {% if forloop.first %}
+                                        <thead>
+                                        <tr>
+                                            {% for field in form.visible_fields %}
+                                                <th>{{ field.label|capfirst }}</th>
+                                            {% endfor %}
+                                        </tr>
+                                        </thead>
+                                    {% endif %}
+                                    <tr class="{% cycle 'row1' 'row2' %} formset_row">
+                                        {% for field in form.visible_fields %}
+                                            <td>
+                                                {# Include the hidden fields in the form #}
+                                                {% if forloop.first %}
+                                                    {% for hidden in form.hidden_fields %}
+                                                        {{ hidden }}
+                                                    {% endfor %}
+                                                {% endif %}
+                                                {{ field.errors.as_ul }}
+                                                {{ field }}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+
+                              </table>                           
+                                
+                          </form>                         
+                           
+                            {% if operation == 'Add' %}
+                                <button type="button" id="create_question_btn" class="btn btn-primary">Add Question</button>
+                            {% else %}
+                                <button type="button" id="update_question_btn" data-url= "{% url 'question-update' question.id quiz.id %}"  class="btn btn-primary">Update</button>   
+                            {% endif %}
+                       
+                         
+                        </div>
+                        <div class='col-sm-4'></div>
+                                        
+                    
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function(){
+       
+        //Create Question
+        $('#question_form_div').on('click','#create_question_btn', function(){
+
+            event.preventDefault();
+            for (var instance in CKEDITOR.instances)
+              CKEDITOR.instances[instance].updateElement();
+
+            formdata = new FormData($('#question_form')[0]);
+              
+            $.ajax({
+              url : '{%url "add_test_question" quiz.id %}',
+              headers: {
+                  content_type: 'application/json',
+                  'X-CSRFToken': "{{ csrf_token }}"
+                  },
+              data : formdata,
+              method: 'post',
+              processData: false,
+              contentType: false,
+
+              beforeSend:function()
+                {
+                  $('#create_question_btn').text('Please Wait');
+                        
+                },   
+
+              success:function(output)
+                  {
+                    if(output.valid)
+                        {
+                          location.href = "{% url 'view_test' quiz.id %}";           
+                        }
+                    else
+                      {                        
+                        $('#question_form_div').html(output.form);
+                        alert('Some information is missing; please complete it.');
+                      }
+                  },
+            });
+
+
+          });
+        
+        //Update question
+        $('#question_form_div').on('click','#update_question_btn', function(){
+            
+            event.preventDefault();
+            url = $(this).attr('data-url');
+            for (var instance in CKEDITOR.instances)
+                CKEDITOR.instances[instance].updateElement();
+
+            form = $('#question_form_div #question_form').serialize();
+            $.ajax({
+                url : url,
+                headers: {
+                   content_type: 'application/json',
+                   'X-CSRFToken': "{{ csrf_token }}"
+                },
+                data : form,
+                method: 'post', 
+
+                beforeSend:function()
+                  {
+                    $('#update_question_btn').text('Please Wait');
+                       
+                 },
+       
+                success:function(output)
+                {
+                    if(output.valid)
+                    {
+
+                      location.href = "{% url 'view_test' quiz.id %}"; 
+                    }
+                    else
+                    {                      
+                        $('#question_form_div').html(output.form);
+                        alert('Some information is missing; please complete it.');
+                      }
+                    
+            
+            
+                },
+            });
+        });
+
+
+      });
+      </script>
+
+
+{% endblock %}

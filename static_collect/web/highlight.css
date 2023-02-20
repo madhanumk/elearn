@@ -1,0 +1,18 @@
+.hLight
+    {
+        width:auto;
+    }
+    span.hLight:hover
+    {
+        color:#0000EE; 
+        left: 0px!important; 
+        position:relative!important; 
+        top:0px!important;
+        cursor:pointer; 
+        width:auto; 
+        font-family: serif; 
+        font-weight:bold;
+        background-color: #fff;        
+        opacity:1.0 !important;
+        
+    }

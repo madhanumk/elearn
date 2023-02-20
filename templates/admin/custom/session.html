@@ -1,0 +1,29 @@
+{% load static %}
+{% for session in sessions %}
+    <div class="card shadow col-sm-3 m-1 p-2">
+                           
+        <h6 class="d-inline">{{session.title}}</h6>
+                                                              
+                                           
+            <ul class="list-unstyled ml-1">
+                                
+            <li>{{session.start_date}} {{session.start_time}}</li>
+                                
+                                
+            <li>
+                {{session.classroom.name}}, <a target="_blank" href="{{session.link}}">Link</a>
+                {% if session.password_if_any != None %}
+                    Passsword : {{session.password_if_any}}
+                {% endif %}
+                <a href='' class="edit_session mx-1" data-url="{% url 'ajax_edit_session' session.id %}"><img title="Edit Session" src="{% static '/images/icons/edit.png' %}"></a>
+                <a href='' class="delete_session mx-1" data-url="{% url 'ajax_delete_session' session.id %}"><img title="Delete Session" src="{% static '/images/icons/delete.png' %}"></a>
+                                
+            </li>
+        </ul>
+                           
+                            
+                                                    
+    </div>
+{% empty %}
+    No Sessions found
+{% endfor %}

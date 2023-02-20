@@ -1,0 +1,378 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load school_tags %}
+{% load widget_tweaks %}
+
+
+{% block message %}
+    <p id="message_txt" class="ml-2" style="color:red;"></p>
+{% endblock %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+				<div class="row mb-2">
+                    <h3>College Dashboard</h3>                   
+                </div>
+
+                <div class="row mb-3">
+                    
+                   
+                    <div class="col-sm-12">
+                        <a href="{% url 'college_admin' %}" class="btn btn-primary  p-2 m-1 rounded-pill">Home</a>
+                        <a href="{% url 'students' %}" class="btn btn-primary p-2 m-1 rounded-pill">Students</a>
+                        <a href="{% url 'faculty' %}" class="btn btn-primary p-2 m-1 rounded-pill">Faculty</a>
+                        <a href="{% url 'score' %}" class="btn btn-primary p-2 m-1 rounded-pill">Performance</a>
+                        <a href="{% url 'view_post' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Circular</a>
+                        <a href="{% url 'resource_list' %}" class="btn btn-primary p-2 m-1 rounded-pill">Resource</a>
+                    </div>
+                    
+                </div>
+
+                <div class="row">
+
+                    <div class="col-sm-3  p-4 shadow">                        
+                        <form method="get" id="filter-form">
+
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <h4 class="d-inline">Filter</h4>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <a class="float-right" href="{% url 'view_post' %}"><u>Reset</u></a>
+                                </div>
+                                <div class="col-sm-12">                                    
+                                    <div class="input-group">                                       
+                                        <input type="text" name="title" {% if title %} value="{{title}}" {% endif %} class="form-control" placeholder="Search by title">
+                                        <div class="input-group-append">
+                                          <button class="btn btn-secondary" type="submit">
+                                            <i class="fa fa-search"></i>
+                                          </button>
+                                        </div>
+                                    </div>                                    
+                               </div>
+
+                                <div class="col-sm-12">
+                                    {{ filter.form.post_category.label_tag }}
+                                    {% render_field filter.form.post_category class="form-control form-submit" %}
+                                </div>
+
+                            
+                                <div class="col-sm-12">
+                                    {{ filter.form.language_medium.label_tag }}
+                                    {% render_field filter.form.language_medium class="form-control form-submit" %}
+                                </div>
+
+                                
+                                <div class="col-sm-12">
+                                    {{ filter.form.subjects__grade.label_tag }}
+                                    {% render_field filter.form.subjects__grade class="form-control form-submit" %}
+                                </div>
+                              
+                            </div>
+                          
+                        </form>
+                    </div>
+ 
+                    <div class="col-sm-9 p-4">
+                        <div class="row">
+
+                            <div class="col-sm-6">
+                                <h4 class="d-inline"> Select post to change</h4> 
+                            </div>
+
+                            <div class="col-sm-6 float-right">
+                                  <a class="float-right add_post" url="{% url 'post_add' %}" href="#">+ Add new post</a>
+                            </div>
+
+                        </div>
+                         
+
+                        
+                        <div class="row table-responsive">
+
+                            <table class="table shadow table-striped  mt-2">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Post Title</th>
+                                    <th scope="col">Expires on</th>                                                                    
+                                    <th scope="col">Post category</th>    
+                                    <th scope="col">Programme</th>
+                                    <th scope="col">Edit</th>   
+                                    <th scope="col">Delete</th>           
+                                  </tr>
+                                </thead>
+                                <tbody id="post_div">
+
+                                    {% for post in dataqs.object_list %}
+                                        <tr class="post-list post_id_{{post.id}}">
+                                            <td>{{post.post_title}}</td>
+                                            <td>{{post.expires_on}} </td>                                          
+                                            <td>{{post.post_category}}</td>
+                                            <td>{{post.programme}}</td>                                          
+                                            <td><u><a class="edit_post" url="{% url 'post_edit' post.id %}" href="#">Edit</a></u></td>
+                                            <td><a class="delete-post" url="{% url 'post_delete' post.id %}" href="#">Delete</td>                                           
+                                        </tr>
+                                    {% empty %}
+
+                                    <tr class="student_id_{{student.id}} remove-empty">
+                                        <td colspan="6"><h6 class="text-center">No data available..!</h6></td>                                      
+                                    </tr>
+
+                                    {% endfor %}
+                               
+                                  
+                                </tbody>
+                            </table>
+
+                            <div class="pagination text-center">
+                                <span>
+                                    {% if dataqs.has_previous %}
+                                        <a href="?{% query_transform request page=1 %}">&laquo; first</a>
+                                        <a href="?{% query_transform request page=dataqs.previous_page_number %}">previous</a>
+                                    {% endif %}
+                    
+                                    <span class="current">
+                                        Page {{ dataqs.number }} of {{ dataqs.paginator.num_pages }}.
+                                    </span>
+                    
+                                    {% if dataqs.has_next %}
+                                        <a href="?{% query_transform request page=dataqs.next_page_number %}">next</a>
+                                        <a href="?{% query_transform request page=dataqs.paginator.num_pages %}">last &raquo;</a>
+                                    {% endif %}
+                                </span>
+                            </div> 
+        
+                         
+        
+                        </div>
+        
+                        
+                    </div>
+
+                </div>
+              
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bd-example-modal-lg" data-backdrop="static" data-keyboard="false" href="#" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+        
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+    <script type="text/javascript" src="/static/ckeditor/ckeditor-init.js" data-ckeditor-basepath="/static/ckeditor/ckeditor/" id="ckeditor-init-script"></script>
+
+<script type="text/javascript" src="/static/ckeditor/ckeditor/ckeditor.js"></script>
+
+    <script>
+
+        $(document).ready(function(){  
+            
+            //form submit
+            $('.form-submit').change(function() {
+                $("#filter-form").submit();
+            });
+
+            function initialiseCKEditor() {
+            var textareas = Array.prototype.slice.call(document.querySelectorAll('textarea[data-type=ckeditortype]'));
+            for (var i=0; i<textareas.length; ++i) {
+            var t = textareas[i];
+            if (t.getAttribute('data-processed') == '0' && t.id.indexOf('__prefix__') == -1) {
+                t.setAttribute('data-processed', '1');
+                var ext = JSON.parse(t.getAttribute('data-external-plugin-resources'));
+                for (var j=0; j<ext.length; ++j) {
+                CKEDITOR.plugins.addExternal(ext[j][0], ext[j][1], ext[j][2]);
+                }
+                CKEDITOR.replace(t.id, JSON.parse(t.getAttribute('data-config')));
+            }
+            }
+        }
+
+            //add post 
+            $('.add_post').click(function() {
+                event.preventDefault();
+                var url = $(this).attr('url');
+                $.ajax({
+                    url : url,               
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').html(output.form);  
+                            $('#AjaxModal').modal('toggle');             
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form); 
+                        }
+
+                        initialiseCKEditor();
+                       
+                    },
+                });
+            });
+
+
+            //Create post
+            $('#AjaxModal').on('click','#create_btn', function(){
+                event.preventDefault();
+                var url = '{% url 'post_add' %}';
+                for (var instance in CKEDITOR.instances)
+                      CKEDITOR.instances[instance].updateElement();
+                
+                formdata = new FormData($('#AjaxModal #post_form')[0]);
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+
+
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+                    
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').modal('hide');                           
+                            $('#post_div').prepend(output.html);
+                            $('.remove-empty').remove();                          
+                           
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                            initialiseCKEditor();
+                        }
+                        $('#AjaxModal #info_text').text('');
+                    },
+                });
+            });
+
+             //post edit
+             $('#post_div').on('click','.edit_post', function(){
+                event.preventDefault();
+                var url = $(this).attr('url');               
+                $.ajax({
+                    url : url,                  
+           
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').html(output.form);
+                            $('#AjaxModal').modal('toggle'); 
+                            initialiseCKEditor();
+                           
+                           
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+                        $('#AjaxModal #info_text').text('');
+                    },
+                });
+
+
+            });
+
+        
+            //Update Student Form
+            $('#AjaxModal').on('click','#update_btn', function(){
+                event.preventDefault();
+                var url = $(this).attr('data-url');
+
+                for (var instance in CKEDITOR.instances)
+                      CKEDITOR.instances[instance].updateElement();
+                
+                formdata = new FormData($('#AjaxModal #post_form')[0]);
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+                    
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').modal('hide');
+
+                            $('.post_id_'+output.pk).html(output.html);
+                           
+                           
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                              initialiseCKEditor();
+                        }
+                        $('#AjaxModal #info_text').text('');
+                    },
+                });
+
+
+            });
+
+
+
+            //post delete
+            //post edit
+            $('#post_div').on('click','.delete-post', function(){
+                event.preventDefault();
+                var url = $(this).attr('url');
+
+                if(confirm('Are you sure want to delete this post?')){
+
+                             
+                $.ajax({
+                    url : url,
+                  
+           
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                           
+                            $('.post_id_'+output.pk).remove(); 
+                           
+                        }
+                        else
+                        {
+                            alert('Access denied..!')
+                        }
+                      
+                    },
+                });
+
+
+         
+
+                }
+                
+         });
+
+        
+        
+        
+        });
+
+  
+    </script>
+
+
+{% endblock %}

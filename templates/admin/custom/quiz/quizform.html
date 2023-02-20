@@ -1,0 +1,39 @@
+{% load crispy_forms_tags %}
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+            {% if operation == 'Add' %}
+                Add Test
+            {% else %}
+                Edit Test
+            {% endif %}
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" id="quiz_form">
+            <table>
+                {% csrf_token %}
+
+                {{form|crispy}}
+                <p>Enter 0 for no exam time limit </p>
+            </table>
+            
+            
+        </form>
+      </div>
+      <div class="modal-footer">
+        <span style="color:red" id="info_text"></span>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        {% if operation == 'Add' %}
+            <button type="button" id="create_quiz_btn" class="btn btn-primary">Save</button>
+        {% else %}
+            <button type="button" id="update_quiz_btn" data-url= "{% url 'ajax_edit_quiz' quiz_id %}" class="btn btn-primary">Update</button>   
+        {% endif %}
+        
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,101 @@
+
+<div class="modal-dialog  modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">            
+           {{test|title}}  - Performance
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="row">
+
+            <div class="col-sm-12">
+
+             
+
+            </div>
+
+            <div class="col-sm-12  mt-1 table-responsive">
+                <h5>Attempted List - {{attempted_list.count}}</h5>
+
+                <table class="table table-striped display excel-export-3" id="example">
+                    <thead>
+                      <tr>
+                        <th scope="col">Student Name</th>                         
+                        <th scope="col">Programme</th>
+                        <th scope="col">Year</th>
+                        <th scope="col">Mark</th>
+                        <th scope="col">Rank</th>
+                      </tr>
+                    </thead>
+                    <tbody id="report_div">
+
+                      {% for attempt in attempted_list %}
+                      <tr>
+                        <td>{{attempt.user.student}}</td>
+                        <td>{{attempt.user.student.programme}}</td>
+                        <td>{{attempt.user.student.year}}</td>
+                        <td>{{attempt.score}}</td>
+                        <td>{{attempt.rank}}</td>
+                      </tr>
+
+                    
+                     {% empty %}
+                        <tr>
+                            <td colspan="5">
+                                <h6 class="text-center">No Attempts Available..!</h6>
+                            </td>
+                        </tr>
+                     {% endfor %}                
+
+                      
+                    </tbody>
+                </table>
+
+                <hr>
+
+            </div>
+
+            <div class="col-sm-12 mt-1 table-responsive">
+                <h5>Not Attempted List - {{not_attempted_students.count}}</h5>
+
+                <table class="table table-striped display excel-export-4" id="example">
+                    <thead>
+                      <tr>
+                        <th scope="col">Student Name</th>                         
+                        <th scope="col">Programme</th>
+                        <th scope="col">Year</th>
+                        <th scope="col">Mobile No</th>
+                  
+                      </tr>
+                    </thead>
+                    <tbody id="report_div">
+
+                      {% for student in not_attempted_students %}
+                        <tr>
+                          <td>{{student}}</td>                        
+                          <td>{{student.programme}}</td>
+                          <td>{{student.year}}</td>
+                          <td>{{student.mobile_no}}</td>
+                        </tr>                   
+                    
+                     {% endfor %}                
+
+                      
+                    </tbody>
+                </table>
+
+            </div>
+
+          </div>
+    
+      </div>
+      <div class="modal-footer">
+        <span style="color:red" id="info_text"></span>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>    
+      </div>
+    </div>
+  </div>

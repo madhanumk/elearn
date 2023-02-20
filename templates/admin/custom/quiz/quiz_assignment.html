@@ -1,0 +1,16 @@
+{% load static %}
+{% for assignment in quiz.assignment_set.all %} 
+                            
+<tr>
+    <td>{{assignment.Question.name|safe}} <a  href= "{% url 'question-update' assignment.Question.id quiz.id %}"><img  class="float-right ml-1"  src="{% static '/images/icons/edit.png' %}"></a></td>
+    <td>{{assignment.Question.description|safe}}</td>
+    <td>{{assignment.marks}} </td>                                    
+    <td> <a class="edit_quiz_assignment" data-url= "{% url 'ajax_edit_quiz_assignment' assignment.id %}" href="#"><img  class="float-right ml-1"  src="{% static '/images/icons/edit.png' %}"></a></td>                                    
+    <td><a class="delete_assignment" data-url= "{% url 'ajax_delete_quiz_question' assignment.id %}" href="#"><img src="{% static '/images/icons/delete.png' %}"></a></td>
+   
+</tr>
+
+
+{% empty %}
+    No Assignment created
+{% endfor %}

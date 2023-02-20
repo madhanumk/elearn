@@ -1,0 +1,195 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load school_tags %}
+{% load widget_tweaks %}
+{% block message %}
+    <p id="message_txt" class="ml-2" style="color:red;"></p>
+{% endblock %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+				<div class="row mb-2">
+                    <h3>College Dashboard</h3>                   
+                </div>
+
+                <div class="row mb-3">                    
+                   
+                    <div class="col-sm-12">                     
+                        <a href="{% url 'college_admin' %}" class="btn btn-primary  p-2 m-1 rounded-pill">Home</a>
+                        <a href="{% url 'students' %}" class="btn btn-primary p-2 m-1 rounded-pill">Students</a>
+                        <a href="{% url 'faculty' %}" class="btn btn-primary p-2 m-1 rounded-pill">Faculty</a>
+                        <a href="{% url 'score' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Performance</a>
+                        <a href="{% url 'view_post' %}" class="btn btn-primary p-2 m-1 rounded-pill">Circular</a>
+                        <a href="{% url 'resource_list' %}" class="btn btn-primary p-2 m-1 rounded-pill">Resource</a>
+                    </div>
+                    
+                </div>
+
+                <div class="row">
+
+             
+ 
+                    <div class="col-sm-12 p-4">
+                        <h4 class="d-inline">Performance</h4> 
+                        <div class="row table-responsive">
+
+                            <table class="table shadow table-striped mt-2">
+                                <thead>
+                                  <tr>                                 
+                                    <th scope="col">Programme</th>                                  
+                                    <th scope="col">Year</th>                                                                    
+                                    <th scope="col">No of students</th>    
+                                    <th scope="col">No of teachers</th> 
+                                    <th scope="col">View Details</th>                                             
+                                  </tr>
+                                </thead>
+                                <tbody>
+            
+                                    {% for grade_list,year_list,no_of_students,no_of_teachers in zippedList %}
+                                        <tr>
+                                            <td>{{grade_list}}</td>
+                                            <td>{{year_list}}</td>                                          
+                                            <td>{{no_of_students}}</td>
+                                            <td>{{no_of_teachers}}</td>
+                                           <td><a href="{% url 'view_class_report' grade=grade_list.id year=year_list %}">View Details</a></td>
+                                         
+                                        </tr>
+                                    {% endfor %}
+                               
+                                  
+                                </tbody>
+                            </table>
+
+        
+                        </div>
+        
+                        
+                    </div>
+
+                </div>
+              
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bd-example-modal-lg" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+        
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+
+    <script>
+
+        $(document).ready(function(){
+            //form submit
+            $('.form-submit').change(function() {
+                $("#filter-form").submit();
+            });
+
+                  
+            //password reset         
+            $('#students_div').on('click','.password-reset',function(){
+                event.preventDefault();
+                var url = $(this).attr('reset-url');
+                $.ajax({
+                    url : url,
+               
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').html(output.html);  
+                            $('#AjaxModal').modal('toggle'); 
+
+            
+                        }
+                        else
+                        {
+                            alert('access denied');
+                        }
+                       
+                    },
+                });
+
+
+           
+
+            });
+
+
+            
+            //Student edit popup           
+            $('#students_div').on('click','.edit_user',function(){
+                event.preventDefault();
+                var url = $(this).attr('data-url');
+                $.ajax({
+                    url : url,
+               
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').html(output.form);  
+                            $('#AjaxModal').modal('toggle'); 
+
+            
+                        }
+                        else
+                        {
+                            alert('access denied');
+                        }
+                       
+                    },
+                });
+
+
+           
+
+            });
+
+
+            //Update Student Form
+            $('#AjaxModal').on('click','#update_btn', function(){
+                event.preventDefault();
+                var url = $(this).attr('data-url');
+                var studentId = $(this).attr('student-id');
+                formdata = new FormData($('#AjaxModal #student_form')[0]);
+                $.ajax({
+                    url : url,
+                    data : formdata,
+                    method: 'post',
+                    processData: false,
+                    contentType: false,
+                    beforeSend:function()
+                    {
+                        $('#AjaxModal #info_text').text('Please Wait');
+                       
+                    },
+                    
+                    success:function(output)
+                    {
+                        if(output.valid)
+                        {
+                            $('#AjaxModal').modal('hide');
+                            $('.student_id_'+studentId).html(output.html);
+                           
+                        }
+                        else
+                        {
+                            $('#AjaxModal').html(output.form);
+                        }
+                        $('#AjaxModal #info_text').text('');
+                    },
+                });
+
+
+            });
+
+        });
+
+  
+    </script>
+
+
+{% endblock %}

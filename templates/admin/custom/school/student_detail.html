@@ -1,0 +1,212 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+                <div class="row mb-3">                           
+                    <div class="col-sm-12">
+                        <a href="{% url 'college_admin' %}" class="btn btn-primary p-2 m-1 rounded-pill">Home</a>
+                        <a href="{% url 'students' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Students</a>
+                        <a href="{% url 'faculty' %}" class="btn btn-primary p-2 m-1 rounded-pill">Faculty</a>
+                        <a href="{% url 'score' %}" class="btn btn-primary p-2 m-1 rounded-pill">Performance</a>
+                        <a href="{% url 'view_post' %}" class="btn btn-primary p-2 m-1 rounded-pill">Circular</a>
+                        <a href="{% url 'resource_list' %}" class="btn btn-primary p-2 m-1 rounded-pill">Resource</a>
+                    </div>
+                    <div class="col-sm-12">
+                        <a href="{% url 'students' %}" class="btn btn-primary mt-1">Go Back</a>
+                    </div>                  
+                   
+                </div>
+				<div class="row">
+
+                    <div class="col-sm-6">
+                        <a href="#"><h3 >Report : {{student|capfirst}} </h3></a>
+                    </div>
+                   
+                    <div class="col-sm-6">
+                        <a class="btn btn-primary float-right" href="#" id="print_btn">Print</a>                       
+                    </div>
+                    
+  
+                </div>
+                <hr>
+                
+                <div class="row m-3" id='DivIdToPrint'>
+
+                    <h5>General Details:</h5>
+                    <div class="table-responsive" id="student_table">
+                        <table class="table table-striped table-responsive display">
+                          <thead>
+                            <tr>
+                              <th scope="col">Student Name</th>                              
+                              <th scope="col">Programme</th>
+                              <th scope="col">Academic Year</th>                          
+                              <th scope="col">Address</th>
+                              <th scope="col">District</th>
+                              <th scope="col">Pincode</th>
+                              <th scope="col">dob</th>
+                              <th scope="col">Parents Mobile Number</th>
+                        
+                            </tr>
+                          </thead>
+                          <tbody id="report_div">
+  
+                          
+                            <tr>
+                              <td>{{student|capfirst}}</td>                              
+                              <td>{{student.programme}}-{{student.get_year_display}}-{{student.get_semester_display}}</td>
+                              <td>{{student.acadmic_year}}</td>                             
+                              <td>{{student.address}}</td>
+                              <td>{{student.district}}</td>
+                              <td>{{student.pincode}}</td>
+                              <td>{{student.dob}}</td>
+                              <td>{{student.mobile_no}}</td>
+                              
+                            </tr>
+
+                            
+                          </tbody>
+                        </table>
+                   
+                    </div>
+
+                    <hr><hr>
+                    <h3>Test Report</h3>
+
+                    <div class="table-responsive">
+
+                        {% if test_names %}
+                            <table id="testTable" class="table table-head-custom table-vertical-center">
+                                <thead id="thead">
+
+                                </thead>
+                                <tbody id="tbody">     
+
+
+                                </tbody>
+                            </table>
+
+                        {% else %}
+
+                            <h6 class="pl-3">No Test Available..!</h6>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <h3>Assignment Report</h3>
+
+                    <div class="table-responsive">
+                        {% if assignment_subjects %}
+                            <table id="assignmentTable" class="table table-head-custom table-vertical-center">
+                            
+                            
+                            </table>
+
+                        {% else %}
+
+                            <h6 class="pl-3">No Assignment Available..!</h6>
+
+                        {% endif %}
+                    </div>
+
+                </div>
+                            
+                            
+                            
+                            
+                    
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>   
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.2.61/jspdf.min.js"></script>
+    
+ 
+
+    <script>  
+    
+     $('#print_btn').click(function () {
+       window.print();
+     });
+
+    
+        var appendElements = "<tr>";
+        appendElements+='<th class="pl-0" style="min-width: 100px">Test Name</th>';
+        appendElements+='<th class="pl-0" style="min-width: 100px">Subject</th>';
+        appendElements+='<th style="min-width: 120px">Score</th>';  
+        
+        appendElements+='</tr>';
+
+        $('#testTable #thead').append(appendElements);
+
+        var score= {{score|safe}};
+        var testSubjects= {{test_subjects|safe}};
+
+    
+
+        {% for test_name in test_names %}
+
+            var table = document.querySelector("#testTable");
+            var totalrows = document.querySelectorAll("#testTable #tbody tr").length;
+            var row = tbody.insertRow(totalrows);
+                             
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1); 
+            var cell2 = row.insertCell(2); 
+    
+                             
+    
+            cell0.innerHTML = '{{test_name}}';
+            cell1.innerHTML = testSubjects[{{forloop.counter0}}]; 
+            cell2.innerHTML = score[{{forloop.counter0}}]; 
+          
+                                             
+            
+            {% endfor %}
+
+            //assignment table
+
+        var appendElements = "<tr>";
+        appendElements+='<th class="pl-0" style="min-width: 100px">Assignment Name</th>';
+        appendElements+='<th class="pl-0" style="min-width: 100px">Subject</th>';
+        appendElements+='<th style="min-width: 120px">Score</th>';  
+        
+        appendElements+='</tr>';
+
+        $('#assignmentTable').append(appendElements);
+
+        var score= {{assignment_score|safe}};
+        var assignmentSubjects = {{assignment_subjects|safe}};
+    
+
+        {% for assignment_name in assignment_names %}
+
+                var table = document.querySelector("#assignmentTable");
+                var totalrows = document.querySelectorAll("#assignmentTable tr").length;
+                var row = table.insertRow(totalrows);
+                                
+                var cell0 = row.insertCell(0);
+                var cell1 = row.insertCell(1); 
+                var cell2 = row.insertCell(2); 
+        
+                                
+        
+                cell0.innerHTML = '{{assignment_name}}';
+                cell1.innerHTML = assignmentSubjects[{{forloop.counter0}}]; 
+                cell2.innerHTML = score[{{forloop.counter0}}]; 
+            
+                                             
+            
+            {% endfor %}
+        
+
+    </script>
+
+
+{% endblock %}

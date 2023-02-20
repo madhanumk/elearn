@@ -1,0 +1,364 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load multioptions_tags %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <a href="{% url 'faculty_classroom' %}" class="btn btn-primary p-2 m-1 rounded-pill">Classroom</a>
+                        <a href="{% url 'view_all_assignment' %}" class="btn btn-primary p-2 m-1 rounded-pill">Assignments</a>
+                        <a href="{% url 'view_all_test' %}" class="btn btn-primary p-2 m-1 rounded-pill">Tests</a>
+                        <a href="{% url 'view_all_discussion' %}" class="btn btn-primary p-2 m-1 rounded-pill">Discussions</a>
+                        <a href="{% url 'faculty_resource_list' %}" class="btn btn-secondary p-2 m-1 rounded-pill">Resources</a>
+                    </div>   
+                      
+                      
+                      
+                </div>
+				<div class="row mb-2 container">
+                    <a href="{% url 'faculty_resource_list' %}" class="btn btn-primary">Go Back</a>            
+                </div>
+                <hr>            
+               
+                <div class="row m-3">
+                     <div class="col-sm-6">
+
+                        <div class="row">
+
+                            <div class="col-sm-6">
+                                <h5>Video List</h5>
+                             </div>
+    
+                             <div class="col-sm-6 float-right">
+                               <a href="#" url="{% url 'faculty_add_video' resource.id %}" class="add_video float-right">+ Add Video</a>
+                            </div>
+
+
+                            <div class="col-sm-12  table-responsive">
+                                <table class="table table-striped display" id="example">
+                                    <thead>
+                                      <tr>
+                                        <th scope="col">Video Ttile</th>             
+                                        <th scope="col">View</th>
+                                        <th scope="col">Chapter No</th>
+                                        <th scope="col">Learning Style</th>   
+                                        <th scope="col">Edit</th>   
+                                        <th scope="col">Delete</th>                                    
+                                      </tr>
+                                    </thead>
+                                    <tbody id="video_div">
+            
+                                      {% for video in videos %}
+                                      <tr >
+                                        <td>{{video.video_title}}</td>                        
+                                        <td><a class="video_list" href="#" data_link="{{video.video_link}}?ecver=1">Watch</a></td>
+                                        <td>{{video.chapter_no }}</td>
+                                        <td>{{video.get_learning_style_display}}</td>
+                                        <td><a class="edit_video" url="{% url 'faculty_edit_video' video.id %}" href="#">Edit</a></td>
+                                        <td><a class="delete-video" url="{% url 'faculty_video_delete' video.id %}" href="#">Delete</a></td>
+                                        
+                                      </tr>
+            
+                                     {% empty %}
+            
+                                     <tr>
+                                        <td colspan="5"><h6 class="text-center">No data available..!</h6></td>                   
+                                      </tr>
+                                     {% endfor %}                    
+                                      
+                                    </tbody>
+                                  </table>
+
+                            </div>
+
+                        </div>
+                     
+
+
+                         
+                      
+                     </div>  
+                     
+                     <div class="col-sm-6">
+                         <h5>Preview</h5>
+                        <iframe width="100%" height="450px" src="" ></iframe>
+
+                     </div>
+                </div>                           
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bd-example-modal-lg" data-backdrop="static" data-keyboard="false" href="#" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+        
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+    <script>
+
+        $(document).ready(function(){
+
+        //video preview change
+         $('#video_div').on('click','.video_list',function(){                                                 
+            
+                event.preventDefault();
+                var link = $(this).attr('data_link'); 
+                if (link.indexOf("drive.google.com") != -1)
+                {
+                    
+                    var res = link.replace("view?ecver=1", 'preview');                                                                                                            
+                    $('iframe').attr("src", res);
+                    $(".video_list").css('color','white');
+                    $(this).css('color','black');
+
+                }
+
+                else{
+
+                    var full_video_link = "youtube.com";
+                    if(link.indexOf(full_video_link) != -1){                                                    
+                    var res = link.split("=");                                                 
+                    var link = "https://www.youtube.com/embed/"+res[1]; 
+
+                }
+                else{
+                    var res = link;                                                    
+                    var link = "https://www.youtube.com/embed/"+res;                                                  
+
+                }
+
+                $('iframe').attr("src", link);
+                $(".video_list").css('color','blue');
+                $(this).css('color','black');
+
+
+
+                }
+        
+                
+
+                
+            });
+
+                                                  
+        //add Video Popup
+        $('.add_video').click(function() {
+            event.preventDefault();
+            var url = $(this).attr('url');
+            $.ajax({
+                url : url,               
+                success:function(output)
+                {
+                    if(output.valid)
+                    {
+                        $('#AjaxModal').html(output.form);  
+                        $('#AjaxModal').modal('toggle');             
+                    }
+                    else
+                    {
+                        $('#AjaxModal').html(output.form); 
+                    }
+                    
+                },
+            });
+
+        });
+
+
+        //Add Video
+        $('#AjaxModal').on('click','#create_btn', function(){
+            event.preventDefault();
+            var url = $(this).attr('url');
+
+            
+            formdata = new FormData($('#AjaxModal #video_form')[0]);
+            $.ajax({
+                url : url,
+                data : formdata,
+                method: 'post',
+                processData: false,
+                contentType: false,
+                beforeSend:function()
+                {
+                    $('#AjaxModal #info_text').text('Please Wait');
+                    
+                },
+                
+                success:function(output)
+                {
+                    if(output.valid)
+                    {
+                        $('#AjaxModal').modal('hide');
+
+                        $('#video_div').html(output.html);
+                        
+                        
+                    }
+                    else
+                    {
+                        $('#AjaxModal').html(output.form);
+                    }
+                    $('#AjaxModal #info_text').text('');
+                },
+            });
+
+
+        });
+
+        //Video edit
+        $('#video_div').on('click','.edit_video', function(){
+        event.preventDefault();
+        var url = $(this).attr('url');                
+        
+        $.ajax({
+            url : url,                 
+            success:function(output)
+            {
+                if(output.valid)
+                {
+                    $('#AjaxModal').html(output.form);
+                    $('#AjaxModal').modal('toggle');                            
+                    
+                }
+                else
+                {
+                    $('#AjaxModal').html(output.form);
+                }
+                $('#AjaxModal #info_text').text('');
+            },
+        });
+
+
+    });
+
+        
+        //Update video Form
+        $('#AjaxModal').on('click','#update_btn', function(){
+            event.preventDefault();
+            var url = $(this).attr('data-url');
+            
+            formdata = new FormData($('#AjaxModal #video_form')[0]);
+            $.ajax({
+                url : url,
+                data : formdata,
+                method: 'post',
+                processData: false,
+                contentType: false,
+                beforeSend:function()
+                {
+                    $('#AjaxModal #info_text').text('Please Wait');
+                    
+                },
+                
+                success:function(output)
+                {
+                    if(output.valid)
+                    {
+                        $('#AjaxModal').modal('hide');
+
+                        $('#video_div').html(output.html);
+                        
+                        
+                    }
+                    else
+                    {
+                        $('#AjaxModal').html(output.form);
+                    }
+                    $('#AjaxModal #info_text').text('');
+                },
+            });
+
+
+        });
+
+
+        //Video delete
+        $('#video_div').on('click','.delete-video', function(){
+            event.preventDefault();
+            var url = $(this).attr('url');
+
+            if(confirm('Are you sure want to delete this video?')){
+
+                            
+            $.ajax({
+                url : url,
+                
+        
+                success:function(output)
+                {
+                    if(output.valid)
+                    {
+                        
+                        $('#video_div').html(output.html); 
+                        
+                    }
+                    else
+                    {
+                        alert('Access denied..!')
+                    }
+                    
+                },
+            });
+
+
+        
+
+            }
+            
+        });
+
+    
+        function defaultPreview() {
+            
+            var link = $(".video_list:first").attr('data_link');
+        
+
+            if (link.indexOf("drive.google.com") != -1)
+
+            {
+                var res = link.replace("view?ecver=1", 'preview');
+                                                                            
+                $('iframe').attr("src", res);
+                $(".video_list").css('color','white');
+                $(this).css('color','black');                                                       
+
+
+            }
+
+            else{
+
+                var full_video_link = "youtube.com";
+                if(link.indexOf(full_video_link) != -1){                                                    
+                var res = link.split("=");                                                 
+                var link = "https://www.youtube.com/embed/"+res[1]; 
+
+                }
+                else{
+                    var res = link;                                                    
+                    var link = "https://www.youtube.com/embed/"+res;                                                  
+
+                }
+
+            $('iframe').attr("src", link);
+            $(".video_list:first").css('color','black');
+
+            }
+        
+        
+
+
+
+
+            }
+                                                
+        defaultPreview();
+                       
+          });
+
+  
+    </script>
+
+{% endblock %}

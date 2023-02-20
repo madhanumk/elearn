@@ -1,0 +1,31 @@
+{% load static %}
+
+<table class="table table-striped e display" id="example">
+    <thead>
+        <tr>
+        <th scope="col">Material Name</th>             
+        <th scope="col">Topic</th>
+        <th scope="col">Content</th>
+        <th scope="col">Added By</th>
+        <th scope="col">Added On</th>
+    
+        </tr>
+    </thead>
+    <tbody id="report_div">
+
+        {% for material in materials %}
+        <tr>
+        <td>{{material}}</td>                        
+        <td>{{material.topic}}</td>
+        <td><a href="{{material.material.url}}" download>Download</a></td>
+        <td>{{material.topic.croom.created_by.get_full_name}}</td>
+        <td>{{material.added_on}}</td>
+        </tr>
+        {% endfor %}                     
+        
+    </tbody>
+</table>
+
+
+
+

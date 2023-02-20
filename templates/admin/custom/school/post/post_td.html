@@ -1,0 +1,8 @@
+
+
+ <td><a href="">{{post.post_title}}</a></td>
+ <td>{{post.expires_on}} </td>                                          
+ <td>{{post.post_category}}</td>
+ <td>{{post.language_medium}}</td>                                          
+ <td><u><a class="edit_post" url="{% url 'post_edit' post.id %}" href="#">Edit</a></u></td>
+ <td><a class="delete-post" url="{% url 'post_delete' post.id %}" href="#">Delete</td> 

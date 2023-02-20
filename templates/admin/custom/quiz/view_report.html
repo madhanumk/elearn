@@ -1,0 +1,333 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load multioptions_tags %}
+{% block content %} 
+	<div class="kt-portlet kt-portlet--height-fluid">
+		<div class="kt-portlet__body">
+			<div class="container">
+                <div class="row mb-3">
+
+                    <div class="col-sm-12">
+                        <a href="{% url 'faculty_classroom' %}" class="btn btn-primary p-2 m-1 rounded-pill">Classroom</a>
+                        <a href="{% url 'view_all_assignment' %}" class="btn btn-primary p-2 m-1 rounded-pill">Assignments</a>
+                        <a href="{% url 'view_all_test' %}" class="btn btn-primary p-2 m-1 rounded-pill">Tests</a>
+                        <a href="{% url 'view_all_discussion' %}" class="btn btn-primary p-2 m-1 rounded-pill">Discussions</a>
+                      </div>
+                        
+                    
+                </div>
+				<div class="row mb-2">
+                    <h3 class="pl-3">{{ quiz|title }} Test Report</h3>              
+                   
+                </div>
+                <hr>
+                
+                <div class="row m-3 table-responsive">
+                    <table class="table table-striped  display" id="example">
+                        <thead>
+                          <tr>
+                            <th scope="col">Student Name</th>                         
+                            <th scope="col">Grade</th>
+                            <th scope="col">Section</th>
+                            <th scope="col">Mark</th>
+                            <th scope="col">Rank</th>
+                      
+                          </tr>
+                        </thead>
+                        <tbody id="report_div">
+
+                          {% for attempt in attempts %}
+                          <tr>
+                            <td>
+                                {{attempt.user.student}}
+                                {% for subject in  quiz.subject_assigment.all %}
+                                {{subject.programme}}
+                                    {% if subject.programme == attempt.user.student.programme %}
+                                        <a class="student-report" href="#" url="{% url 'student_report' attempt.user.student.id subject.id  %}"> {{attempt.user.student.id}}  </a>                                  
+                                    {% else %}
+                                       <a class="student-report" href="#" url="{% url 'student_report' attempt.user.student.id subject.id  %}"> {{attempt.user.student}}  </a>                                  
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>{{attempt.user_programme}}</td>
+                            <td>{{attempt.user_section}}</td>
+                            <td>{{attempt.score}}</td>
+                            <td>{{attempt.rank}}</td>
+                          </tr>
+                         {% endfor %}
+
+                        
+
+                          
+                        </tbody>
+                      </table>
+
+                </div>
+                            
+                            
+                            
+                            
+                    
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade bd-example-modal-lg" id="AjaxModal" tabindex="-1" role="dialog" aria-labelledby="AjaxModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  
+                   
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+
+                
+                <h5>Test Performance</h5>
+                  
+                <div id="mychart_div_2">
+                    <canvas id="myChart_2" width="400" class="p-2" ></canvas>
+                </div>
+
+                <hr>
+
+                <div class="test-list">
+
+                </div>
+                <hr>
+
+                <h5>Assignment Performance</h5>
+                  
+                <div id="mychart_div_1">
+                    <canvas id="myChart_1" width="400" class="p-2" ></canvas>
+                </div>
+
+                <hr>
+
+                <div class="assignment-list">
+
+                </div>
+                <hr>
+
+    
+              </div>
+              <div class="modal-footer">
+                <span style="color:red" id="info_text"></span>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>              
+              </div>
+            </div>
+          </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function(){         
+
+            // DataTable
+            var table = $('#example').DataTable({
+                "pageLength": 50,
+
+                dom: 'Bfrtip',
+                        buttons: [
+                        { extend: 'excel', className: 'btn-primary' }
+                                ],
+                initComplete: function () {
+                    // Apply the search
+                    this.api().columns().every( function () {
+                        var that = this;
+        
+                        $( 'input', this.footer() ).on( 'keyup change clear', function () {
+                            if ( that.search() !== this.value ) {
+                                that
+                                    .search( this.value )
+                                    .draw();
+                            }
+
+                        
+                        } );
+                    } );
+                }
+            });
+
+
+
+            //get student past report
+            $('.student-report').click(function(){
+                event.preventDefault();
+                var url = $(this).attr('url');
+                $.ajax({
+                    url : url,
+                    success:function(output)
+                        {
+
+                        $('.modal-title').html(output.student_name + ' - Performance');
+                        $('.assignment-list').html(output.assignments);
+                        $('.test-list').html(output.tests);
+                        $('#AjaxModal').modal('toggle');
+
+                        //assignment chart                                       
+                        window.chartColors = {
+                            red: 'rgb(255, 99, 132)',
+                            orange: 'rgb(255, 159, 64)',
+                            yellow: 'rgb(255, 205, 86)',
+                            green: 'rgb(75, 192, 192)',
+                            blue: 'rgb(54, 162, 235)',
+                            purple: 'rgb(153, 102, 255)',
+                            grey: 'rgb(231,233,237)'
+                        };
+                        
+                        
+                        
+                        var line1 = output.assignment_mark                        
+                        var date = output.assignment_name
+                        var config = {
+                        type: 'line',
+                        data: {
+                            labels: date,
+                            datasets: [{
+                            label: "Mark",
+                            backgroundColor: window.chartColors.red,
+                            borderColor: window.chartColors.red,
+                            data: line1,
+                            fill: false,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            title:{
+                            display:true,
+                            text:'Mark'
+                            },
+                            tooltips: {
+                            mode: 'index',
+                            intersect: false,
+                            },
+                        hover: {
+                            mode: 'nearest',
+                            intersect: true
+                            },
+                            scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                display: true,
+                                labelString: 'Assignment'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                display: true,
+                                },
+                            }]
+                            }
+                        }
+                        };
+                        
+                        
+                        var ctx = document.getElementById("myChart_1").getContext("2d");
+                        var myLine = new Chart(ctx, config);
+
+
+                        //test chart start
+                                                      
+                          window.chartColors = {
+                            red: 'rgb(255, 99, 132)',
+                            orange: 'rgb(255, 159, 64)',
+                            yellow: 'rgb(255, 205, 86)',
+                            green: 'rgb(75, 192, 192)',
+                            blue: 'rgb(54, 162, 235)',
+                            purple: 'rgb(153, 102, 255)',
+                            grey: 'rgb(231,233,237)'
+                        };
+                        
+                        
+                        
+                        var line1 = output.test_mark                        
+                        var date = output.test_name
+                        var config = {
+                        type: 'line',
+                        data: {
+                            labels: date,
+                            datasets: [{
+                            label: "Mark",
+                            backgroundColor: window.chartColors.red,
+                            borderColor: window.chartColors.red,
+                            data: line1,
+                            fill: false,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            title:{
+                            display:true,
+                            text:'Mark'
+                            },
+                            tooltips: {
+                            mode: 'index',
+                            intersect: false,
+                            },
+                        hover: {
+                            mode: 'nearest',
+                            intersect: true
+                            },
+                            scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                display: true,
+                                labelString: 'Test'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                display: true,
+                                },
+                            }]
+                            }
+                        }
+                        };
+                        
+                        
+                        var ctx = document.getElementById("myChart_2").getContext("2d");
+                        var myLine = new Chart(ctx, config);
+
+
+                        //test chart end
+
+
+
+                        var table = $('.excel-export').DataTable({
+                            "pageLength":10,
+                            dom: 'Bfrtip', "ordering": false,
+                            buttons: 
+                                [
+                                    { extend: 'excel', className: 'btn-primary' }
+                                ],                
+                        }); 
+                                    
+                            
+                        },
+                });
+
+            });
+
+
+
+
+        });
+
+        
+
+    </script>
+
+
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends '../base_2.html' %}
+
+
+{% load static %}
+{% block content %}      
+                                
+								<div class="kt-portlet kt-portlet--height-fluid">
+									<div class="kt-portlet__body">
+                                        <div class="kt-pricing-1__items row">
+                                            <div class="kt-pricing-1__item col-lg-12 table-responsive">
+                                                    <div class="container " >
+
+                                                            <div class="row">
+                                                            
+                                                                <div class="col-sm-12 text-center">
+   
+                                                                    <h1>You already started the test <u>{{old_test.test}}</u> </h1>
+                                                                    <br>
+                                                                    <h5>So you could not attend the new test.</h5>
+                                                            
+                                                                 
+                                                                        <a href="{% url 'quiz-detail' old_test.test.id %}">
+                                                                           <button class="btn  btn-success btn-shadow-hover font-weight-bolder py-3">Go to ongoing test</button>
+                                                                        </a>
+                                                            
+                                                                    
+                                                                    
+                                                                        <button id="new_test" value="{{current_test.id}}" class="btn  btn-success btn-shadow-hover font-weight-bolder py-3">Go to new test</button>
+                                                                    
+                                                            
+                                                                </div>
+                                                            
+                                                            
+                                                            </div>
+                                                            
+                                                            
+                                                    </div>
+                                                        
+                                                
+
+                                         
+                                              
+                                            </div>
+                                            
+                                        
+                                         
+                                        </div>
+									</div>
+                                </div>
+                             
+                                
+                                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript"> 
+    window.history.forward(); 
+    function noBack() { 
+        window.history.forward(); 
+    } 
+  </script>
+
+<script>
+
+$('#new_test').click(function () {
+    var csrftoken = getCookie('csrftoken');
+    localStorage.clear();
+    
+    function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+   
+    $.ajax({
+        type: "POST",
+        contentType: "application/json",
+        url : "/quiz/delete_on_test/{{old_test.test.id}}/",
+        data : {},
+        dataType: "json",
+        beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+           xhr.setRequestHeader("X-CSRFToken", csrftoken);
+         }
+        },
+       success: function (data) { 
+
+        location.reload();
+        }
+      }); 
+
+
+    
+});
+
+</script>
+                                
+                {% endblock %}
+
+
+                
+
